@@ -5,7 +5,7 @@ the exterior heat-transfer multiplier and vapor mass-transfer multiplier are
 independent parameters.
 
 Use ``M_h`` for sensible convective heat transfer and ``M_m`` for water-vapor
-mass transfer.  Radiation is not multiplied by either value.
+mass transfer. Radiation is represented separately by ``h_rad``.
 
 This is a low-order screening model, not CFD and not a validated garment
 performance predictor.
@@ -54,6 +54,7 @@ def stable_equilibria_split(
     heat_multiplier: float,
     mass_multiplier: float,
     u_body: float,
+    h_rad: float = H_RAD,
     grid_points: int = 1200,
 ) -> list[SplitEquilibrium]:
     """Return all stable equilibria using independent external multipliers.
@@ -64,9 +65,13 @@ def stable_equilibria_split(
         ``M_h`` multiplying only sensible convective heat transfer.
     mass_multiplier:
         ``M_m`` multiplying only vapor mass transfer.
+    h_rad:
+        Linearized radiative exchange coefficient [W/(m^2 K)].
     """
     if heat_multiplier <= 0.0 or mass_multiplier <= 0.0:
         raise ValueError("transfer multipliers must be positive")
+    if h_rad < 0.0:
+        raise ValueError("h_rad must be non-negative")
 
     water_flux_cap = (water_gph / 1000.0 / 3600.0) / A
 
@@ -74,7 +79,7 @@ def stable_equilibria_split(
         h, km = passive_coeffs(surface_c, ambient_c, rh)
         q_body = u_body * (T_SKIN - surface_c)
         q_conv = heat_multiplier * h * (ambient_c - surface_c)
-        q_rad = H_RAD * (ambient_c - surface_c)
+        q_rad = h_rad * (ambient_c - surface_c)
         vapor_drive = max(
             rho_v_sat(surface_c) - rh * rho_v_sat(ambient_c),
             0.0,
@@ -126,8 +131,8 @@ def select_warm(roots: list[SplitEquilibrium]) -> SplitEquilibrium | None:
 def run_split_screen() -> pd.DataFrame:
     """Screen independent M_h and M_m at the primary environment.
 
-    ``u_body`` is intentionally held fixed so this table isolates external
-    transfer assumptions rather than heat-spreader coupling.
+    ``u_body`` and radiation are intentionally held fixed so this table isolates
+    the two exterior-transfer multipliers.
     """
     ambient_c = 35.0
     rh = 0.70
