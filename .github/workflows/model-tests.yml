@@ -40,6 +40,8 @@ jobs:
         run: python simulations/open_valley_thermal_1d.py > /tmp/open-valley-thermal.txt
       - name: Run heat-mass coupling audit
         run: python simulations/open_valley_heat_mass_coupling_audit.py > /tmp/open-valley-coupling-audit.txt
+      - name: Run passive environment boundary
+        run: python simulations/passive_environment_boundary.py > /tmp/passive-environment-boundary.txt
       - name: Run liquid-supply capacity audit
         run: python simulations/supply_limit_audit.py > /tmp/supply-limit-audit.txt
       - name: Run 2D heat-spreader orientation demo
@@ -60,11 +62,13 @@ jobs:
           test -s /tmp/reference-output/data/open_valley_distributed_1d.csv
           test -s /tmp/reference-output/data/open_valley_thermal_1d.csv
           test -s /tmp/reference-output/data/open_valley_heat_mass_coupling_audit.csv
+          test -s /tmp/reference-output/data/passive_environment_boundary.csv
           test -s /tmp/reference-output/data/supply_limit_audit.csv
           test -s /tmp/reference-output/data/heat_spreader_orientation.csv
           test -s /tmp/reference-output/data/water_salt_parameter_screen.csv
           test -s /tmp/reference-output/data/rib_diffusion_boundary_layer.csv
           test -s /tmp/reference-output/figures/passive_equilibrium_branches.png
           test -s /tmp/reference-output/figures/rib_diffusion_boundary_layer.png
+          test -s /tmp/reference-output/figures/passive_environment_boundary.png
           test -s /tmp/reference-output/metadata.json
           test -s /tmp/reference-output/sha256.txt
