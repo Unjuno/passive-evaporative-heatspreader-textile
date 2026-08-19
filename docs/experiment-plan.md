@@ -1,6 +1,6 @@
 # Experiment Plan
 
-Date: 2026-08-19
+Date: 2026-08-20
 
 ## 1. Primary question
 
@@ -15,7 +15,7 @@ At the same liquid-water input and ambient conditions, does the integrated passi
 - **B4 — integrated architecture:** directional transport + heat spreader + capillary delivery + exterior ribs/fins.
 - **B5 — intentionally dense exterior:** boundary-layer-overlap/failure control.
 
-For E3b/E3c, B4/B5 exterior structures are further split into micro-rib-only, hierarchical microstructure + macro air-renewal, covered-corridor, open-valley, and segmented-open variants.
+For E3b/E3c, B4/B5 exterior structures are further split into micro-rib-only, hierarchical microstructure + macro air-renewal, covered-corridor, continuously open-valley, centimeter-interruption control, millimeter-scale interruption, and discontinuous-island variants.
 
 ## 3. Primary environment
 
@@ -29,16 +29,22 @@ For E3b/E3c, B4/B5 exterior structures are further split into micro-rib-only, hi
 
 Secondary conditions:
 
-- relative humidity: 50%, 85%;
-- water feed: 75, 300 g/h equivalent;
-- hot-ambient shielding comparison near 40 °C;
-- vertical, horizontal, and inverted channel orientation for hierarchical exteriors.
+- RH: 50% and 85%;
+- water feed: 75 and 300 g/h equivalent;
+- hot-ambient comparison near 40 °C;
+- vertical, horizontal, and inverted orientation where relevant;
+- controlled external airflow only after the passive still-air condition is complete.
 
-## 4. Fair-comparison rule
+## 4. Fair-comparison and supply-limit rules
 
-All compared samples must receive the same commanded liquid feed in a given test cell. Do not create an apparent advantage by feeding the advanced sample more water than the control.
+All compared samples must receive the same commanded liquid feed in a given test cell. Record actual feed mass independently and close the water balance.
 
-Record feed mass independently and close the water balance.
+Do not credit a numerical transfer-capacity case for evaporation exceeding the physical liquid supply. For each experiment report whether the exterior is:
+
+- transfer-limited;
+- supply-limited;
+- runoff-limited;
+- uncertain.
 
 ## 5. Primary measurement
 
@@ -47,21 +53,21 @@ Measure electrical heater power required to maintain the artificial skin at 34 �
 For the integrated sample relative to the flat control:
 
 \[
-\Delta Q = P_{heater,B4} - P_{heater,B0}
+\Delta Q=P_{heater,B4}-P_{heater,B0}.
 \]
 
 A larger positive value indicates greater heat removal from the artificial skin.
 
-## 6. Provisional decision rules
+## 6. Provisional project decision rules
 
 At 35 °C / 70% RH / 150 g/h equivalent / still air:
 
-- **PASS:** `Delta Q >= 10 W`, n >= 3, coefficient of variation <=10%, water-balance closure >=95%.
-- **STRONG PASS:** `Delta Q >= 20 W` under the same comparison.
+- **PASS:** `Delta Q >= 10 W`, n >= 3, CV <=10%, water-balance closure >=95%.
+- **STRONG PASS:** `Delta Q >= 20 W`.
 - **FAIL:** `Delta Q < 5 W`.
-- **UNCERTAIN:** 5–10 W, or CV >10%, or inadequate water-balance closure.
+- **UNCERTAIN:** 5–10 W, CV >10%, or inadequate water-balance closure.
 
-These are project decision thresholds, not external standards.
+These are internal screening thresholds, not external standards.
 
 ## 7. Measurements
 
@@ -70,189 +76,197 @@ Required:
 1. heater electrical power;
 2. artificial-skin temperature;
 3. ambient temperature and RH;
-4. air speed;
+4. far-field air speed;
 5. commanded and measured liquid feed;
 6. sample mass before/after;
 7. runoff/drip collection;
-8. evaporated mass by balance;
-9. textile/rib surface temperature.
+8. evaporated mass by water balance;
+9. wet exterior surface temperature.
 
 Strongly recommended:
 
-10. RH and temperature at approximately 0.5, 1, 2, 5, 10, 20, and 40 mm outside the exterior structure where sensor size permits;
+10. local T/RH at approximately 0.5, 1, 2, 5, 10, 20, and 40 mm where probe size permits;
 11. infrared surface-temperature map;
-12. rib wetting fraction;
-13. compression state / rib height during operation;
-14. macro-corridor dimensions/open fraction for hierarchical samples;
-15. signed local corridor flow direction and, where resolvable, magnitude;
-16. corridor temperature/RH at inlet, intermediate positions, and outlet.
+12. rib/wet-field wetting fraction;
+13. compression state and actual rib/valley geometry;
+14. macro-path dimensions and open fraction;
+15. signed local flow direction/magnitude where resolvable;
+16. axial and transverse valley T/RH profiles;
+17. exact wet projected area used for evaporation-flux normalization.
 
-The combination of heater power, surface temperature, near-surface RH, and signed local air flow is intended to help distinguish vapor-transfer improvement from sensible-heat-transfer change. Do not infer `M_h = M_m` from a single integrated cooling measurement.
+Heater power, surface T, local air T/RH, evaporation mass and flow must be interpreted together. Do not infer `M_h=M_m` from one integrated measurement.
 
-## 8. Experiment E1 — direct value test
+## 8. E1 — direct value test
 
 Compare B0 and B4 at the primary condition.
 
-Hypothesis H1: B4 increases body-side heat removal by >=10 W over 0.30 m² equivalent.
+**H1:** B4 increases body-side heat removal by >=10 W over 0.30 m² equivalent.
 
-Alternative explanations if H1 fails:
+Failure alternatives include insufficient wetting, thermal contact resistance, humidity-layer overlap, runoff, weak vapor renewal, or inward sensible heat offsetting latent benefit.
 
-- insufficient effective exterior area;
-- insufficient wetting;
-- high thermal contact resistance;
-- humid boundary-layer overlap;
-- runoff instead of evaporation;
-- natural-convection cancellation under hot/humid conditions;
-- increased inward sensible heat transfer offsetting latent benefit.
-
-## 9. Experiment E2 — ablation
+## 9. E2 — ablation
 
 Compare B0/B2/B3/B4.
 
-Hypothesis H2: B4 exceeds both B2 and B3, showing that heat spreading and exterior evaporation enhancement are complementary.
+**H2:** B4 exceeds both B2 and B3, demonstrating complementarity of heat routing and exterior evaporation enhancement.
 
-If B4 ~= B2, the heat spreader may be unnecessary under the tested sweat distribution.
+## 10. E3 — exterior pitch / boundary-layer access
 
-If B4 ~= B3, the exterior structured area may not be providing useful mass-transfer enhancement.
+Hold exterior material family and approximate height constant; compare pitch near 0.8, 1.0, and 1.5 mm.
 
-## 10. Experiment E3 — exterior pitch/accessibility
+Use heater power plus temperature-corrected local vapor loading rather than geometric area alone.
 
-Hold exterior material family and approximate height constant; compare pitch around:
+`docs/e3-boundary-layer-screen.md` shows that a several-millimeter stagnant humidity layer can dominate pitch refinement. E3 remains a physical falsification experiment, not a confirmation exercise.
 
-- 0.8 mm;
-- 1.0 mm;
-- 1.5 mm.
+## 11. E3b — hierarchical air renewal
 
-Use heater-power gain plus near-surface RH profiles to determine whether tighter geometry increases effective vapor exchange or merely geometric area.
+Compare a micro-rib-only exterior against similar wet microstructure combined with larger ambient-access paths such as open valleys, cross-openings, spacer passages, grooves, pleats, or discontinuous fields.
 
-Original hypothesis H3: an intermediate spacing maximizes effective exchange before boundary-layer overlap dominates.
-
-### E3 numerical pre-screen
-
-`docs/e3-boundary-layer-screen.md` provides a periodic 2-D pure-diffusion pre-screen. For the screened 2.5 mm-high, 65%-coverage geometry, it indicates that the idealized distance from rib tips to refreshed ambient air can dominate pitch refinement. At several-millimeter renewal gaps, the predicted benefit of changing pitch from 1.5 mm to 0.8 mm is small.
-
-This is a simulation result only. It motivates E3b rather than replacing physical E3.
-
-## 11. Experiment E3b — hierarchical air renewal
-
-Compare a micro-rib-only exterior against the same/similar wet microstructure combined with larger open air-renewal paths.
-
-Candidate macro structures include:
-
-- open corridors between rib fields;
-- valleys between discontinuous evaporator islands;
-- spacer-knit channels;
-- grooves or corrugations;
-- pleat gaps;
-- raised stand-off structures preserving an air passage.
-
-Starting research ranges:
+Starting research ranges remain broad:
 
 - microstructure height: about 2–3 mm;
-- local microstructure pitch: about 0.8–1.5 mm;
-- macro corridor width: about 1–10 mm;
-- corridor/open-valley depth: about 1–5 mm;
-- evaporator-field width between corridors: about 5–25 mm.
+- local pitch: about 0.8–1.5 mm;
+- macro/open path width: about 1–10 mm;
+- depth: about 1–5 mm;
+- wet-field widths: about 5–25 mm.
 
-Measure heater power, RH/T approximately 0.5, 1, 2, 5, 10, and 20 mm above both rib fields and corridors, and signed corridor flow direction where possible.
+Do not assume upward chimney flow. Record upward, downward, reversing/intermittent, or below-resolution behavior.
 
-### Corridor-flow correction
+## 12. E3c — covered versus continuously open / interrupted exterior
 
-`simulations/corridor_buoyancy_screen.py` shows that a wet vertical channel need not generate upward chimney flow. Evaporative cooling increases air density while humidification reduces it.
+Latest numerical work changes the sample matrix.
 
-`simulations/self_consistent_corridor_1d.py` then couples signed buoyancy flow to wet-wall temperature and channel heat/vapor state for an end-renewed covered rectangular-duct limit. At 35 °C / 70% RH, shallow 100 mm channels become nearly saturated internally and natural buoyancy flow is weak. At 40 °C / 70% RH the same model can predict stronger downward flow while local sensible heat input makes body-side heat flux inward.
+### D1 — covered/end-renewed control
 
-Therefore E3b must classify corridor flow as upward, downward, reversing/intermittent, or below measurement resolution before interpreting the mechanism. Vertical, horizontal, and inverted controls are required where practical.
+Wet-floor duct, ambient connection primarily at ends; approximately 6–10 mm wide, 3–5 mm deep, 50–100 mm long.
 
-Hypothesis H3b: a two-scale exterior combining wet microstructures with macro air-renewal paths outperforms a dense micro-rib field alone under equal water input. The sign of any buoyancy-driven corridor flow is not assumed in advance.
+### O1 — continuously laterally open valley
 
-Provisional hierarchy-specific PASS condition:
+Matched wet floor, continuously exposed to ambient along the path. **This is the principal hypothesis.**
 
-- hierarchical sample exceeds micro-rib-only control by >=5 W; and
-- shows consistently lower near-surface RH over at least two measurement heights; and
-- the result is not explained by greater water input.
+### O2a — centimeter-interruption negative/control
 
-Additional **FLOW-MECHANISM SUPPORT** requires a repeatable signed flow response to orientation together with a consistent corridor RH/T profile.
+Cross/end openings every approximately 20–50 mm.
 
-See `experiments/e3b_hierarchical_air_renewal.md` for the detailed protocol.
+The distributed 1-D vapor screen predicts this spacing is generally too coarse when lateral renewal between openings is weak. O2a is therefore a negative/control condition, not the preferred design.
 
-## 12. Experiment E3c — open valley vs covered corridor
+### O2b — millimeter-scale short segments
 
-The self-consistent 1-D model is intentionally a covered/end-renewed limit. It predicts that a channel can have nonzero flow and even `Pe_m > 10` while still becoming nearly saturated and losing most of its vapor driving force.
+Approximate wet segment lengths: 1, 2, and 3 mm where manufacturable. This tests the numerical result that axial end effects decay over an exchange length of roughly 0.7–1.1 mm in the representative 6 × 3 mm screen.
 
-E3c therefore compares:
+### O3 — discontinuous wet islands
 
-- **D1:** covered/end-renewed rectangular duct;
-- **O1:** same or matched wet floor in a laterally open valley;
-- **O2:** segmented open valley with 20–50 mm maximum uninterrupted wet length;
-- **O3:** discontinuous evaporator islands separated by ambient-connected gaps.
+Small wet fields separated by ambient-connected gaps; preferred apparel implementation if literal 1–3 mm channels are impractical.
 
-Primary hypothesis H3c: continuous lateral ambient access and/or segmentation maintains lower local RH and more useful heater-power cooling than an end-renewed covered duct at equal water input and wet area.
+### E3c mechanism metrics
 
-Provisional PASS for the open-valley premise at 35 °C / 70% RH:
+Convert measured ambient, wet-surface, and local-valley states to vapor density:
 
-- mean local RH lower than D1 by >=5 percentage points over at least half of sampled positions;
+\[
+\theta(x)=\frac{\rho_{v,valley}(x)-\rho_{v,\infty}}
+{\rho_{v,sat}(T_s(x))-\rho_{v,\infty}},
+\qquad
+F(x)=1-\theta(x).
+\]
+
+When the inversion is well-conditioned:
+
+\[
+R(x)=\frac{1-\theta(x)}{\theta(x)}.
+\]
+
+Use `F` as the primary renewal-quality metric. Exact high `R` is secondary because measurement inversion becomes ill-conditioned near ambient vapor loading.
+
+**Do not optimize `F` alone.** Pair it with absolute transfer:
+
+\[
+k_{eff,exp}=\frac{\dot m''_{evap}}
+{\rho_{v,sat}(T_s)-\rho_{v,\infty}}
+\]
+
+where water balance and wet-area assignment support the calculation, and always retain heater power as the integrated cooling metric.
+
+### E3c hypotheses
+
+- **H3c-1:** O1 maintains higher `F` than D1 at equal water input.
+- **H3c-2:** O2a gives little improvement when its interior remains laterally stagnant.
+- **H3c-3:** O2b/O3 improve `F` more strongly than O2a at matched wet area.
+- **H3c-4:** an architecture with higher `F` but lower evaporation flux / `k_eff` is not an improvement.
+
+### E3c PASS
+
+At 35 °C / 70% RH, at least one of O1/O2b/O3 must show:
+
+- clearly higher temperature-corrected `F` than D1;
 - heater-power advantage over D1 >=3 W after active-area normalization;
-- equal water input within measurement uncertainty;
+- equal liquid input within uncertainty;
 - water-balance closure >=95%.
 
-See `experiments/e3c_open_vs_covered_corridors.md` for the complete protocol.
+Support for the distributed-renewal interpretation is strengthened if the ordering is broadly:
 
-## 13. Experiment E4 — humidity boundary
+`O1 or O2b/O3 > O2a >= or ~= D1`
+
+in median `F`, without loss of absolute evaporation conductance.
+
+See `experiments/e3c_open_vs_covered_corridors.md`.
+
+## 13. E4 — humidity boundary
 
 Test the best current B4 sample at 50%, 70%, and 85% RH.
 
-Hypothesis H4: passive advantage decreases strongly as ambient vapor-pressure driving force decreases.
+**H4:** passive advantage decreases strongly as ambient vapor-pressure driving force decreases.
 
-Record the condition where B4 no longer exceeds B0 by a practically useful margin.
+At the dry 50% condition, explicitly check whether evaporation becomes **liquid-supply-limited** before interpreting a transfer-capacity advantage.
 
-## 14. Experiment E5 — heat-spreader orientation
+## 14. E5 — heat-spreader orientation
 
-For an anisotropic heat spreader, compare its high-conductivity axis aligned toward the evaporative panel versus rotated approximately 90°.
+For an anisotropic heat spreader, compare the high-conductivity axis aligned toward wet evaporation zones versus rotated approximately 90°.
 
-Hypothesis H5: alignment toward the evaporation zone improves body-side heat removal under spatially nonuniform wetting.
+**H5:** alignment improves body-side heat removal under spatially nonuniform wetting.
 
-## 15. Experiment E6 — hot-ambient shielding
+## 15. E6 — hot-ambient sensible-heat penalty and shielding
 
-At elevated ambient temperature, compare dry conductive exterior regions exposed versus thermally shielded.
+At approximately 40 °C, compare exposed versus thermally protected/routed structures while retaining the same wet-area and water-input controls.
 
-Hypothesis H6: shielding dry regions reduces parasitic inward heat pickup while preserving wet-zone evaporation.
+**H6:** shielding/routing reduces parasitic inward sensible heat while retaining useful vapor exchange.
 
-Also record exterior/ambient temperature gradients so increased sensible exchange is not mistaken for latent-cooling benefit.
+The coupled open-valley thermal screen explicitly shows a failure mode in which evaporation remains positive while body-side heat flux becomes negative. Therefore E6 must never use evaporation rate alone as the cooling endpoint.
 
-## 16. Experiment E7 — mechanical durability
+Required comparison variables:
 
-After a baseline measurement, apply controlled bending, stretch, compression, washing, and wet/dry cycling.
+- heater power;
+- evaporation mass;
+- wet-surface T;
+- valley/ambient T/RH;
+- dry-region surface T;
+- local flow if measurable.
 
-Track:
+## 16. E7 — mechanical durability
 
-- in-plane thermal conductance;
-- capillary delivery rate;
-- cooling gain;
-- exterior geometry recovery;
-- macro-channel open fraction where applicable.
+After baseline measurement, apply controlled bending, stretch, compression, washing, and wet/dry cycling.
+
+Track in-plane thermal conductance, capillary delivery rate, cooling gain, exterior geometry recovery, and open-path fraction.
 
 Provisional durability target: retain >=80% of baseline functional performance after the defined cycle protocol.
 
 ## 17. Uncertainty
 
-For each primary result, report:
+For each primary result report:
 
 - instrument calibration uncertainty;
 - run-to-run standard deviation;
-- uncertainty in active area;
-- uncertainty in actual water feed;
+- active-area uncertainty;
+- actual water-feed uncertainty;
 - humidity and temperature stability;
-- RH probe position uncertainty near structured surfaces;
-- signed low-speed flow measurement resolution and directional uncertainty;
-- estimated combined standard uncertainty where practical;
-- coverage factor if expanded uncertainty is reported.
+- probe position/size uncertainty near structured surfaces;
+- low-speed flow measurement resolution;
+- wet-area and compression uncertainty;
+- propagated uncertainty in vapor density, `theta`, `F`, and where reported `R`/`k_eff`;
+- combined standard uncertainty and coverage factor where practical.
 
 Do not report more numerical precision than measurement uncertainty supports.
 
-Model-screen sensitivity fractions in `simulations/split_transfer_sensitivity.py` are deterministic grid fractions, not statistical probabilities.
-
-## 18. Salt/contamination protocol
+## 18. Salt / contamination protocol
 
 Salt deposition is not unique to this architecture. Compare degradation against the same synthetic-sweat exposure in B0.
 
