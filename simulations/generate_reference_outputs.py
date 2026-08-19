@@ -28,6 +28,7 @@ from simulations.corridor_buoyancy_screen import (
 from simulations.heat_spreader_2d import orientation_demo
 from simulations.open_valley_distributed_1d import run_screen as run_open_valley_distributed_screen
 from simulations.open_valley_exchange_target import target_table as open_valley_target_table
+from simulations.open_valley_heat_mass_coupling_audit import run_screen as run_heat_mass_coupling_audit
 from simulations.open_valley_thermal_1d import run_screen as run_open_valley_thermal_screen
 from simulations.passive_rib_screen import U_FLAT, stable_equilibria
 from simulations.rib_diffusion_screen import run_screen as run_diffusion_screen
@@ -174,44 +175,32 @@ def main() -> None:
     data_dir.mkdir(parents=True, exist_ok=True)
     fig_dir.mkdir(parents=True, exist_ok=True)
 
-    passive = generate_passive_branch_table()
-    split = run_split_screen()
-    sensitivity = run_sensitivity()
-    sensitivity_summary = summarize(sensitivity)
-    corridor = run_corridor_screen()
-    corridor_neutral = corridor_neutral_curve()
-    corridor_self_consistent = run_self_consistent_corridor_screen()
-    open_valley_targets = open_valley_target_table()
-    open_valley_distributed = run_open_valley_distributed_screen()
-    open_valley_thermal = run_open_valley_thermal_screen()
-    supply_limit = run_supply_limit_audit()
-    spreader = generate_heat_spreader_table()
-    salt = run_parameter_screen()
-    diffusion = run_diffusion_screen()
-
     outputs = {
-        "passive_equilibrium_branches.csv": passive,
-        "split_heat_mass_screen.csv": split,
-        "split_transfer_sensitivity.csv": sensitivity,
-        "split_transfer_sensitivity_summary.csv": sensitivity_summary,
-        "corridor_buoyancy_screen.csv": corridor,
-        "corridor_neutral_density_curve.csv": corridor_neutral,
-        "self_consistent_corridor_1d.csv": corridor_self_consistent,
-        "open_valley_renewal_targets.csv": open_valley_targets,
-        "open_valley_distributed_1d.csv": open_valley_distributed,
-        "open_valley_thermal_1d.csv": open_valley_thermal,
-        "supply_limit_audit.csv": supply_limit,
-        "heat_spreader_orientation.csv": spreader,
-        "water_salt_parameter_screen.csv": salt,
-        "rib_diffusion_boundary_layer.csv": diffusion,
+        "passive_equilibrium_branches.csv": generate_passive_branch_table(),
+        "split_heat_mass_screen.csv": run_split_screen(),
     }
+    sensitivity = run_sensitivity()
+    outputs["split_transfer_sensitivity.csv"] = sensitivity
+    outputs["split_transfer_sensitivity_summary.csv"] = summarize(sensitivity)
+    outputs["corridor_buoyancy_screen.csv"] = run_corridor_screen()
+    outputs["corridor_neutral_density_curve.csv"] = corridor_neutral_curve()
+    outputs["self_consistent_corridor_1d.csv"] = run_self_consistent_corridor_screen()
+    outputs["open_valley_renewal_targets.csv"] = open_valley_target_table()
+    outputs["open_valley_distributed_1d.csv"] = run_open_valley_distributed_screen()
+    outputs["open_valley_thermal_1d.csv"] = run_open_valley_thermal_screen()
+    outputs["open_valley_heat_mass_coupling_audit.csv"] = run_heat_mass_coupling_audit()
+    outputs["supply_limit_audit.csv"] = run_supply_limit_audit()
+    outputs["heat_spreader_orientation.csv"] = generate_heat_spreader_table()
+    outputs["water_salt_parameter_screen.csv"] = run_parameter_screen()
+    outputs["rib_diffusion_boundary_layer.csv"] = run_diffusion_screen()
+
     for name, table in outputs.items():
         table.to_csv(data_dir / name, index=False)
 
-    plot_passive_branches(passive, fig_dir / "passive_equilibrium_branches.png")
-    plot_heat_spreader(spreader, fig_dir / "heat_spreader_orientation.png")
+    plot_passive_branches(outputs["passive_equilibrium_branches.csv"], fig_dir / "passive_equilibrium_branches.png")
+    plot_heat_spreader(outputs["heat_spreader_orientation.csv"], fig_dir / "heat_spreader_orientation.png")
     plot_salt_threshold(fig_dir / "water_salt_saturation_threshold.png")
-    plot_rib_diffusion(diffusion, fig_dir / "rib_diffusion_boundary_layer.png")
+    plot_rib_diffusion(outputs["rib_diffusion_boundary_layer.csv"], fig_dir / "rib_diffusion_boundary_layer.png")
 
     metadata = {
         "classification": "SIMULATION/ANALYTIC_SCREENING",
@@ -222,6 +211,7 @@ def main() -> None:
             "The passive lumped model may contain multiple stable roots.",
             "Heat and vapor transfer are not assumed to share one multiplier.",
             "Open-valley lateral exchange is parameterized through effective exchange distances, not CFD-resolved geometry.",
+            "The heat-mass coupling audit uses the same-exchange-length state as a baseline and does not prove arbitrary heat/mass decoupling is physically achievable.",
             "The coupled open-valley thermal solver is a fully-wet transfer-capacity model; supply_limit_audit.csv marks cases whose capacity exceeds available feed.",
             "Supply-limited cases do not have a solved dryout/wet-fraction temperature field; capacity-model body heat flux must not be reused as a feed-limited prediction.",
             "Salt vapor flux is zero in the garment-temperature models.",
