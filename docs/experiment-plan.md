@@ -31,7 +31,8 @@ Secondary conditions:
 
 - relative humidity: 50%, 85%;
 - water feed: 75, 300 g/h equivalent;
-- hot-ambient shielding comparison near 40 °C.
+- hot-ambient shielding comparison near 40 °C;
+- vertical, horizontal, and inverted channel orientation for hierarchical exteriors.
 
 ## 4. Fair-comparison rule
 
@@ -82,7 +83,11 @@ Strongly recommended:
 11. infrared surface-temperature map;
 12. rib wetting fraction;
 13. compression state / rib height during operation;
-14. macro-corridor dimensions/open fraction for hierarchical samples.
+14. macro-corridor dimensions/open fraction for hierarchical samples;
+15. signed local corridor flow direction and, where resolvable, magnitude;
+16. corridor temperature/RH at inlet, mid-height, and outlet.
+
+The combination of heater power, surface temperature, near-surface RH, and signed local air flow is intended to help distinguish vapor-transfer improvement from sensible-heat-transfer change. Do not infer `M_h = M_m` from a single integrated cooling measurement.
 
 ## 8. Experiment E1 — direct value test
 
@@ -97,7 +102,8 @@ Alternative explanations if H1 fails:
 - high thermal contact resistance;
 - humid boundary-layer overlap;
 - runoff instead of evaporation;
-- natural-convection cancellation under hot/humid conditions.
+- natural-convection cancellation under hot/humid conditions;
+- increased inward sensible heat transfer offsetting latent benefit.
 
 ## 9. Experiment E2 — ablation
 
@@ -117,13 +123,13 @@ Hold exterior material family and approximate height constant; compare pitch aro
 - 1.0 mm;
 - 1.5 mm.
 
-Use heater-power gain plus near-surface RH profiles to determine whether tighter geometry increases effective exchange or merely geometric area.
+Use heater-power gain plus near-surface RH profiles to determine whether tighter geometry increases effective vapor exchange or merely geometric area.
 
 Original hypothesis H3: an intermediate spacing maximizes effective exchange before boundary-layer overlap dominates.
 
 ### E3 numerical pre-screen
 
-`docs/e3-boundary-layer-screen.md` now provides a periodic 2-D pure-diffusion pre-screen. For the screened 2.5 mm-high, 65%-coverage geometry, it indicates that the idealized distance from rib tips to refreshed ambient air can dominate pitch refinement. At several-millimeter renewal gaps, the predicted benefit of changing pitch from 1.5 mm to 0.8 mm is small.
+`docs/e3-boundary-layer-screen.md` provides a periodic 2-D pure-diffusion pre-screen. For the screened 2.5 mm-high, 65%-coverage geometry, it indicates that the idealized distance from rib tips to refreshed ambient air can dominate pitch refinement. At several-millimeter renewal gaps, the predicted benefit of changing pitch from 1.5 mm to 0.8 mm is small.
 
 This is a simulation result only. It motivates E3b rather than replacing physical E3.
 
@@ -147,15 +153,23 @@ Starting research ranges:
 - macro corridor width: about 1–6 mm;
 - evaporator-field width between corridors: about 5–25 mm.
 
-Measure heater power and RH/T approximately 0.5, 1, 2, 5, 10, and 20 mm above both rib fields and corridors.
+Measure heater power, RH/T approximately 0.5, 1, 2, 5, 10, and 20 mm above both rib fields and corridors, and signed corridor flow direction where possible.
 
-Hypothesis H3b: a two-scale exterior combining wet microstructures with macro air-renewal paths outperforms a dense micro-rib field alone under equal water input.
+### Corridor-flow correction
+
+`simulations/corridor_buoyancy_screen.py` shows that a wet vertical channel need not generate upward chimney flow. Evaporative cooling increases air density while humidification reduces it. For the common 35 °C / 70% RH screen, a neutral-density state occurs near 34 °C at roughly 90% RH in the low-order model.
+
+Therefore E3b must classify corridor flow as upward, downward, reversing/intermittent, or below measurement resolution before interpreting the mechanism. Vertical, horizontal, and inverted controls are required where practical.
+
+Hypothesis H3b: a two-scale exterior combining wet microstructures with macro air-renewal paths outperforms a dense micro-rib field alone under equal water input. The sign of any buoyancy-driven corridor flow is not assumed in advance.
 
 Provisional hierarchy-specific PASS condition:
 
 - hierarchical sample exceeds micro-rib-only control by >=5 W; and
 - shows consistently lower near-surface RH over at least two measurement heights; and
 - the result is not explained by greater water input.
+
+Additional **FLOW-MECHANISM SUPPORT** requires a repeatable signed flow response to orientation together with a consistent corridor RH/T profile.
 
 See `experiments/e3b_hierarchical_air_renewal.md` for the detailed protocol.
 
@@ -178,6 +192,8 @@ Hypothesis H5: alignment toward the evaporation zone improves body-side heat rem
 At elevated ambient temperature, compare dry conductive exterior regions exposed versus thermally shielded.
 
 Hypothesis H6: shielding dry regions reduces parasitic inward heat pickup while preserving wet-zone evaporation.
+
+Also record exterior/ambient temperature gradients so increased sensible exchange is not mistaken for latent-cooling benefit.
 
 ## 15. Experiment E7 — mechanical durability
 
@@ -203,10 +219,13 @@ For each primary result, report:
 - uncertainty in actual water feed;
 - humidity and temperature stability;
 - RH probe position uncertainty near structured surfaces;
+- signed low-speed flow measurement resolution and directional uncertainty;
 - estimated combined standard uncertainty where practical;
 - coverage factor if expanded uncertainty is reported.
 
 Do not report more numerical precision than measurement uncertainty supports.
+
+Model-screen sensitivity fractions in `simulations/split_transfer_sensitivity.py` are deterministic grid fractions, not statistical probabilities.
 
 ## 17. Salt/contamination protocol
 
