@@ -20,10 +20,17 @@ import hashlib
 import json
 from pathlib import Path
 import subprocess
+import sys
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+
+# Support both `python simulations/generate_reference_outputs.py` and
+# `python -m simulations.generate_reference_outputs` from the repository root.
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 from simulations.heat_spreader_2d import orientation_demo
 from simulations.passive_rib_screen import U_FLAT, stable_equilibria
