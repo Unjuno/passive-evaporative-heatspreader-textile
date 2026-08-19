@@ -5,10 +5,17 @@ evaporation, body-side heat flux, and ambient sensible heat supplied to the wet
 surface. Heat and vapor lateral exchange remain separately parameterized for
 model-form sensitivity.
 
-This is a fully-wet transfer-capacity screen, not CFD.  Liquid-feed limits are
-audited separately.  ``skin_c`` is explicit because the environmental heat-flow
-sign boundary depends strongly on the controlled skin/artificial-skin
-setpoint; 34 °C is only the repository's primary bench condition.
+``wet_fraction`` is a homogenized sub-grid wetness factor.  ``wet_fraction=1``
+recovers the earlier fully-wet transfer-capacity model.  Values below one scale
+the liquid-vapor source and latent sink while retaining sensible coupling over
+the full thermally connected floor.  This represents a strong-heat-spreader,
+fine-scale partial-wetness limit; it is not a resolved prediction of individual
+dry patches.
+
+This remains a screening model, not CFD. ``skin_c`` is explicit because the
+environmental heat-flow sign boundary depends strongly on the controlled
+skin/artificial-skin setpoint; 34 °C is only the repository's primary bench
+condition.
 """
 
 from __future__ import annotations
@@ -51,6 +58,7 @@ class OpenValleyThermalResult:
     velocity_mm_s: float
     delta_vapor_mm: float
     delta_heat_mm: float
+    wet_fraction: float
     converged: bool
     iterations: int
     mean_surface_C: float
@@ -153,17 +161,25 @@ def solve_open_valley_thermal(
     delta_heat_mm: float = 0.5,
     u_body_W_m2K: float = U_BODY_DEFAULT,
     skin_c: float = T_SKIN,
+    wet_fraction: float = 1.0,
     nx: int = 81,
     max_iterations: int = 120,
     tolerance: float = 2e-7,
 ) -> OpenValleyThermalResult:
-    """Solve coupled wet-wall / valley-air heat and vapor balances."""
+    """Solve coupled wet-wall / valley-air heat and vapor balances.
+
+    ``wet_fraction`` scales the distributed vapor source and latent term.  The
+    sensible wall/body coupling remains over the full modeled floor, which is a
+    homogenized strong-heat-spreader approximation.
+    """
     if width_mm <= 0 or depth_mm <= 0 or length_mm <= 0:
         raise ValueError("geometry must be positive")
     if delta_vapor_mm <= 0 or delta_heat_mm <= 0:
         raise ValueError("effective exchange distances must be positive")
     if u_body_W_m2K <= 0:
         raise ValueError("u_body must be positive")
+    if not 0.0 <= wet_fraction <= 1.0:
+        raise ValueError("wet_fraction must be between 0 and 1")
     if nx < 5:
         raise ValueError("nx must be at least 5")
 
@@ -204,7 +220,7 @@ def solve_open_valley_thermal(
 
         vapor_new = _solve_linear_field(
             source_target=saturated_vapor_density(surface),
-            source_conductance_per_length=k_m_wall * p_wet,
+            source_conductance_per_length=wet_fraction * k_m_wall * p_wet,
             ambient_conductance_per_length=k_m_lateral * p_open,
             ambient_value=c_inf,
             axial_diffusive_conductance=D_V * area,
@@ -215,7 +231,9 @@ def solve_open_valley_thermal(
 
         surface_new = surface.copy()
         for _ in range(20):
-            evap_flux = k_m_wall * (saturated_vapor_density(surface_new) - vapor_new)
+            evap_flux = wet_fraction * k_m_wall * (
+                saturated_vapor_density(surface_new) - vapor_new
+            )
             residual = (
                 u_body_W_m2K * (skin_c - surface_new)
                 + h_wall * (air_new - surface_new)
@@ -224,7 +242,10 @@ def solve_open_valley_thermal(
             derivative = (
                 -u_body_W_m2K
                 - h_wall
-                - L_V * k_m_wall * saturated_vapor_density_derivative(surface_new)
+                - wet_fraction
+                * L_V
+                * k_m_wall
+                * saturated_vapor_density_derivative(surface_new)
             )
             step = residual / derivative
             surface_new = np.clip(surface_new - step, 5.0, 55.0)
@@ -243,7 +264,9 @@ def solve_open_valley_thermal(
         if error < tolerance:
             break
 
-    evap_flux = k_m_wall * (saturated_vapor_density(surface) - vapor)
+    evap_flux = wet_fraction * k_m_wall * (
+        saturated_vapor_density(surface) - vapor
+    )
     body_flux = u_body_W_m2K * (skin_c - surface)
     air_to_wall = h_wall * (air_temp - surface)
     local_rh = vapor / saturated_vapor_density(air_temp)
@@ -258,6 +281,7 @@ def solve_open_valley_thermal(
         velocity_mm_s=velocity_mm_s,
         delta_vapor_mm=delta_vapor_mm,
         delta_heat_mm=delta_heat_mm,
+        wet_fraction=wet_fraction,
         converged=bool(error < tolerance),
         iterations=iteration + 1,
         mean_surface_C=float(np.mean(surface)),
