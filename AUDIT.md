@@ -5,11 +5,11 @@ Branch audited: `agent/initial-research-disclosure`
 
 ## Overall assessment
 
-The repository now has a coherent technical disclosure, explicit design variants, three executable screening models, regression tests, reference numerical data, and a staged physical experiment plan. It is **not yet a finished stable release**.
+The repository now has a coherent technical disclosure, explicit design variants, three executable screening models, regression tests, a reproducible table/figure generation pipeline, prior-art working notes, and a staged physical experiment plan. It is **not yet a finished stable release**.
 
-The most important audit finding was numerical: the nonlinear passive heat/mass model can have multiple stable equilibria. Earlier exploratory calculations sometimes selected the most-cooling root, creating an overly optimistic single-value exchange threshold. The repository model has been corrected to expose all stable roots and distinguish warm/conservative and cool/optimistic branches.
+The most important numerical audit finding remains that the nonlinear passive heat/mass model can have multiple stable equilibria. Earlier exploratory calculations sometimes selected the most-cooling root, creating an overly optimistic single-value exchange threshold. The repository model now exposes all stable roots and distinguishes warm/conservative and cool/optimistic branches.
 
-GitHub Actions has successfully executed the test suite and all three current model demos on the development PR. Remaining high-priority gaps are authoritative patent-family/claim verification, release-commit-generated figures/data provenance, higher-fidelity boundary-layer/sensitivity work, and physical bench data.
+GitHub Actions has successfully executed the test suite, all three current model demos, and the reproducible reference-output generator. Remaining high-priority gaps are authoritative patent-family/claim verification, final-release artifact freezing/provenance, higher-fidelity boundary-layer/model-uncertainty work, and physical bench data.
 
 ## A. Technical coherence
 
@@ -39,10 +39,11 @@ GitHub Actions has successfully executed the test suite and all three current mo
 | Dependencies | PASS | `requirements.txt` and `requirements-dev.txt`. |
 | Multi-equilibrium handling | PASS | All stable roots exposed; explicit selection policy required. |
 | Unit/regression tests | PASS | Includes vapor-pressure, geometry, equilibrium, multi-root, 2D orientation, and salt-conservation tests. |
-| CI workflow | PASS | GitHub Actions completed tests and all current model demos successfully on PR #1. |
-| Reference output CSV | PASS/PARTIAL | Branch-map CSV exists; release automation/provenance still needed. |
+| CI workflow | PASS | GitHub Actions completes tests and current model demos. |
+| Reproducible output generator | PASS | `simulations/generate_reference_outputs.py` creates CSVs, PNGs, metadata with git commit, and SHA-256 manifest. |
+| Reference output CSV | PASS/PARTIAL | Existing branch-map record plus generator; stable-release outputs must be regenerated at the final tag/commit. |
 | Consolidated numerical-results record | PASS | `docs/current-results.md`. |
-| Figure regeneration | MISSING | Add plotting script and commit-linked generated figures. |
+| Figure regeneration | PASS | Plotting/generation pipeline is CI-validated; stable-release figures still need freezing from the release commit. |
 
 ## C. Numerical-model audit
 
@@ -55,6 +56,7 @@ GitHub Actions has successfully executed the test suite and all three current mo
 | Conservative interpretation | PASS | README/current-results no longer present a single `M` as validated design criterion. |
 | 2D anisotropy direction | PASS/MODEL | In the current right-side sink geometry, x-aligned high conductivity routes more body-side heat than the 90°-rotated anisotropy; regression-tested. |
 | Salt conservation | PASS/MODEL | Normalized model conserves salt between upstream solids and terminal liquid; no salt vapor flux exists. |
+| RH branch sweep | PASS/PARTIAL | Reproducible output generator maps stable branches at 50/70/85% RH; broader coefficient/model-form uncertainty remains open. |
 
 ## D. Experimental readiness
 
@@ -80,9 +82,12 @@ GitHub Actions has successfully executed the test suite and all three current mo
 | Humidity-responsive ventilation | PASS | 2021 Science Advances work recorded. |
 | 2026 sweat-pumping cooling fabric | PASS | Recorded. |
 | Early sorbent cooling garment + exterior fins | PASS/PARTIAL | JPH04209808A recorded from a public patent index; authoritative office/family verification remains. |
-| Fan garment family | PARTIAL | WO2005/063065 identified as a major reference family; detailed claim mapping still needed. |
-| 3D rib/fin textile search | MISSING | Dedicated literature/patent search needed. |
-| Selection/combination escape routes | PASS/PARTIAL | Concrete embodiment matrix added; still needs claim-oriented review. |
+| Fan garment family | PASS/PARTIAL | WO2005/063065 family identified; detailed authoritative claim/family mapping still needed. |
+| Ribbed capillary exterior evaporation | PASS/PARTIAL | EP1978836 family identified as highly relevant: capillary textile ribs/walls transport sweat away from skin toward an exterior evaporation web. |
+| Wicking evaporative cooling garment | PASS/PARTIAL | US8443463 / US20110283722 family identified: liquid supply + wicking garment + exterior evaporation. |
+| 3D spacer-knit outward moisture/evaporation | PASS/PARTIAL | US12209335 / US20240125016 family identified; 3D-knit evaporation media also found outside clothing. |
+| Patent working notes | PASS | `docs/patent-notes.md` records close families and design consequences. |
+| Selection/combination escape routes | PASS/PARTIAL | Concrete embodiment matrix added; still needs claim-oriented professional review. |
 
 ## F. Public-release readiness
 
@@ -94,9 +99,9 @@ GitHub Actions has successfully executed the test suite and all three current mo
 | Citation metadata | PASS/PARTIAL | Update version/date at stable tag. |
 | Changelog | PASS | `CHANGELOG.md`. |
 | Stable-release checklist | PASS | `docs/release-checklist.md`. |
+| Artifact SHA-256 capability | PASS | Reference generator creates a manifest; stable release still needs the frozen final manifest. |
 | Stable release tag | MISSING | Current work remains a development branch/draft PR. |
 | Persistent archive/DOI | MISSING | Do after stable release audit. |
-| SHA-256 release manifest | MISSING | Generate for frozen release bundle. |
 
 ## G. Remaining queue
 
@@ -106,23 +111,25 @@ GitHub Actions has successfully executed the test suite and all three current mo
 - [x] Current quantitative-results summary.
 - [x] Reference branch-map CSV.
 - [x] Automated model tests/CI definition.
-- [x] CI passes on current development PR.
+- [x] CI passes for current models and reference-output generator.
 - [x] Stable-release checklist and changelog.
 - [x] Numbered architecture schematic.
 - [x] Correct simulation/measurement labeling.
+- [x] Reproducible CSV/figure/SHA generation pipeline.
 - [ ] Verify closest patent families/claims from authoritative patent-office records.
-- [ ] Generate reference CSV/figures directly from the final release commit and record commit SHA.
-- [ ] Generate SHA-256 manifest for frozen release artifacts.
+- [ ] Regenerate/freeze reference artifacts from the final release commit and record that exact SHA.
+- [ ] Update `CITATION.cff`, changelog, and version metadata for the stable tag.
 
 ### P1 — technical strengthening
 
 - [x] Add consolidated 2D anisotropic heat-spreader source model.
 - [x] Add normalized water/salt mass-balance numerical model with zero salt vapor flux.
 - [ ] Add higher-fidelity water/salt pore-scale or cyclic model if experiments justify it.
-- [ ] Add high-humidity sensitivity/uncertainty study.
+- [x] Add RH 50/70/85 stable-branch sensitivity generation.
+- [ ] Add systematic parameter/model-form uncertainty study.
 - [x] Add exterior boundary-layer/accessibility identification method.
 - [ ] Investigate whether multi-equilibrium behavior survives a better natural-convection/boundary-layer model.
-- [ ] Add plotting/regeneration pipeline for quantitative figures.
+- [x] Add plotting/regeneration pipeline for quantitative figures.
 
 ### P2 — physical evidence
 
