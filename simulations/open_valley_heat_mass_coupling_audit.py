@@ -1,9 +1,9 @@
 """Audit heat/mass coupling in the open-valley thermal model.
 
 The thermal screen allows independent effective lateral exchange lengths
-``delta_vapor`` and ``delta_heat``.  This module quantifies departure from a
-same-exchange-length baseline and solves the hot-ambient body-heat-flow sign
-boundary.
+``delta_vapor`` and ``delta_heat``.  This module quantifies departure from
+ordinary same-boundary heat/mass coupling and solves the hot-ambient body-heat
+flow sign boundary.
 
 For
 
@@ -18,9 +18,21 @@ we define
     Xi  = chi / Le
         = delta_vapor / delta_heat.
 
-Xi=1 is the same-exchange-length baseline. Xi<1 means sensible ambient exchange
-is suppressed relative to vapor exchange.  This is a model-form audit, not a
-claim that Xi can be selected arbitrarily in a real textile.
+``Xi=1`` is the same-exchange-length conduction/diffusion baseline.
+
+For an equal-j-factor Chilton-Colburn-style comparison,
+
+    h/(rho cp k_m) ~ Le^(2/3),
+
+so the equivalent exchange-length ratio in this parameterization is
+
+    Xi_CC = Le^(-1/3).
+
+These are comparison baselines, not validated textile correlations.  They are
+used to show whether a required hot-ambient heat/mass selectivity is close to
+ordinary same-boundary transport or would require a distinct physical
+mechanism such as thermal shielding, geometry-dependent contact, radiation
+control, or separated heat/vapor pathways.
 """
 
 from __future__ import annotations
@@ -50,6 +62,12 @@ def lewis_number(temp_c: float, rh: float) -> float:
     return float(alpha / D_V)
 
 
+def chilton_colburn_xi(temp_c: float, rh: float) -> float:
+    """Equivalent Xi for an equal-j-factor heat/mass analogy comparison."""
+    le = lewis_number(temp_c, rh)
+    return float(le ** (-1.0 / 3.0))
+
+
 def coupling_metrics(
     delta_vapor_mm: float,
     delta_heat_mm: float,
@@ -64,6 +82,10 @@ def coupling_metrics(
         "Lewis_number": le,
         "Xi_delta_vapor_over_delta_heat": xi,
         "chi_h_over_rhocp_km": le * xi,
+        "same_length_Xi": 1.0,
+        "same_length_chi": le,
+        "chilton_colburn_Xi": le ** (-1.0 / 3.0),
+        "chilton_colburn_chi": le ** (2.0 / 3.0),
     }
 
 
@@ -74,12 +96,7 @@ def zero_body_flux_threshold(
     min_delta_heat_mm: float = 0.05,
     max_delta_heat_mm: float = 10.0,
 ) -> dict[str, float | bool]:
-    """Solve the effective heat-exchange distance at zero mean body heat flux.
-
-    The current screened cases are monotonic over the default bracket.  The
-    endpoint bracket is tested first.  A short fallback scan is used only when
-    the endpoints do not bracket a sign change.
-    """
+    """Solve the effective heat-exchange distance at zero mean body heat flux."""
     if delta_vapor_mm <= 0.0:
         raise ValueError("delta_vapor must be positive")
 
@@ -136,28 +153,53 @@ def zero_body_flux_threshold(
 
 def run_screen() -> pd.DataFrame:
     rows = []
+    ambient_c = 40.0
+    ambient_rh = 0.70
+    cc_xi = chilton_colburn_xi(ambient_c, ambient_rh)
+
     for delta_vapor in (0.10, 0.25, 0.50, 1.0, 2.0):
-        threshold = zero_body_flux_threshold(delta_vapor)
+        threshold = zero_body_flux_threshold(
+            delta_vapor,
+            ambient_c=ambient_c,
+            ambient_rh=ambient_rh,
+        )
         if threshold["found_zero_crossing"]:
             metrics = coupling_metrics(
                 delta_vapor,
                 float(threshold["critical_delta_heat_mm"]),
-                ambient_c=40.0,
-                ambient_rh=0.70,
+                ambient_c=ambient_c,
+                ambient_rh=ambient_rh,
             )
+            critical_xi = float(threshold["critical_Xi"])
+            same_length_meets = 1.0 <= critical_xi
+            cc_meets = cc_xi <= critical_xi
         else:
+            le = lewis_number(ambient_c, ambient_rh)
             metrics = {
-                "Lewis_number": lewis_number(40.0, 0.70),
+                "Lewis_number": le,
                 "Xi_delta_vapor_over_delta_heat": np.nan,
                 "chi_h_over_rhocp_km": np.nan,
+                "same_length_Xi": 1.0,
+                "same_length_chi": le,
+                "chilton_colburn_Xi": cc_xi,
+                "chilton_colburn_chi": le ** (2.0 / 3.0),
             }
+            critical_xi = np.nan
+            same_length_meets = False
+            cc_meets = False
+
         rows.append(
             {
                 "classification": "SIMULATION/COUPLING_AUDIT",
-                "ambient_C": 40.0,
-                "ambient_RH": 0.70,
+                "ambient_C": ambient_c,
+                "ambient_RH": ambient_rh,
                 **threshold,
                 **metrics,
+                "same_length_meets_required_selectivity": same_length_meets,
+                "chilton_colburn_meets_required_selectivity": cc_meets,
+                "critical_Xi_over_chilton_colburn_Xi": (
+                    critical_xi / cc_xi if np.isfinite(critical_xi) else np.nan
+                ),
             }
         )
     return pd.DataFrame(rows)
