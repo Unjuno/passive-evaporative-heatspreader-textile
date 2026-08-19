@@ -4,191 +4,175 @@ Date: 2026-08-20
 
 ## Objective
 
-Develop and publicly document a reproducible passive cooling garment architecture based on coupled heat spreading, liquid transport, exterior evaporation, and ambient-air access. The roadmap prioritizes falsification of the core cooling premise before durability, aesthetic, or manufacturing optimization.
+Develop and publicly document a reproducible passive cooling garment architecture based on heat routing, liquid transport, exterior evaporation, and ambient-air access. Falsification of the cooling premise takes priority over optimization for durability, appearance, or manufacturing.
 
-## Gate 0 — Scope freeze
+## Gate 0 — scope and architecture
 
 Status: **substantially complete**
 
-- [x] Primary architecture is passive and does not require an onboard fan.
-- [x] Core elements separated from optional embodiments.
-- [x] Numbered architecture/layer vocabulary documented.
-- [x] Exterior design treated as apparel texture rather than exposed machine hardware.
-- [x] Salt transport corrected: water evaporates; nonvolatile salts do not.
-- [x] Hierarchical exterior family recorded.
-- [x] Laterally open valleys, segmented valleys, discontinuous islands, and covered/end-renewed corridors made explicit as distinct embodiments.
+- [x] primary architecture is fanless/passive;
+- [x] core versus optional components separated;
+- [x] numbered architecture/layer vocabulary;
+- [x] apparel-like exterior design families;
+- [x] nonvolatile-salt correction;
+- [x] hierarchical/open-valley/island/covered comparison embodiments explicit.
 
-## Gate 1 — Prior-art map
+## Gate 1 — prior-art map
 
 Status: **in progress**
 
-- [x] directional sweat/liquid transport;
-- [x] evaporative cooling textiles;
-- [x] humidity-responsive garment ventilation;
+- [x] directional liquid transport;
+- [x] evaporative textiles;
+- [x] humidity-responsive ventilation;
 - [x] heat-conductive/cooling textiles;
-- [x] broad fan/sorbent garment families recorded at working-note level;
-- [x] 3D-knit/pile/fin adjacent structures recorded at working-note level;
+- [x] fan/sorbent garment families at working-note level;
+- [x] 3D-knit/pile/fin adjacent structures;
 - [x] close integrated heat-conductive + sweat-transport work acknowledged;
-- [ ] authoritative patent-office claim mapping of closest families;
-- [ ] final source-by-source difference table for stable release.
+- [ ] authoritative patent-office family/claim mapping;
+- [ ] final source-by-source difference table.
 
-Deliverables: `docs/prior-art.md`, `docs/patent-notes.md`, and stable-release claim-oriented verification.
+## Gate 2 — reproducible screening model stack
 
-## Gate 2 — Reproducible screening model stack
-
-Status: **substantially complete at low-order/screening level**
+Status: **advanced low-order stack complete; higher-fidelity external flow open**
 
 Completed:
 
-- [x] nonlinear passive heat/mass balance with multi-equilibrium audit;
-- [x] separate sensible and vapor multipliers `M_h` / `M_m`;
-- [x] deterministic model-form sensitivity ranges;
-- [x] periodic 2-D rib vapor-diffusion / boundary-layer-sharing model;
-- [x] anisotropic 2-D heat-spreader model;
-- [x] nonvolatile water/salt transport screen;
-- [x] prescribed-state moist-air corridor buoyancy screen;
-- [x] self-consistent 1-D covered/end-renewed corridor screen;
-- [x] local open-valley renewal target/measurement inversion;
-- [x] distributed open-valley axial diffusion/advection + lateral-renewal vapor model;
-- [x] `F` versus absolute `k_eff` metric audit;
-- [x] regression tests;
-- [x] GitHub Actions CI;
-- [x] reproducible CSV/PNG/metadata/SHA generator.
+- [x] nonlinear lumped heat/mass balance and multi-root audit;
+- [x] separate sensible/vapor transfer (`M_h`, `M_m`);
+- [x] deterministic model-form sensitivity;
+- [x] periodic E3 rib vapor diffusion;
+- [x] prescribed thermo-solutal corridor buoyancy;
+- [x] self-consistent covered/end-renewed corridor T/RH/flow;
+- [x] local open-valley `R/F` target and measurement inversion;
+- [x] distributed open-valley axial diffusion/advection + lateral vapor renewal;
+- [x] exchange-length / centimeter-segmentation audit;
+- [x] `F` versus absolute `k_eff` audit;
+- [x] coupled open-valley wet-wall / air heat / vapor model;
+- [x] explicit liquid-supply capacity classification;
+- [x] anisotropic 2-D heat spreading;
+- [x] nonvolatile water/salt transport;
+- [x] regression tests, CI, reproducible CSV/PNG/metadata/SHA generation.
 
-Open model-strengthening tasks:
+Next strengthening tasks:
 
-- [ ] couple distributed open-valley vapor transport to wet-wall heat balance and sensible heat exchange;
-- [ ] predict lateral exchange from geometry-resolved 2-D/3-D natural convection/cross-flow rather than effective `delta_open`;
-- [ ] geometry-specific Nu/Sh and entrance/opening-loss sensitivity;
-- [ ] constrain the physical relationship between `M_h` and `M_m` from improved external-flow physics;
-- [ ] re-test nonlinear equilibrium behavior after improved boundary-layer coupling.
+1. physically constrain heat/mass exchange coupling instead of freely varying `delta_heat` and `delta_vapor`;
+2. add a wetting/dryout state model for supply-limited cases rather than only a capacity flag;
+3. predict lateral exchange from geometry-resolved 2-D/3-D natural convection/cross-flow;
+4. re-test lumped-model multi-equilibrium behavior against improved external-flow physics;
+5. sensitivity to Nu/Sh, compression, openings, external drift, and garment curvature.
 
-## Gate 3 — Minimum bench validation
+## Gate 3 — minimum bench validation
 
 Status: **not started physically; protocols prepared**
 
-Priority sequence:
+Priority:
 
-1. **E1:** B0 flat fast-dry control vs B4 integrated architecture.
-2. **E2:** B0/B2/B3/B4 ablation.
-3. **E3/E3b:** micro-rib pitch and hierarchical air-renewal comparison.
-4. **E3c:** covered/end-renewed duct vs continuously laterally open valley vs centimeter-scale interruption control vs millimeter-scale interruptions/islands.
-5. **E4:** humidity limit at 50/70/85% RH.
-6. **E5:** heat-spreader orientation.
-7. **E6:** hot-ambient dry-side shielding and sensible-heat penalty.
+1. **E1** — B0 flat fast-dry vs B4 integrated architecture.
+2. **E2** — B0/B2/B3/B4 ablation.
+3. **E3/E3b** — microstructure pitch and ambient-access hierarchy.
+4. **E3c** — D1 covered vs O1 continuously open vs O2a centimeter-control vs O2b millimeter segments vs O3 islands.
+5. **E4** — 50/70/85% RH with supply-limit classification.
+6. **E5** — heat-spreader orientation.
+7. **E6** — hot-ambient sensible-heat penalty and shielding.
 
-The first physical objective is a controlled artificial-skin experiment, not a wearable human trial.
-
-### Minimum measurement package
+Minimum measurement package:
 
 - heater power at fixed artificial-skin temperature;
-- actual liquid feed and water balance;
-- surface temperature;
-- ambient T/RH and far-field air speed;
-- near-surface and corridor/valley T/RH;
-- signed local flow direction/magnitude where resolvable;
+- actual liquid feed and >=95% water-balance target;
+- wet-surface temperature;
+- ambient and local T/RH;
+- far-field and local flow where resolvable;
 - actual wet area and compressed geometry;
-- `F`/normalized vapor loading as renewal-quality metrics;
-- evaporation mass flux or inferred `k_eff` where water balance and area assignment permit.
+- local renewal `F`;
+- evaporation mass flux / inferred `k_eff` where valid.
 
-## Gate 4 — Mechanical and textile validation
+## Gate 4 — textile/mechanical validation
 
 Status: **not started**
 
-- compression recovery;
-- bending and stretch;
-- wash durability;
-- wetting recovery after drying;
-- contamination and salt exposure;
-- snagging and abrasion;
-- visual thickness/silhouette;
-- wearer-contact safety.
+Compression recovery, stretch, bending, laundering, wet/dry cycling, abrasion, snagging, contamination, salt exposure, silhouette, and wearer-contact safety.
 
-## Gate 5 — Apparel design optimization
+## Gate 5 — apparel design optimization
 
-Status: **concept stage with narrowed direction**
+Status: **concept stage, narrowed**
 
-Current preferred visual/functional family:
+Current preferred family:
 
-- low-profile micro-rib or 3D-knit wet fields;
-- continuously laterally open valleys integrated as stripes/seams/panel boundaries;
-- frequent cross-openings;
-- discontinuous evaporator islands;
-- millimeter-scale interruption only where it can be manufactured without unacceptable complexity;
-- anisotropic or patterned heat-routing paths aligned to wet fields;
-- shielding of dry conductive regions in hot ambient conditions.
+- low-profile micro-rib / 3D-knit wet fields;
+- continuously ambient-connected valleys or gaps;
+- cross-openings and discontinuous islands;
+- millimeter-scale interruption only where practical, not as a universal requirement;
+- heat-routing patterns integrated into seams/stripes/panels;
+- dry-side shielding in hot ambient conditions.
 
-Important correction: **20–50 mm segmentation alone is no longer treated as an air-renewal solution**. The distributed 1-D screen places the representative vapor exchange length near 1 mm, so centimeter-scale end openings do little for a weakly laterally renewed interior.
+Do **not** rank designs by geometric area, local `F`, airflow, or evaporation alone. Compare at matched water input/wet area using:
 
-Compare alternatives at similar projected area, wet area, mass, compression state, and absolute transfer capacity rather than by geometric surface area or local `F` alone.
+1. renewal quality `F`;
+2. absolute vapor transfer / evaporation;
+3. heater-power body cooling;
+4. ambient sensible heat pickup;
+5. mass/compression/wearability.
 
-## Gate 6 — Stable public release
+## Gate 6 — stable public release
 
-Status: **public development repository active; stable release not frozen**
+Status: **public development repository active; stable v1.0 not frozen**
 
 Before stable v1.0:
 
-- [ ] complete authoritative prior-art/patent-office verification;
-- [ ] freeze technical disclosure and embodiment matrix at one exact commit;
-- [ ] freeze source code and reference inputs;
-- [ ] regenerate all reference outputs at the exact release commit;
-- [ ] generate/freeze SHA-256 manifest;
-- [ ] update `CITATION.cff`, version/date, changelog, and release notes;
-- [ ] create GitHub release/tag;
-- [ ] archive the exact release in a persistent public repository/DOI service;
-- [ ] never overwrite older public release records.
+- [ ] authoritative patent-office verification;
+- [ ] freeze disclosure/embodiments at one exact commit;
+- [ ] regenerate all reference outputs at that commit;
+- [ ] freeze SHA-256 manifest;
+- [ ] update `CITATION.cff`, version/date, changelog, release notes;
+- [ ] create GitHub tag/release;
+- [ ] archive exact release in a persistent public DOI repository;
+- [ ] preserve earlier public records without overwrite.
 
 ## Current research priorities
 
-### P0 — Does the integrated architecture beat a normal fast-dry textile?
+### P0 — product premise
 
-Primary physical metric: artificial-skin heater-power difference at equal water input.
+Does B4 remove measurably more body heat than B0 at equal water input?
 
-### P1 — Can the exterior maintain vapor driving force **and** absolute evaporation capacity without a fan?
+### P1 — passive exterior physics
 
-The numerical record now rejects four overly simple assumptions:
+Current rejected shortcuts:
 
-- geometric area alone is sufficient;
-- a long vertical wet corridor automatically produces useful chimney renewal;
-- 20–50 mm segmentation automatically renews the interior;
-- a high local retained driving-force fraction `F` automatically means high evaporation capacity.
+- geometric area alone is enough;
+- long wet vertical channels guarantee useful chimney renewal;
+- high axial Péclet number proves renewal;
+- 20–50 mm segmentation is sufficient;
+- high `F` proves high evaporation capacity;
+- positive evaporation proves body cooling;
+- modeled transfer capacity above water feed is achievable at fixed feed.
 
-The current hypothesis is continuous lateral ambient access with sufficient absolute transfer conductance. E3c is the direct physical discriminator.
+Current hypothesis:
 
-### P2 — Is the gain due to integration rather than one component?
+> continuously ambient-connected wet microtexture with sufficient vapor conductance, controlled sensible heat pickup, and strong body-to-wet-zone heat routing.
 
-Use B2/B3/B4 ablation and heat-spreader orientation tests.
+### P2 — integration
 
-### P3 — Where does passive operation fail or reverse?
+Use ablation and heat-spreader orientation to determine whether the gain is truly integrated rather than dominated by one component.
 
-Map:
+### P3 — failure boundaries
 
-- high humidity;
-- hot ambient air;
-- inward sensible heat pickup;
-- weak/reversed buoyancy flow;
-- stagnant outer humidity layer;
-- compression closing open paths.
+Map high humidity, hot ambient air, supply limitation, inward sensible heat, flow reversal, stagnant humidity layers, and compression-closing of ambient paths.
 
-### P4 — Can the architecture survive clothing mechanics and remain visually acceptable?
+### P4 — garment viability
 
-Stretch, compression, washing, abrasion, repeated wet/dry cycles, snag resistance, and normal apparel silhouette.
+Mechanical durability, washability, snag resistance, visual bulk, mass, and textile manufacturability.
 
 ## Stop / redesign conditions
 
-Substantial redesign is required if controlled tests show all of the following:
+Substantial redesign is required if controlled tests show the integrated architecture gives <5 W over B0 at the primary condition and neither ambient-access topology nor heat routing provides a reproducible mechanism benefit.
 
-- integrated B4 gains <5 W over flat B0 under the primary condition;
-- continuously open ambient-access geometries do not measurably improve local vapor driving force or useful cooling;
-- heat spreading adds mass/stiffness without measurable body-side benefit;
-- passive high-humidity operation provides no useful advantage within wearable geometry.
+Retire a specific exterior geometry if it:
 
-A specific exterior concept should be retired even if the whole project continues when:
+- improves vapor renewal but not heater-power cooling;
+- increases evaporation while net body heat flow becomes adverse;
+- gets high `F` by reducing absolute transfer;
+- depends on unavailable liquid supply;
+- depends on a flow direction that reverses;
+- loses its ambient paths under ordinary compression/wear.
 
-- it increases airflow but increases net inward sensible heat;
-- it relies on a flow direction that reverses under relevant conditions;
-- it produces a high `F` only by suppressing wet-surface transfer, with lower evaporation flux or `k_eff`;
-- its apparent benefit is explained by unequal water input or wet area;
-- compression or normal clothing contact closes its intended air paths.
-
-Negative results remain part of the technical record.
+Negative results remain part of the public technical record.
