@@ -15,7 +15,7 @@ At the same liquid-water input and ambient conditions, does the integrated passi
 - **B4 — integrated architecture:** directional transport + heat spreader + capillary delivery + exterior ribs/fins.
 - **B5 — intentionally dense exterior:** boundary-layer-overlap/failure control.
 
-For E3b, B4/B5 exterior structures are further split into micro-rib-only and hierarchical microstructure + macro air-renewal variants.
+For E3b/E3c, B4/B5 exterior structures are further split into micro-rib-only, hierarchical microstructure + macro air-renewal, covered-corridor, open-valley, and segmented-open variants.
 
 ## 3. Primary environment
 
@@ -85,7 +85,7 @@ Strongly recommended:
 13. compression state / rib height during operation;
 14. macro-corridor dimensions/open fraction for hierarchical samples;
 15. signed local corridor flow direction and, where resolvable, magnitude;
-16. corridor temperature/RH at inlet, mid-height, and outlet.
+16. corridor temperature/RH at inlet, intermediate positions, and outlet.
 
 The combination of heater power, surface temperature, near-surface RH, and signed local air flow is intended to help distinguish vapor-transfer improvement from sensible-heat-transfer change. Do not infer `M_h = M_m` from a single integrated cooling measurement.
 
@@ -150,14 +150,17 @@ Starting research ranges:
 
 - microstructure height: about 2–3 mm;
 - local microstructure pitch: about 0.8–1.5 mm;
-- macro corridor width: about 1–6 mm;
+- macro corridor width: about 1–10 mm;
+- corridor/open-valley depth: about 1–5 mm;
 - evaporator-field width between corridors: about 5–25 mm.
 
 Measure heater power, RH/T approximately 0.5, 1, 2, 5, 10, and 20 mm above both rib fields and corridors, and signed corridor flow direction where possible.
 
 ### Corridor-flow correction
 
-`simulations/corridor_buoyancy_screen.py` shows that a wet vertical channel need not generate upward chimney flow. Evaporative cooling increases air density while humidification reduces it. For the common 35 °C / 70% RH screen, a neutral-density state occurs near 34 °C at roughly 90% RH in the low-order model.
+`simulations/corridor_buoyancy_screen.py` shows that a wet vertical channel need not generate upward chimney flow. Evaporative cooling increases air density while humidification reduces it.
+
+`simulations/self_consistent_corridor_1d.py` then couples signed buoyancy flow to wet-wall temperature and channel heat/vapor state for an end-renewed covered rectangular-duct limit. At 35 °C / 70% RH, shallow 100 mm channels become nearly saturated internally and natural buoyancy flow is weak. At 40 °C / 70% RH the same model can predict stronger downward flow while local sensible heat input makes body-side heat flux inward.
 
 Therefore E3b must classify corridor flow as upward, downward, reversing/intermittent, or below measurement resolution before interpreting the mechanism. Vertical, horizontal, and inverted controls are required where practical.
 
@@ -173,7 +176,29 @@ Additional **FLOW-MECHANISM SUPPORT** requires a repeatable signed flow response
 
 See `experiments/e3b_hierarchical_air_renewal.md` for the detailed protocol.
 
-## 12. Experiment E4 — humidity boundary
+## 12. Experiment E3c — open valley vs covered corridor
+
+The self-consistent 1-D model is intentionally a covered/end-renewed limit. It predicts that a channel can have nonzero flow and even `Pe_m > 10` while still becoming nearly saturated and losing most of its vapor driving force.
+
+E3c therefore compares:
+
+- **D1:** covered/end-renewed rectangular duct;
+- **O1:** same or matched wet floor in a laterally open valley;
+- **O2:** segmented open valley with 20–50 mm maximum uninterrupted wet length;
+- **O3:** discontinuous evaporator islands separated by ambient-connected gaps.
+
+Primary hypothesis H3c: continuous lateral ambient access and/or segmentation maintains lower local RH and more useful heater-power cooling than an end-renewed covered duct at equal water input and wet area.
+
+Provisional PASS for the open-valley premise at 35 °C / 70% RH:
+
+- mean local RH lower than D1 by >=5 percentage points over at least half of sampled positions;
+- heater-power advantage over D1 >=3 W after active-area normalization;
+- equal water input within measurement uncertainty;
+- water-balance closure >=95%.
+
+See `experiments/e3c_open_vs_covered_corridors.md` for the complete protocol.
+
+## 13. Experiment E4 — humidity boundary
 
 Test the best current B4 sample at 50%, 70%, and 85% RH.
 
@@ -181,13 +206,13 @@ Hypothesis H4: passive advantage decreases strongly as ambient vapor-pressure dr
 
 Record the condition where B4 no longer exceeds B0 by a practically useful margin.
 
-## 13. Experiment E5 — heat-spreader orientation
+## 14. Experiment E5 — heat-spreader orientation
 
 For an anisotropic heat spreader, compare its high-conductivity axis aligned toward the evaporative panel versus rotated approximately 90°.
 
 Hypothesis H5: alignment toward the evaporation zone improves body-side heat removal under spatially nonuniform wetting.
 
-## 14. Experiment E6 — hot-ambient shielding
+## 15. Experiment E6 — hot-ambient shielding
 
 At elevated ambient temperature, compare dry conductive exterior regions exposed versus thermally shielded.
 
@@ -195,7 +220,7 @@ Hypothesis H6: shielding dry regions reduces parasitic inward heat pickup while 
 
 Also record exterior/ambient temperature gradients so increased sensible exchange is not mistaken for latent-cooling benefit.
 
-## 15. Experiment E7 — mechanical durability
+## 16. Experiment E7 — mechanical durability
 
 After a baseline measurement, apply controlled bending, stretch, compression, washing, and wet/dry cycling.
 
@@ -209,7 +234,7 @@ Track:
 
 Provisional durability target: retain >=80% of baseline functional performance after the defined cycle protocol.
 
-## 16. Uncertainty
+## 17. Uncertainty
 
 For each primary result, report:
 
@@ -227,7 +252,7 @@ Do not report more numerical precision than measurement uncertainty supports.
 
 Model-screen sensitivity fractions in `simulations/split_transfer_sensitivity.py` are deterministic grid fractions, not statistical probabilities.
 
-## 17. Salt/contamination protocol
+## 18. Salt/contamination protocol
 
 Salt deposition is not unique to this architecture. Compare degradation against the same synthetic-sweat exposure in B0.
 
