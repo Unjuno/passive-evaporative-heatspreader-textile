@@ -60,19 +60,35 @@ The principal unresolved exterior parameter is `alpha`, because dense structures
 
 ## Repository map
 
+### Technical record
+
 - `docs/technical-disclosure.md` — integrated technical description
+- `docs/architecture.md` — numbered functional architecture diagrams
 - `docs/embodiment-matrix.md` — concrete complete implementation combinations
 - `docs/design-history.md` — retained, optional, and deprecated design branches
 - `docs/current-results.md` — consolidated numerical findings and corrections
 - `docs/roadmap.md` — research and publication roadmap
 - `docs/experiment-plan.md` — staged physical validation plan
-- `docs/prior-art.md` — prior-art map and known adjacent technologies
+- `docs/accessibility-identification.md` — method for estimating effective exterior area
+- `docs/prior-art.md` — literature/prior-art overview
+- `docs/patent-notes.md` — close patent-family working notes
 - `docs/release-checklist.md` — stable-release audit gate
+
+### Models and reproducibility
+
 - `models/governing-equations.md` — equations, assumptions, variables, and checks
-- `simulations/passive_rib_screen.py` — current low-order screening model
+- `models/water-salt-transport.md` — water/salt conservation model and zero salt-vapor rule
+- `simulations/passive_rib_screen.py` — nonlinear passive exterior heat/mass-transfer screen
+- `simulations/heat_spreader_2d.py` — 2D anisotropic lateral heat-routing model
+- `simulations/water_salt_1d.py` — normalized nonvolatile-salt mass-balance screen
+- `simulations/generate_reference_outputs.py` — reproducible CSV/PNG/metadata/SHA generator
 - `simulations/README.md` — model hierarchy and run instructions
 - `tests/` — numerical regression tests
-- `data/reference_branch_map_35C_70RH_150gph.csv` — reference multi-equilibrium screening table
+- `.github/workflows/model-tests.yml` — CI for tests, models, and reference generation
+
+### Data and release controls
+
+- `data/reference_branch_map_35C_70RH_150gph.csv` — retained multi-equilibrium audit table
 - `experiments/README.md` — experiment structure and data requirements
 - `data/README.md` — data conventions
 - `figures/README.md` — figure conventions
@@ -85,11 +101,33 @@ At garment temperatures, sweat salts are treated as nonvolatile. Water evaporate
 
 ## Prior-art position
 
-Several important building blocks are already known, including directional sweat transport and integrated heat-conductive/sweat-transport cooling textiles. This project does not treat those broad ideas alone as unique. See `docs/prior-art.md` for the current map and unresolved patent-search tasks.
+Several important building blocks are already known. Current audit has identified prior disclosures covering, among other things:
+
+- directional sweat transport;
+- integrated heat-conductive and sweat-transport textiles;
+- textile ribs/walls that wick sweat away from skin toward an exterior evaporation surface;
+- wicking evaporative cooling garments supplied with liquid;
+- 3D spacer-knit outward moisture transport and evaporation-area enlargement;
+- fan-assisted sweat evaporation;
+- sorbent cooling garments and exterior fins.
+
+This project therefore does **not** treat capillary transport, exterior ribs, 3D knit, heat-conductive textiles, or evaporation individually as unique premises. The research emphasis is on the specific integrated architecture, heat-routing strategy, effective-area/boundary-layer analysis, hot-ambient protection, stretchability, apparel integration, and falsifiable comparison methods. See `docs/prior-art.md` and `docs/patent-notes.md`.
 
 ## Scope
 
 The core research focus is the passive architecture. Optional variants may include external airflow, auxiliary fans, humidity-responsive vents, different heat-spreader topologies, or gas-phase moisture-capture layers, but those are secondary embodiments unless explicitly stated otherwise.
+
+## Reproducibility
+
+Install development dependencies and run:
+
+```bash
+python -m pip install -r requirements-dev.txt
+python -m pytest -q
+python simulations/generate_reference_outputs.py --output-root generated-reference
+```
+
+Generated reference artifacts are marked as simulation outputs and include metadata and SHA-256 hashes.
 
 ## License
 
