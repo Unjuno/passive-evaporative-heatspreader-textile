@@ -5,7 +5,7 @@ Branch audited: `agent/initial-research-disclosure`
 
 ## Overall assessment
 
-The branch now contains a coherent technical disclosure, explicit implementation variants, **eight executable screening/sensitivity modules**, regression tests, a reproducible output generator, prior-art working notes, and staged physical experiment protocols.
+The branch contains a coherent technical disclosure, explicit implementation variants, **eight executable screening/sensitivity modules**, regression tests, a reproducible output generator, prior-art working notes, and staged physical experiment protocols.
 
 It remains a development branch, not a frozen stable release, and it contains **no physical garment-performance measurements yet**.
 
@@ -15,7 +15,7 @@ Five numerical audit findings currently dominate the research plan:
 2. the E3 periodic 2-D diffusion screen shows that dense wet micro-ribs can share one stagnant humidity layer, making near-surface air renewal at least as important as geometric rib area;
 3. sensible convective heat transfer and vapor mass transfer are modeled with independent multipliers (`M_h`, `M_m`) rather than automatically assigning one multiplier to both mechanisms;
 4. moist-air buoyancy can reverse corridor flow direction because evaporative cooling increases air density while humidification lowers it;
-5. the new self-consistent 1-D end-renewed corridor model shows that **nonzero buoyancy flow and even a moderate/large axial Péclet number do not guarantee useful vapor renewal**: long covered channels can still approach saturation and lose most of their evaporation driving force.
+5. the self-consistent 1-D end-renewed corridor model shows that **nonzero buoyancy flow and even a moderate/large axial Péclet number do not guarantee useful vapor renewal**: long covered channels can still approach saturation and lose most of their evaporation driving force.
 
 The current preferred exterior is therefore hierarchical and laterally open: wet microstructures for local evaporation area plus open valleys, cross-openings, short segments, spacer paths, or discontinuous fields that remain exposed to ambient air along more than just two channel ends.
 
@@ -26,11 +26,11 @@ The current preferred exterior is therefore hierarchical and laterally open: wet
 | Core passive architecture | PASS | Directional liquid transport + heat spreading + capillary delivery + exterior evaporation remains consistent. |
 | Whole-body/routed heat spreading | PASS | Continuous, anisotropic, mesh, serpentine, island-bridge and redundant paths documented. |
 | Exterior geometry families | PASS | Ribs, fins, 3D knit, pile, lamellae, pleats and related structures explicit. |
-| Hierarchical air-renewal exterior | PASS/UPDATED | E17/E3b/E3c now distinguish micro-area enhancement from macro/lateral air renewal. |
+| Hierarchical air-renewal exterior | PASS/UPDATED | E17 plus E18–E21 distinguish broad hierarchy, open valleys, segmentation/islands, and covered/end-renewed comparison channels. |
 | Sensible/vapor exchange separation | PASS | `M_h` and `M_m` separated; E3 maps only to vapor side. |
 | Corridor buoyancy direction | PASS/SCREEN | Up/down/near-neutral tendency derived from moist-air density rather than assumed. |
 | Self-consistent corridor state | PASS/SCREEN | `self_consistent_corridor_1d.py` solves signed velocity + wet-wall T + channel T/RH for a covered/end-renewed rectangular-duct limit. |
-| Laterally open valley physics | OPEN | Distributed lateral ambient exchange is not yet solved. E3c is the direct physical test. |
+| Laterally open valley physics | OPEN | Distributed lateral ambient exchange is not yet solved. E3c is the direct physical discriminator. |
 | Hot-ambient dry-side risk | PASS | Stronger air exchange can increase inward sensible heat pickup; shielding/routing remains required. |
 | Fan requirement | PASS | Fan remains optional; primary architecture is fanless. |
 | MOF/sorbent role | PASS | Secondary optional embodiment only. |
@@ -48,15 +48,15 @@ The current preferred exterior is therefore hierarchical and laterally open: wet
 | Deterministic uncertainty sweep | PASS | `simulations/split_transfer_sensitivity.py`. |
 | Periodic rib diffusion model | PASS | `simulations/rib_diffusion_screen.py`. |
 | Prescribed-state corridor buoyancy model | PASS/SCREEN | `simulations/corridor_buoyancy_screen.py`. |
-| Self-consistent corridor model | PASS/NEW | `simulations/self_consistent_corridor_1d.py`. |
+| Self-consistent corridor model | PASS | `simulations/self_consistent_corridor_1d.py`. |
 | 2-D heat-spreader model | PASS | `simulations/heat_spreader_2d.py`. |
 | Water/salt mass-balance model | PASS | `simulations/water_salt_1d.py`. |
-| Regression tests | PASS/UPDATED | New self-consistent corridor tests include Poiseuille resistance, flow reversal, hot-ambient inward heat, low-Pe classification, and segment-length behavior. |
+| Regression tests | PASS | Self-consistent corridor tests cover rectangular-duct resistance, low-Pe behavior, flow reversal, hot-ambient inward heat, and segment-length behavior. |
 | E3 grid convergence | PASS/SCREEN | 24 nodes/pitch differs by about 0.62% from the 48-node screened result in the reference case. |
-| Reference generator | PASS/UPDATED | Self-consistent corridor CSV added to generated reference package. |
-| CI definition | PASS/UPDATED | CI runs all current model demos/tests and checks self-consistent corridor output. |
-| Previously verified computational integration | PASS | `model-tests` #137 passed at `0ff7bad704f61ba45d0897ae5dbcc6c6e98882da`. |
-| Current self-consistent-corridor integration | CHECK | New model/tests/generator are committed; record the new passing run before declaring this integration verified. |
+| Reference generator | PASS | Self-consistent corridor CSV is included in generated reference output with metadata and SHA-256 manifest. |
+| CI definition | PASS | CI runs all current model demos/tests and checks the generated self-consistent corridor output. |
+| Current verified integration | **PASS** | GitHub Actions `model-tests` **#171** passed at SHA `5c0f319179e98220474ced18778d3453d5917891`. |
+| Audit-only head after verified integration | INFO | This audit update creates a newer documentation commit; #171 remains the explicitly verified computational integration point. |
 
 ## C. Numerical-model audit
 
@@ -96,7 +96,7 @@ The split model uses:
 
 When `M_h = M_m = M`, the split model reproduces the older coupled model as a regression-tested special case.
 
-In hot ambient air, increasing `M_h` can increase inward sensible heat pickup while increasing `M_m` may still improve latent evaporation. Therefore airflow or area enhancement cannot be scored with one exchange multiplier.
+In hot ambient air, increasing `M_h` can increase inward sensible heat pickup while increasing `M_m` may still improve latent evaporation. Airflow or area enhancement therefore cannot be scored with one exchange multiplier.
 
 ### C4 — deterministic model-form sensitivity
 
@@ -132,12 +132,20 @@ For 10 × 5 × 100 mm:
 - 35 °C / 85% RH: -1.01 mm/s, `Pe_m≈3.59`, flow reversal;
 - 40 °C / 70% RH: -14.94 mm/s, `Pe_m≈53.4`, **~−1.67 W/m²** wet-wall body heat flux.
 
+The model also reports `NTU_m` and the vapor-driving-force retention factor
+
+\[
+\Phi(NTU_m)=\frac{1-e^{-NTU_m}}{NTU_m}.
+\]
+
+This prevents a large axial Péclet number from being mistaken for proof that useful vapor driving force remains.
+
 Audit interpretation:
 
 - nonzero velocity is not sufficient;
 - axial Péclet number is not sufficient;
 - long covered channels can have high `Pe_m` while remaining nearly saturated because mass-transfer NTU is also high;
-- a stronger hot-ambient flow can be thermally adverse;
+- stronger hot-ambient flow can be thermally adverse;
 - the design should not depend on long covered/end-renewed chimneys;
 - laterally open valleys/cross-openings/segmentation are now the preferred hypothesis.
 
@@ -154,11 +162,11 @@ Important limitation: this model omits distributed lateral ambient exchange and 
 | Water balance | PASS | >=95% closure target. |
 | E3 micro-rib pitch plan | PASS | Defined. |
 | E3b hierarchical air-renewal plan | PASS | Defined with signed flow and orientation controls. |
-| E3c open-vs-covered validation | PASS/NEW | Covered duct, open valley, segmented valley, and discontinuous island variants defined. |
+| E3c open-vs-covered validation | PASS | Covered duct, open valley, segmented valley, and discontinuous island variants defined. |
 | Near-surface RH profile | PASS | Spatial RH/T measurements required. |
 | Split heat/vapor identification | PLANNED/PARTIAL | Surface/air T and RH required; exact inverse-identification method remains open. |
 | Corridor flow-direction measurement | PLANNED | Signed flow classification required. |
-| Covered-vs-open axial RH profile | PLANNED/NEW | E3c samples inlet/intermediate/outlet positions and open-valley near field. |
+| Covered-vs-open axial RH profile | PLANNED | E3c samples inlet/intermediate/outlet positions and open-valley near field. |
 | Physical data | MISSING | No bench experiment has yet been executed. |
 | Exact instrument/calibration list | PARTIAL | Hardware-specific uncertainty budget remains open. |
 
@@ -171,7 +179,7 @@ Important limitation: this model omits distributed lateral ambient exchange and 
 | Capillary exterior ribs/walls | PASS/PARTIAL | Close patent family identified; authoritative claim mapping still needed. |
 | 3-D spacer-knit moisture/evaporation | PASS/PARTIAL | Relevant families recorded. |
 | Fan/sorbent cooling garments | PASS/PARTIAL | Relevant prior families recorded. |
-| Concrete implementation combinations | PASS | `docs/embodiment-matrix.md`, including hierarchical E17. |
+| Concrete implementation combinations | PASS/UPDATED | `docs/embodiment-matrix.md` now explicitly includes E18 laterally open valleys, E19 segmentation/cross-venting, E20 evaporator islands, and E21 covered/end-renewed channels. |
 | Authoritative patent-office verification | OPEN | Highest-priority legal-strengthening item before stable release. |
 
 ## F. Public-release readiness
@@ -180,12 +188,16 @@ Important limitation: this model omits distributed lateral ambient exchange and 
 |---|---|---|
 | Public GitHub repository | PASS | Repository is public. |
 | Apache-2.0 | PASS | `LICENSE`. |
-| README | PASS/UPDATED | Includes self-consistent corridor findings and open-valley direction. |
-| Self-consistent model documentation | PASS/NEW | `docs/self-consistent-corridor-model.md`. |
-| Master experiment plan | PASS/UPDATED | E3c added. |
-| E3c protocol | PASS/NEW | `experiments/e3c_open_vs_covered_corridors.md`. |
+| README | PASS | Includes self-consistent corridor findings and open-valley direction. |
+| Technical disclosure | PASS/UPDATED | Ambient-access topology and E18–E21 families are explicit. |
+| Current-results summary | PASS | Synced through self-consistent corridor result. |
+| Simulations README | PASS | Model hierarchy synced through self-consistent corridor and next open-valley model. |
+| Changelog | PASS | Self-consistent corridor and E3c corrections recorded. |
+| Master experiment plan | PASS | E3c included. |
+| E3c protocol | PASS | `experiments/e3c_open_vs_covered_corridors.md`. |
+| PR narrative | PASS | Draft PR #1 updated through self-consistent corridor audit and CI #171. |
 | Citation metadata | PASS/PARTIAL | Update at stable version/tag. |
-| Reproducible generator + SHA | PASS/UPDATED | Self-consistent corridor CSV included. |
+| Reproducible generator + SHA | PASS | Self-consistent corridor CSV included. |
 | Stable tag | MISSING | Development branch only. |
 | Persistent archive / DOI | MISSING | Do after stable-release audit. |
 | Frozen release artifact manifest | MISSING | Generate from exact final commit. |
@@ -203,9 +215,11 @@ Important limitation: this model omits distributed lateral ambient exchange and 
 - [x] Add self-consistent corridor regression tests.
 - [x] Add self-consistent corridor outputs to reference generator and CI definition.
 - [x] Add E3c open-vs-covered physical validation protocol.
-- [x] Sync README and master experiment plan.
-- [ ] Confirm self-consistent-corridor CI passes at a recorded computational SHA.
-- [ ] Sync `docs/current-results.md`, simulations README, changelog, and PR body with the new model.
+- [x] Sync README, technical disclosure, embodiment matrix, roadmap, current results, simulation hierarchy, changelog, and experiment plan.
+- [x] Confirm self-consistent-corridor integration: GitHub Actions #171 PASS at `5c0f319179e98220474ced18778d3453d5917891`.
+- [x] Sync draft PR #1 with the current model, experiment, design-direction, and verification state.
+
+**P0 status: complete for the current development stage.**
 
 ### P1 — model strengthening
 
