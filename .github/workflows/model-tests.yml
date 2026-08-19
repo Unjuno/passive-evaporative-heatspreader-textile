@@ -36,6 +36,9 @@ jobs:
         run: |
           python simulations/generate_reference_outputs.py --output-root /tmp/reference-output
           test -s /tmp/reference-output/data/passive_equilibrium_branches.csv
+          test -s /tmp/reference-output/data/split_heat_mass_screen.csv
+          test -s /tmp/reference-output/data/split_transfer_sensitivity.csv
+          test -s /tmp/reference-output/data/split_transfer_sensitivity_summary.csv
           test -s /tmp/reference-output/data/heat_spreader_orientation.csv
           test -s /tmp/reference-output/data/water_salt_parameter_screen.csv
           test -s /tmp/reference-output/data/rib_diffusion_boundary_layer.csv
