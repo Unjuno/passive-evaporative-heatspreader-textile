@@ -20,15 +20,16 @@ All notable research-record changes are documented here.
 - homogenized partial-wetness parameter in the open-valley thermal model;
 - explicit feed-limited solver that determines sub-grid wet fraction `beta` from imposed liquid feed;
 - latent heat-source partition between body-side heat and ambient sensible heat;
+- separate-temperature wet/dry two-node model with lateral heat-spreader mixing conductance;
 - Lewis-number and Chilton–Colburn-style ordinary heat/mass coupling baselines;
-- wet-wall energy-closure, feed-balance, latent-partition, and heat/mass-selectivity regression tests;
+- wet-wall energy-closure, feed-balance, latent-partition, wet/dry, and heat/mass-selectivity regression tests;
 - conservative liquid-supply capacity audit retained separately from the explicit partial-wetness state;
 - E3b hierarchical air-renewal and E3c open-vs-covered physical protocols;
 - E4a feed-limit / wetness-transition physical protocol;
 - E18–E21 open-valley / segmented / island / covered-channel implementation variants;
 - 2-D anisotropic heat-spreader and normalized nonvolatile water/salt models;
 - regression tests and GitHub Actions CI;
-- reproducible CSV/PNG/metadata/SHA-256 output package including explicit feed-limited states.
+- reproducible CSV/PNG/metadata/SHA-256 output package including explicit feed-limited and wet/dry two-node states.
 
 ### Corrected
 
@@ -47,7 +48,8 @@ All notable research-record changes are documented here.
 - supply-limited operation now has a first explicit homogenized partial-wetness state rather than only a capacity/feed flag;
 - stronger linked external exchange is no longer assumed always beneficial at fixed feed: once available water is fully consumed, additional ambient sensible heat can reduce body-coupled cooling;
 - identical evaporation mass is no longer assumed to imply identical body heat removal;
-- arbitrary `Xi<1` heat/vapor decoupling is no longer treated as freely available: ordinary same-boundary Lewis/Chilton–Colburn-style comparisons remain near `Xi≈1` for the current air/water-vapor screen.
+- arbitrary `Xi<1` heat/vapor decoupling is no longer treated as freely available: ordinary same-boundary Lewis/Chilton–Colburn-style comparisons remain near `Xi≈1` for the current air/water-vapor screen;
+- lateral heat spreading is no longer credited with a global cooling gain in a spatially symmetric fixed-feed system: the new two-node screen shows internal mixing can collapse wet/dry temperature differences while leaving the area-integrated body heat flux unchanged when wet/dry external and body-side coefficients are identical.
 
 ### Current research direction
 
@@ -57,7 +59,7 @@ The preferred exterior has narrowed to a hierarchical, continuously/largely late
 - open valleys, cross-openings and ambient-connected gaps;
 - discontinuous evaporator islands;
 - millimeter-scale interruptions only as an extreme mechanism test rather than a required apparel dimension;
-- routed/anisotropic heat spreading toward wet fields;
+- routed/anisotropic heat spreading toward **spatially nonuniform** wet/exposed regions;
 - explicit water-supply/wetness-state accounting;
 - hot-ambient shielding or thermal routing that limits harmful sensible heat pickup.
 
@@ -69,14 +71,15 @@ The current numerical objective is simultaneous validation of:
 4. available water supply and wetness state;
 5. latent heat-source partition;
 6. sensible heat pickup from ambient air;
-7. whether any claimed heat/vapor selectivity has an actual physical mechanism.
+7. whether heat spreading connects genuinely different local boundary conditions;
+8. whether any claimed heat/vapor selectivity has an actual physical mechanism.
 
-Next model-strengthening tasks are spatially resolved wet/dry patches and geometry-resolved external natural-convection/cross-flow, followed by re-testing the older lumped multi-equilibrium behavior against that improved external-flow model.
+Next model-strengthening tasks are a distributed wet/dry field with unequal local boundary conditions and geometry-resolved external natural-convection/cross-flow, followed by re-testing the older lumped multi-equilibrium behavior against that improved external-flow model.
 
 ## Verification
 
 - `model-tests` #231 passed at `7f015b8e1b0278f29b545f41d24674b5a394ee79`, covering the coupled open-valley thermal model and preceding stack.
-- The feed-limited / analogy integration requires a newer passing CI before being recorded as the next verified integration point.
+- The expanded feed-limited / analogy / wet-dry integration requires a newer passing CI before being recorded as the next verified integration point.
 
 ## Release policy
 
