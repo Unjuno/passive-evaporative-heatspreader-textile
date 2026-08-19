@@ -13,19 +13,35 @@ All notable research-record changes will be documented here.
 - governing equations and variable/unit definitions;
 - passive exterior rib screening model;
 - explicit multi-equilibrium detection and conservative/optimistic branch reporting;
+- periodic 2-D E3 rib vapor-diffusion model with grid-convergence checks;
+- hierarchical microstructure + macro air-renewal embodiment and E3b experiment protocol;
+- split sensible-heat / vapor-transfer model using independent `M_h` and `M_m` multipliers;
+- regression test proving the split model reduces to the older coupled model when `M_h = M_m`;
+- deterministic model-form sensitivity sweep over RH, `U_body`, radiation, `M_h`, and `M_m`;
+- model-form uncertainty framework distinguishing screening-grid fractions from probabilities;
 - regression tests and GitHub Actions workflow;
 - experiment, data, and figure conventions;
 - embodiment matrix and design-history record;
 - consolidated numerical-results summary;
 - reference equilibrium branch CSV;
-- repository audit checklist.
+- reproducible reference-output generator with CSV/PNG/metadata/SHA-256 artifacts;
+- repository audit checklist with P0/P1/P2/P3 queues.
 
 ### Corrected
 
 - clarified that sweat salts are nonvolatile under garment operating conditions;
 - removed any interpretation that salt is removed by evaporation;
 - corrected earlier screening practice that silently selected the most-cooling stable equilibrium when multiple stable roots coexist;
-- downgraded earlier single-value `M` cooling thresholds from design conclusions to exploratory model artifacts pending validation.
+- downgraded earlier single-value `M` cooling thresholds from design conclusions to exploratory model artifacts pending validation;
+- corrected the assumption that a vapor-transfer enhancement must produce the same multiplier in sensible convective heat transfer;
+- clarified that E3 outputs are vapor mass-transfer multipliers, not cooling wattages or measured effective-area factors;
+- clarified that deterministic sensitivity-grid fractions are not reliability estimates or statistical confidence levels.
+
+### Current research direction
+
+The exterior architecture has shifted from a single-scale dense rib field toward a hierarchical structure combining wet micro-ribs / 3D-knit features with larger open corridors, valleys, spacer paths, or discontinuous fields for air renewal.
+
+The next major numerical task is to replace the prescribed E3 refreshed-air plane with a buoyancy-driven natural-convection / corridor-flow model that can constrain both `M_h` and `M_m`.
 
 ## Release policy
 
