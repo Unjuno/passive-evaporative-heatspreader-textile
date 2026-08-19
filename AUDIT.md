@@ -5,17 +5,18 @@ Branch audited: `agent/initial-research-disclosure`
 
 ## Overall assessment
 
-The branch contains a coherent technical disclosure, explicit implementation variants, **six executable screening/sensitivity modules**, regression tests, a reproducible output generator, prior-art working notes, and staged physical experiment protocols.
+The branch contains a coherent technical disclosure, explicit implementation variants, **seven executable screening/sensitivity modules**, regression tests, a reproducible output generator, prior-art working notes, and staged physical experiment protocols.
 
 It is still a development branch, not a frozen stable release, and it contains **no physical garment-performance measurements yet**.
 
-Three numerical audit findings currently dominate the research plan:
+Four numerical audit findings currently dominate the research plan:
 
 1. the low-order nonlinear passive heat/mass model can contain multiple stable equilibria, so earlier single-value `M` cooling thresholds are not treated as validated criteria;
 2. the E3 periodic 2-D diffusion screen shows that dense wet micro-ribs can share one stagnant humidity layer, making near-surface air renewal at least as important as geometric rib area;
-3. sensible convective heat transfer and vapor mass transfer are now modeled with independent multipliers (`M_h`, `M_m`) rather than automatically assigning one multiplier to both mechanisms.
+3. sensible convective heat transfer and vapor mass transfer are now modeled with independent multipliers (`M_h`, `M_m`) rather than automatically assigning one multiplier to both mechanisms;
+4. the first moist-air corridor buoyancy screen shows that a vertical wet channel does **not** guarantee beneficial upward chimney flow: evaporative cooling increases air density while humidification reduces it, so the flow tendency can reverse or become near-neutral.
 
-The current preferred exterior is therefore hierarchical: wet microstructures for local evaporation area plus larger open corridors/valleys/spacer paths for passive or motion-assisted air renewal. The thermal consequence of those corridors must be evaluated separately for sensible heat and vapor transfer.
+The current preferred exterior is therefore hierarchical: wet microstructures for local evaporation area plus larger open corridors/valleys/spacer paths for passive or motion-assisted air renewal. The thermal and flow consequences of those corridors must be solved together rather than assumed.
 
 ## A. Technical coherence
 
@@ -25,7 +26,8 @@ The current preferred exterior is therefore hierarchical: wet microstructures fo
 | Whole-body/routed heat spreading | PASS | Continuous, anisotropic, mesh, serpentine, island-bridge and redundant paths documented. |
 | Exterior geometry families | PASS | Ribs, fins, 3D knit, pile, lamellae, pleats and related structures explicit. |
 | Hierarchical air-renewal exterior | PASS | E17 and E3b make microstructure + macro corridor combinations explicit. |
-| Sensible/vapor exchange separation | PASS/NEW | `M_h` and `M_m` separated in executable model; E3 maps only to vapor side. |
+| Sensible/vapor exchange separation | PASS | `M_h` and `M_m` separated in executable model; E3 maps only to vapor side. |
+| Corridor buoyancy direction | PASS/SCREEN | Up/down/near-neutral tendency now screened from moist-air density; channel state is still prescribed. |
 | Hot-ambient dry-side risk | PASS | Stronger sensible exchange may increase inward heat pickup; dry conductive regions may require shielding/thermal isolation. |
 | Fan requirement | PASS | Fan remains optional; primary architecture is fanless. |
 | MOF/sorbent role | PASS | Secondary optional embodiment only. |
@@ -39,17 +41,18 @@ The current preferred exterior is therefore hierarchical: wet microstructures fo
 |---|---|---|
 | Governing equations | PASS | Heat/mass and water/salt assumptions documented. |
 | Coupled passive heat/mass model | PASS | `simulations/passive_rib_screen.py`; retained as reference/special case. |
-| Split heat/vapor model | PASS/NEW | `simulations/split_heat_mass_screen.py`. |
-| Deterministic uncertainty sweep | PASS/NEW | `simulations/split_transfer_sensitivity.py`. |
+| Split heat/vapor model | PASS | `simulations/split_heat_mass_screen.py`. |
+| Deterministic uncertainty sweep | PASS | `simulations/split_transfer_sensitivity.py`. |
 | Periodic rib diffusion model | PASS | `simulations/rib_diffusion_screen.py`. |
+| Moist-air corridor buoyancy model | PASS/SCREEN | `simulations/corridor_buoyancy_screen.py`; prescribed channel T/RH, laminar slot-friction screen. |
 | 2-D heat-spreader model | PASS | `simulations/heat_spreader_2d.py`. |
 | Water/salt mass-balance model | PASS | `simulations/water_salt_1d.py`. |
-| Regression tests | PASS/UPDATED | Split-model equivalence and sensitivity-grid tests added. |
+| Regression tests | PASS/UPDATED | Split-model, sensitivity-grid, E3, heat-spreader, salt, and corridor tests exist. |
 | Grid convergence | PASS/SCREEN | E3 reference case differs by about 0.62% between 24 nodes/pitch and the 48-node screened result. |
-| Reference generator | PASS/UPDATED | Split-transfer and deterministic sensitivity CSVs added. |
-| CI definition | PASS/UPDATED | CI runs split-transfer/sensitivity demos and checks generated split-transfer artifacts. |
-| Last confirmed complete CI before current P1 commits | PASS | PR-triggered `model-tests` run #83 completed successfully at head `468aad136e2e80e588de443920617daf376eb8b7`. |
-| Current P1-integrated CI | CHECK AFTER HEAD SETTLES | New commits trigger CI; do not infer success until the run completes. |
+| Reference generator | PASS/UPDATED | Split-transfer, sensitivity, E3, and corridor CSVs included. |
+| CI definition | PASS/UPDATED | CI runs all current model demos/tests and checks generated reference artifacts. |
+| Last confirmed complete CI before latest flow-model commits | PASS | PR-triggered `model-tests` run #83 completed successfully at head `468aad136e2e80e588de443920617daf376eb8b7`. |
+| Current flow-model-integrated CI | CHECK AFTER HEAD SETTLES | New commits trigger CI; success must be confirmed explicitly. |
 
 ## C. Numerical-model audit
 
@@ -83,7 +86,7 @@ Audit interpretation:
 
 ### C3 — split sensible/vapor transfer
 
-The new split model uses:
+The split model uses:
 
 - `M_h`: sensible convective heat-transfer multiplier;
 - `M_m`: vapor mass-transfer multiplier;
@@ -95,17 +98,25 @@ This is especially important when ambient air is hotter than the wet exterior: i
 
 ### C4 — deterministic model-form sensitivity
 
-`simulations/split_transfer_sensitivity.py` sweeps predeclared ranges in:
-
-- RH;
-- `U_body`;
-- `h_rad`;
-- `M_h`;
-- `M_m`.
+`simulations/split_transfer_sensitivity.py` sweeps predeclared ranges in RH, `U_body`, `h_rad`, `M_h`, and `M_m`.
 
 Fractions reported by the script are **fractions of the deterministic screening grid**, not probabilities, reliabilities, or confidence intervals.
 
 Current classification of absolute garment cooling wattage: **FORM-UNCERTAIN** until external-flow/boundary-layer treatment and bench data improve.
+
+### C5 — thermo-solutal corridor buoyancy
+
+`simulations/corridor_buoyancy_screen.py` is the first explicit air-renewal mechanism model. It balances a moist-air density head against fully developed laminar wide-slot friction using a prescribed mean channel temperature and RH.
+
+For the common 35 °C / 70% RH ambient screen, the model places the neutral-density state near 34 °C at roughly 90% RH. This is a screening result, not an experimental threshold.
+
+Audit interpretation:
+
+- a cooler saturated channel can remain denser than hot ambient air and tend downward;
+- a sufficiently warm/humid channel can become lighter and tend upward;
+- vertical grooves therefore cannot be assumed to produce one-way beneficial chimney flow;
+- corridor orientation and openings should tolerate weak, reversed, externally driven, and motion-assisted flow;
+- the next model must solve channel temperature, humidity, and flow self-consistently.
 
 ## D. Experimental readiness
 
@@ -119,7 +130,8 @@ Current classification of absolute garment cooling wattage: **FORM-UNCERTAIN** u
 | E3 micro-rib pitch plan | PASS | Original accessibility experiment defined. |
 | E3b hierarchical air-renewal plan | PASS | Micro-rib-only versus micro+macro corridor architectures defined. |
 | Near-surface RH profile | PASS | E3b includes 0.5/1/2/5/10/20 mm sampling heights. |
-| Split heat/vapor identification | PARTIAL/NEW | Experiment should measure surface/air temperature with RH so improved vapor renewal is not mistaken for uniformly improved heat transfer. |
+| Split heat/vapor identification | PARTIAL | Experiment should measure surface/air temperature with RH so improved vapor renewal is not mistaken for uniformly improved heat transfer. |
+| Corridor flow-direction measurement | OPEN/NEW | Add local velocity or tracer observation so upward/downward/reversing corridor flow can be tested. |
 | Physical data | MISSING | No bench experiment has yet been executed. |
 | Exact instrument/calibration list | PARTIAL | Measurement categories exist; hardware-specific uncertainty budget remains open. |
 
@@ -141,9 +153,9 @@ Current classification of absolute garment cooling wattage: **FORM-UNCERTAIN** u
 |---|---|---|
 | Public GitHub repository | PASS | Repository is public. |
 | Apache-2.0 | PASS | `LICENSE`. |
-| README | PASS/UPDATED | Split transfer and model-form uncertainty reflected. |
+| README | PASS/UPDATED | Split transfer and model-form uncertainty reflected; corridor model should be linked in next README sync. |
 | Citation metadata | PASS/PARTIAL | Update at stable version/tag. |
-| Reproducible generator + SHA | PASS/UPDATED | Split-transfer data included; final release must regenerate at exact release commit. |
+| Reproducible generator + SHA | PASS/UPDATED | Split-transfer, E3, and corridor data included; final release must regenerate at exact release commit. |
 | Stable tag | MISSING | Development branch only. |
 | Persistent archive / DOI | MISSING | Do after stable release audit. |
 | Frozen release artifact manifest | MISSING | Generate from exact final commit. |
@@ -165,16 +177,20 @@ Current classification of absolute garment cooling wattage: **FORM-UNCERTAIN** u
 - [x] Separate sensible heat and vapor-transfer multipliers.
 - [x] Add split-model regression equivalence test.
 - [x] Add deterministic model-form sensitivity framework and executable sweep.
-- [ ] Confirm current P1-integrated CI after the latest commits settle.
+- [x] Add first moist-air corridor buoyancy screen and regression tests.
+- [x] Add corridor outputs to reproducible reference generator and CI artifact checks.
+- [ ] Confirm current flow-model-integrated CI after the latest commits settle.
+- [ ] Sync top-level README with corridor model/result.
 
 ### P1 — model strengthening
 
 - [ ] Couple a better natural-convection / boundary-layer model to E3 rather than prescribing a renewal plane.
 - [x] Separate mass-transfer and sensible-heat multipliers explicitly in the thermal model.
-- [ ] Investigate whether passive macro corridors can create/maintain near-tip air renewal in 2-D/3-D flow models.
+- [ ] Investigate whether passive macro corridors can create/maintain near-tip air renewal in a self-consistent flow model. **Initial prescribed-state buoyancy screen complete.**
 - [x] Add systematic model-form uncertainty ranges and deterministic sensitivity code.
 - [ ] Re-test nonlinear multi-equilibrium behavior with the improved boundary-layer treatment.
 - [ ] Use improved external-flow physics to constrain a plausible relationship between `M_h` and `M_m` rather than assuming either equality or total independence.
+- [ ] Couple channel heat and water-vapor conservation to buoyancy/friction so channel T/RH are solved rather than prescribed.
 
 ### P2 — physical evidence
 
@@ -183,6 +199,7 @@ Current classification of absolute garment cooling wattage: **FORM-UNCERTAIN** u
 - [ ] Execute E3/E3b rib/accessibility/hierarchical-air-renewal comparison.
 - [ ] Execute humidity boundary test.
 - [ ] Measure enough temperature/RH information to estimate vapor and sensible-transfer effects separately.
+- [ ] Measure or visualize corridor flow direction under still-air conditions.
 - [ ] Publish raw data, calibration metadata, analysis, and negative results.
 
 ### P3 — stable publication
@@ -206,5 +223,6 @@ Every significant update must answer:
 6. If added geometric area is claimed to help, is the **air/vapor access mechanism** explicit?
 7. Is a vapor-transfer result being incorrectly reused as a sensible-heat-transfer result?
 8. Is an uncertainty-grid fraction being mislabeled as a probability?
+9. Is a passive corridor flow direction being assumed instead of derived or measured?
 
 If any answer is unclear, keep the item open rather than silently marking it complete.
