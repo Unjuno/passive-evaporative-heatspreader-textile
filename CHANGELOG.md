@@ -19,6 +19,8 @@ All notable research-record changes will be documented here.
 - regression test proving the split model reduces to the older coupled model when `M_h = M_m`;
 - deterministic model-form sensitivity sweep over RH, `U_body`, radiation, `M_h`, and `M_m`;
 - model-form uncertainty framework distinguishing screening-grid fractions from probabilities;
+- low-order moist-air vertical-corridor buoyancy screen with neutral-density analysis and regression tests;
+- corridor buoyancy outputs in the reproducible reference package;
 - regression tests and GitHub Actions workflow;
 - experiment, data, and figure conventions;
 - embodiment matrix and design-history record;
@@ -35,13 +37,14 @@ All notable research-record changes will be documented here.
 - downgraded earlier single-value `M` cooling thresholds from design conclusions to exploratory model artifacts pending validation;
 - corrected the assumption that a vapor-transfer enhancement must produce the same multiplier in sensible convective heat transfer;
 - clarified that E3 outputs are vapor mass-transfer multipliers, not cooling wattages or measured effective-area factors;
-- clarified that deterministic sensitivity-grid fractions are not reliability estimates or statistical confidence levels.
+- clarified that deterministic sensitivity-grid fractions are not reliability estimates or statistical confidence levels;
+- corrected the design intuition that a vertical wet corridor must generate upward chimney flow: evaporative cooling and humidification can oppose each other, so the buoyancy direction can reverse or become near-neutral.
 
 ### Current research direction
 
 The exterior architecture has shifted from a single-scale dense rib field toward a hierarchical structure combining wet micro-ribs / 3D-knit features with larger open corridors, valleys, spacer paths, or discontinuous fields for air renewal.
 
-The next major numerical task is to replace the prescribed E3 refreshed-air plane with a buoyancy-driven natural-convection / corridor-flow model that can constrain both `M_h` and `M_m`.
+The first explicit corridor model now screens moist-air buoyancy direction and laminar slot-flow scaling with prescribed channel temperature/RH. The next major numerical task is a self-consistent channel model that solves flow, heat, and water-vapor conservation together and thereby constrains both `M_h` and `M_m`.
 
 ## Release policy
 
