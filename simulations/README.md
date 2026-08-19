@@ -12,11 +12,12 @@
 8. **`open_valley_distributed_1d.py`** — axial diffusion/advection plus distributed lateral vapor renewal; reports exchange length, `F`, and `k_eff`.
 9. **`open_valley_thermal_1d.py`** — coupled valley-air T, vapor density, surface T, evaporation and body-side heat flow; optional homogenized `wet_fraction`.
 10. **`open_valley_feed_limited.py`** — solves the homogenized wet fraction `beta` required to satisfy imposed feed when fully-wet transfer capacity is too high; reports latent heat-source partition.
-11. **`open_valley_heat_mass_coupling_audit.py`** — heat/mass coupling audit using `Xi=delta_vapor/delta_heat`, Lewis number, a Chilton–Colburn-style comparison, and the hot-ambient zero-body-flux threshold.
-12. **`passive_environment_boundary.py`** — analytic same-path environmental sign boundary and skin-temperature sensitivity.
-13. **`supply_limit_audit.py`** — conservative capacity/feed classification retained separately from the explicit partial-wetness solution.
-14. **`heat_spreader_2d.py`** — anisotropic 2-D lateral heat-routing model.
-15. **`water_salt_1d.py`** — normalized water/nonvolatile-salt mass-balance screen.
+11. **`wet_dry_two_node.py`** — separate wet/dry temperatures at fixed feed, coupled through a lateral heat-spreader mixing conductance.
+12. **`open_valley_heat_mass_coupling_audit.py`** — heat/mass coupling audit using `Xi=delta_vapor/delta_heat`, Lewis number, a Chilton–Colburn-style comparison, and the hot-ambient zero-body-flux threshold.
+13. **`passive_environment_boundary.py`** — analytic same-path environmental sign boundary and skin-temperature sensitivity.
+14. **`supply_limit_audit.py`** — conservative capacity/feed classification retained separately from the explicit partial-wetness solution.
+15. **`heat_spreader_2d.py`** — anisotropic 2-D lateral heat-routing model.
+16. **`water_salt_1d.py`** — normalized water/nonvolatile-salt mass-balance screen.
 
 All are screening or analytic models. None is a validated CFD replacement or physical garment-performance measurement.
 
@@ -62,15 +63,20 @@ If fully-wet evaporation capacity is below the available feed, `beta=1` and the 
 
 At 35 °C / 50% RH with 150 g/h over 0.195 m² of structured area, strong linked-exchange cases become supply-limited. The model predicts that making linked exchange stronger beyond water-supply saturation can **reduce body-coupled cooling** even while the same water mass is evaporated.
 
-This happens because a larger fraction of the latent heat is supplied by warm ambient air. The model therefore reports:
+This occurs because a larger fraction of latent heat is supplied by warm ambient air. `beta` is not a measured visible wet-area fraction.
 
-- body-side latent fraction;
-- ambient-air latent fraction;
-- total evaporation;
-- body heat flux;
-- solved `beta`.
+### Wet/dry two-temperature audit
 
-`beta` is not a measured visible wet-area fraction.
+`wet_dry_two_node.py` tests the one-temperature `beta` approximation by assigning distinct wet and dry temperatures at fixed feed.
+
+For the deliberately symmetric 35 °C / 50% RH reference:
+
+- no lateral mixing permits a wet/dry temperature split near 4.9 °C;
+- increasing heat-spreader mixing progressively collapses the local temperature difference;
+- the required wet fraction changes with mixing;
+- **the area-integrated body heat flux remains nearly invariant** because the wet and dry patches have identical body and ambient sensible coefficients and internal lateral heat transfer cancels globally.
+
+This is not evidence that heat spreading is generally irrelevant. It establishes a sharper condition: heat spreading changes total cooling only when there is spatial heterogeneity in evaporation, ambient exposure, body coupling, shielding, sink placement, or other boundary conditions. That is the regime represented by the separate 2-D heat-spreader model.
 
 ### Heat/mass coupling audit
 
@@ -110,6 +116,7 @@ python -m pip install -r requirements-dev.txt
 python -m pytest -q
 python simulations/open_valley_thermal_1d.py
 python simulations/open_valley_feed_limited.py
+python simulations/wet_dry_two_node.py
 python simulations/open_valley_heat_mass_coupling_audit.py
 python simulations/passive_environment_boundary.py
 python simulations/supply_limit_audit.py
@@ -127,7 +134,8 @@ Do not use any one of these as proof of garment cooling:
 - local `F`;
 - evaporation mass flux;
 - fully-wet transfer capacity;
-- model wet fraction `beta`.
+- model wet fraction `beta`;
+- internal heat-spreader conductance in a spatially symmetric model.
 
 Integrated interpretation requires:
 
@@ -137,13 +145,14 @@ Integrated interpretation requires:
 4. available water supply, wetness state, retention and runoff;
 5. ambient sensible heat pickup / latent heat-source partition;
 6. explicit artificial-skin temperature;
-7. an identified physical mechanism for any claimed heat/vapor selectivity.
+7. spatial boundary-condition heterogeneity when claiming a heat-spreader benefit;
+8. an identified physical mechanism for any claimed heat/vapor selectivity.
 
 ## Current next model tasks
 
-1. resolve wet/dry patches spatially rather than through one homogenized `beta`;
+1. distributed wet/dry field with unequal local body/ambient boundary conditions;
 2. geometry-resolved 2-D/3-D external natural-convection/cross-flow;
-3. use that flow field to constrain heat/mass transfer and re-test the low-order coupling assumptions;
+3. use that flow field to constrain heat/mass transfer and re-test low-order coupling assumptions;
 4. re-test lumped-model multi-equilibrium behavior against improved external-flow physics;
 5. sensitivity to Nu/Sh, compression, opening losses, radiation and weak external drift.
 
