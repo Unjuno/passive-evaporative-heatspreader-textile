@@ -21,18 +21,24 @@ All notable research-record changes are documented here.
 - explicit feed-limited solver that determines sub-grid wet fraction `beta` from imposed liquid feed;
 - latent heat-source partition between body-side heat and ambient sensible heat;
 - separate-temperature wet/dry two-node model with lateral heat-spreader mixing conductance;
+- asymmetric wet/dry spreader screen with dry-side shielding/exposure as an explicit spatial heterogeneity;
+- bounded least-squares + continuation support for the asymmetric partial-wetness solver;
+- low-order heat-spreader material/geometry mapping `g_sheet ~ Gamma*k*t*c/P^2`;
+- heat-spreader mass/thickness/bending-strain screening and `k/rho` mass figure of merit;
+- two-contact thermal-resistance audit `1/g_eff = 1/g_sheet + 2/h_contact`;
 - Lewis-number and Chilton–Colburn-style ordinary heat/mass coupling baselines;
-- wet-wall energy-closure, feed-balance, latent-partition, wet/dry, and heat/mass-selectivity regression tests;
+- wet-wall energy-closure, feed-balance, latent-partition, wet/dry, asymmetric-branch, material/contact-mapping, and heat/mass-selectivity regression tests;
 - conservative liquid-supply capacity audit retained separately from the explicit partial-wetness state;
-- E3b hierarchical air-renewal and E3c open-vs-covered physical protocols;
-- E4a feed-limit / wetness-transition physical protocol;
+- E3b hierarchical air-renewal and E3c open-vs-covered future physical protocols;
+- E4a feed-limit / wetness-transition future physical protocol;
 - E18–E21 open-valley / segmented / island / covered-channel implementation variants;
 - 2-D anisotropic heat-spreader and normalized nonvolatile water/salt models;
 - regression tests and GitHub Actions CI;
-- reproducible CSV/PNG/metadata/SHA-256 output package including explicit feed-limited and wet/dry two-node states.
+- reproducible CSV/PNG/metadata/SHA-256 output package including feed-limited, wet/dry, asymmetric and spreader material/contact screens.
 
 ### Corrected
 
+- repository status now explicitly states that the current project is a **virtual/computational prototype only** and no physical specimen exists;
 - salt is nonvolatile under garment operating conditions; water evaporates, salt does not;
 - earlier most-cooling-root selection is no longer silently used when multiple stable equilibria exist;
 - earlier single-value `M` cooling thresholds are historical screening artifacts, not validated design criteria;
@@ -49,17 +55,25 @@ All notable research-record changes are documented here.
 - stronger linked external exchange is no longer assumed always beneficial at fixed feed: once available water is fully consumed, additional ambient sensible heat can reduce body-coupled cooling;
 - identical evaporation mass is no longer assumed to imply identical body heat removal;
 - arbitrary `Xi<1` heat/vapor decoupling is no longer treated as freely available: ordinary same-boundary Lewis/Chilton–Colburn-style comparisons remain near `Xi≈1` for the current air/water-vapor screen;
-- lateral heat spreading is no longer credited with a global cooling gain in a spatially symmetric fixed-feed system: the new two-node screen shows internal mixing can collapse wet/dry temperature differences while leaving the area-integrated body heat flux unchanged when wet/dry external and body-side coefficients are identical.
+- lateral heat spreading is no longer credited with a global cooling gain in a spatially symmetric fixed-feed system;
+- dense asymmetric `g_mix` sweeps no longer rely on an unconstrained nonlinear root that could jump to a nonphysical high-beta branch;
+- infinite heat-spreader conductivity is no longer treated as a useful target: corrected asymmetric sweeps show finite few-hundred-W/(m² K) diminishing-return bands;
+- sparse conductive coverage is no longer assumed to reduce mass under the linear `t*c` conductance model;
+- sheet conductivity is no longer treated as sufficient without explicit wet/dry thermal-contact conductance;
+- heat-spreader performance is no longer stated without routing pitch/topology/material/contact assumptions.
 
 ### Current research direction
 
-The preferred exterior has narrowed to a hierarchical, continuously/largely laterally open architecture:
+The preferred virtual architecture has narrowed to:
 
 - wet micro-ribs / 3D-knit / short-fin texture for local area;
 - open valleys, cross-openings and ambient-connected gaps;
 - discontinuous evaporator islands;
 - millimeter-scale interruptions only as an extreme mechanism test rather than a required apparel dimension;
-- routed/anisotropic heat spreading toward **spatially nonuniform** wet/exposed regions;
+- short-range routed/anisotropic heat spreading toward **spatially nonuniform** wet/exposed regions;
+- initial virtual-prototype heat-routing pitch around 10–20 mm rather than long-range uniform spreading;
+- high `k/rho` pathways with explicit `k*t/P²` accounting;
+- explicit wet/dry thermal-contact resistance;
 - explicit water-supply/wetness-state accounting;
 - hot-ambient shielding or thermal routing that limits harmful sensible heat pickup.
 
@@ -72,14 +86,15 @@ The current numerical objective is simultaneous validation of:
 5. latent heat-source partition;
 6. sensible heat pickup from ambient air;
 7. whether heat spreading connects genuinely different local boundary conditions;
-8. whether any claimed heat/vapor selectivity has an actual physical mechanism.
+8. whether any claimed heat/vapor selectivity has an actual physical mechanism;
+9. whether a proposed spreader has sufficient `k*t/P²` and thermal contact at acceptable added mass.
 
-Next model-strengthening tasks are a distributed wet/dry field with unequal local boundary conditions and geometry-resolved external natural-convection/cross-flow, followed by re-testing the older lumped multi-equilibrium behavior against that improved external-flow model.
+Next model-strengthening tasks are a distributed wet/dry field with direct material `k`, thickness, anisotropy and contact terms, then geometry-resolved external natural-convection/cross-flow followed by re-testing the older lumped multi-equilibrium behavior.
 
 ## Verification
 
-- `model-tests` #231 passed at `7f015b8e1b0278f29b545f41d24674b5a394ee79`, covering the coupled open-valley thermal model and preceding stack.
-- The expanded feed-limited / analogy / wet-dry integration requires a newer passing CI before being recorded as the next verified integration point.
+- `model-tests` #370 passed at `a01eeafc8ae6814349a3a0937251efd048823dae`, covering the expanded feed-limited / wet-dry / asymmetric stack before the latest material-mapping commits.
+- The current material/contact-mapping integration requires a newer passing CI before being recorded as the next verified integration point.
 
 ## Release policy
 
