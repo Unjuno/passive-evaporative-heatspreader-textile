@@ -14,18 +14,26 @@ def test_70pct_boundary_matches_reference_value():
 
 
 def test_boundary_decreases_with_humidity():
-    t50 = zero_body_flux_ambient_temperature(0.50)
-    t70 = zero_body_flux_ambient_temperature(0.70)
-    t90 = zero_body_flux_ambient_temperature(0.90)
-    assert t50 > t70 > t90
+    assert zero_body_flux_ambient_temperature(0.50) > zero_body_flux_ambient_temperature(0.70)
+    assert zero_body_flux_ambient_temperature(0.70) > zero_body_flux_ambient_temperature(0.90)
 
 
-def test_analytic_boundary_matches_coupled_linked_model():
-    for rh in (0.60, 0.70, 0.85):
-        ambient_c = zero_body_flux_ambient_temperature(rh)
+def test_boundary_increases_with_skin_setpoint():
+    t32 = zero_body_flux_ambient_temperature(0.70, skin_c=32.0)
+    t34 = zero_body_flux_ambient_temperature(0.70, skin_c=34.0)
+    t36 = zero_body_flux_ambient_temperature(0.70, skin_c=36.0)
+    assert t32 < t34 < t36
+    assert t32 == pytest.approx(37.54, abs=0.02)
+    assert t36 == pytest.approx(41.91, abs=0.02)
+
+
+def test_analytic_boundary_matches_coupled_linked_model_at_multiple_skin_setpoints():
+    for skin_c, rh in ((32.0, 0.70), (34.0, 0.60), (34.0, 0.85), (36.0, 0.70)):
+        ambient_c = zero_body_flux_ambient_temperature(rh, skin_c=skin_c)
         result = solve_open_valley_thermal(
             ambient_c=ambient_c,
             ambient_rh=rh,
+            skin_c=skin_c,
             delta_vapor_mm=0.5,
             delta_heat_mm=0.5,
         )
