@@ -38,6 +38,8 @@ jobs:
         run: python simulations/open_valley_distributed_1d.py > /tmp/open-valley-distributed.txt
       - name: Run coupled open-valley thermal-vapor screen
         run: python simulations/open_valley_thermal_1d.py > /tmp/open-valley-thermal.txt
+      - name: Run explicit feed-limited open-valley screen
+        run: python simulations/open_valley_feed_limited.py > /tmp/open-valley-feed-limited.txt
       - name: Run heat-mass coupling audit
         run: python simulations/open_valley_heat_mass_coupling_audit.py > /tmp/open-valley-coupling-audit.txt
       - name: Run passive environment boundary
@@ -61,6 +63,7 @@ jobs:
           test -s /tmp/reference-output/data/open_valley_renewal_targets.csv
           test -s /tmp/reference-output/data/open_valley_distributed_1d.csv
           test -s /tmp/reference-output/data/open_valley_thermal_1d.csv
+          test -s /tmp/reference-output/data/open_valley_feed_limited.csv
           test -s /tmp/reference-output/data/open_valley_heat_mass_coupling_audit.csv
           test -s /tmp/reference-output/data/passive_environment_boundary.csv
           test -s /tmp/reference-output/data/passive_environment_boundary_skin_sensitivity.csv
