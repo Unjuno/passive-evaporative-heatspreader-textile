@@ -1,6 +1,6 @@
 # Prior-Art and Adjacent-Technology Map
 
-Status: partial; patent landscape still requires expansion.  
+Status: partial; patent landscape still requires expansion and authoritative family verification.  
 Last checked: 2026-08-19.
 
 This file is intentionally candid about closely related work. The purpose is to identify what is already known and to define which combinations, geometries, operating rules, and failure-aware implementations are being disclosed here.
@@ -14,7 +14,7 @@ Reported concept: integration of heat-conductive pathways with water-transport c
 
 ### Relevance
 
-This is highly relevant prior work. It means that a broad concept such as "a textile containing a heat-conductive path and a sweat-transport path to enhance evaporative cooling" should not be treated as new by this project.
+This is highly relevant prior work. A broad concept such as "a textile containing a heat-conductive path and a sweat-transport path to enhance evaporative cooling" should not be treated as new by this project.
 
 ### Current project emphasis beyond that broad concept
 
@@ -23,26 +23,24 @@ The present repository focuses on a specific system-design branch including:
 - deliberate whole-garment or large-area lateral heat redistribution toward spatially nonuniform evaporation zones;
 - anisotropic, serpentine, island-bridge, or redundant flexible heat-spreader topologies;
 - a separately engineered high-surface-area **exterior** evaporation morphology such as micro-ribs, short fins, 3D-knit relief, pile, lamellae, or graded structures;
-- an explicit distinction between geometric exterior area and *effective accessible exchange area* through the parameter `alpha`;
+- an explicit distinction between geometric exterior area and *effective accessible exchange area* through `alpha`;
 - design against humid-boundary-layer overlap among adjacent exterior structures;
 - dry-side thermal shielding/selective exposure for ambient temperatures above skin temperature;
 - apparel-aesthetic integration of exterior evaporative structures;
 - same-water-input artificial-skin heater-power benchmarking against a flat fast-dry textile.
 
-These differences require further prior-art searching; this document does not assert that every such element or combination is novel.
+These differences still require further prior-art searching. This document does not assert that every such element or combination is novel.
 
 ## 2. Directional liquid transport: skin-like fabric
 
 **Lao, L.; Shou, D.; Wu, Y. S.; Fan, J. T. "Skin-like fabric for personal moisture management." Science Advances 6, eaaz0013 (2020).**  
 DOI: https://doi.org/10.1126/sciadv.aaz0013
 
-Reported concept: directional liquid-water transport through gradient-wettability channels, with sweat-like outward liquid handling and resistance to external liquid ingress.
+Reported concept: directional liquid-water transport through gradient-wettability channels, with outward liquid handling and resistance to external liquid ingress.
 
 ### Relevance
 
-Directional sweat transport is therefore treated as an available building block, not the primary inventive premise of this repository.
-
-The project combines directional transport with heat redistribution and engineered exterior evaporation geometries, while measuring whether the combined architecture removes additional body-side heat at equal water input.
+Directional sweat transport is treated as an available building block, not the primary inventive premise of this repository.
 
 ## 3. Humidity-responsive adaptive ventilation
 
@@ -53,7 +51,7 @@ Reported concept: moisture-responsive textile flaps that adapt convection, sweat
 
 ### Relevance
 
-Humidity-responsive vents/flaps are treated here as an optional embodiment rather than a core requirement. If used, they may be coupled to exterior evaporative panels or selectively expose wet zones while shielding dry zones.
+Humidity-responsive vents/flaps are treated here as optional embodiments, not core requirements.
 
 ## 4. Directional sweat pumping and self-cooling fabric
 
@@ -64,9 +62,40 @@ Reported concept: a liquid-diode/gradient-wetting fabric that pumps sweat outwar
 
 ### Relevance
 
-This reinforces that outward sweat pumping and evaporation-area enlargement alone are established research directions. The present project therefore evaluates a different combination centered on whole-garment heat redistribution plus explicitly three-dimensional exterior evaporation morphology and boundary-layer-aware geometry.
+Outward sweat pumping and evaporation-area enlargement alone are established research directions. The present project therefore focuses on the combination with large-area heat redistribution, explicitly three-dimensional exterior evaporation morphology, boundary-layer-aware geometry, hot-ambient dry-side protection, and apparel integration.
 
-## 5. What is explicitly *not* claimed as a unique premise here
+## 5. Early cooling-garment patent: sorbent + exterior fins
+
+**Japanese patent publication JPH04209808A, "Cooling garment / 冷房服", published 1992-07-31; priority/filing date reported as 1990-11-30.**
+
+Public patent-index text reports a garment containing a moisture-reactive chemical heat-storage/sorbent material and identifies examples including lithium bromide, silica gel, zeolite, and calcium chloride. The claims also include an embodiment with fins disposed outside the heat-storage material.
+
+### Relevance
+
+This is important because it predates the current work by decades and directly undermines any broad proposition such as:
+
+- "put a desiccant/sorbent in clothing to promote sweat-vapor removal"; or
+- "add exterior fins to a sorbent cooling garment."
+
+Accordingly:
+
+- sorbent/MOF variants are secondary here and cannot be treated broadly as a new premise;
+- exterior fins **by themselves** are not a sufficient differentiator;
+- the current project must be evaluated at the level of specific liquid-fed evaporative exterior structures, heat-routing architecture, boundary-layer-aware geometry, and combined operation.
+
+### Verification status
+
+Publication number and claim text have been located in a public patent index. Before a stable release, verify the bibliographic record, original Japanese text, legal-family information, and any related publications against an authoritative patent-office record such as J-PlatPat or an equivalent official database.
+
+## 6. Fan-based air-conditioning garments
+
+Public patent literature also contains long-standing fan garments that draw ambient air into the clothing space and exhaust it around openings such as the collar/cuffs. These establish forced internal airflow and sweat-evaporation enhancement as known approaches.
+
+The primary architecture in this repository is intentionally passive and does not require an onboard fan. Fan assistance remains an optional variant/comparison case.
+
+Exact closest-family mapping remains a patent-search task.
+
+## 7. What is explicitly *not* claimed as a unique premise here
 
 The following ideas are known or broadly established and should not be presented alone as this project's contribution:
 
@@ -77,9 +106,10 @@ The following ideas are known or broadly established and should not be presented
 - increasing wet area can increase evaporation in suitable conditions;
 - humidity-responsive textile vents can alter heat/mass transfer;
 - fan garments can increase convection/evaporation;
-- sorbents can adsorb water vapor.
+- sorbents/desiccants can capture water vapor;
+- sorbent cooling garments can include exterior fins.
 
-## 6. Current disclosure space to search more aggressively
+## 8. Current disclosure space to search more aggressively
 
 The following combinations need dedicated patent/literature searches before any novelty statement:
 
@@ -90,13 +120,23 @@ The following combinations need dedicated patent/literature searches before any 
 5. conductive path geometry that doubles as apparel patterning or structured evaporative panel support;
 6. stretchable serpentine/island-bridge heat-spreader garments coupled to evaporative cooling;
 7. mixed-height or graded exterior evaporative fins intended to reduce shared humid boundary layers;
-8. selective evaporation-terminal architectures that protect upstream capillary routes from evaporation and salt concentration.
+8. selective evaporation-terminal architectures that protect upstream capillary routes from evaporation and salt concentration;
+9. a complete stack combining large-area heat routing, directional liquid transport, distributed capillary feed, and low-profile exterior 3D evaporators.
 
-## 7. Patent-search TODO
+## 9. Patent-search queue
 
-The patent section is intentionally not filled from memory. It should be populated only with verified publication numbers, priority dates, assignees/inventors, and claim-relevant passages.
+For each close family record:
 
-Priority search classes/topics:
+- earliest priority date;
+- publication number(s);
+- inventor/assignee;
+- independent-claim summary;
+- relevant figures/embodiments;
+- overlap with this repository;
+- remaining design space;
+- authoritative source used for verification.
+
+Priority topics:
 
 - fan-assisted cooling garments;
 - dehumidifying/desiccant cooling garments;
@@ -106,15 +146,6 @@ Priority search classes/topics:
 - flexible heat-spreader apparel;
 - humidity-actuated textile ventilation.
 
-For each patent family record:
-
-- earliest priority date;
-- publication number(s);
-- independent-claim summary;
-- relevant figures/embodiments;
-- overlap with this repository;
-- remaining design space.
-
-## 8. Interpretation rule
+## 10. Interpretation rule
 
 No statement in this repository that something is "the project concept" should be read as a legal conclusion of novelty or inventiveness. Prior art is continuously incorporated, and the technical disclosure is intentionally broader than any single proposed product configuration.
