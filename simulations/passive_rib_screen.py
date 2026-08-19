@@ -3,10 +3,20 @@
 Low-order research model for comparing a structured passive evaporative textile
 against a flat fast-dry control at the same liquid-water input.
 
+Important numerical note
+------------------------
+The nonlinear heat/mass balance can have more than one stable equilibrium.
+Earlier exploratory screens selected the stable root with the largest modeled
+body-side cooling, which can create an optimistic discontinuous jump. This
+version exposes all stable roots and defaults to the warmer/conservative stable
+branch when a single design value is requested.
+
 This is not CFD and not a validated garment-performance predictor.
 """
 
 from __future__ import annotations
+
+from dataclasses import dataclass
 
 import numpy as np
 import pandas as pd
@@ -33,6 +43,14 @@ H_RAD = 6.0  # W/(m^2 K), linearized screening value
 # These are model parameters, not measurements.
 U_FLAT = 60.0  # W/(m^2 K)
 U_PREVIEW = 100.0  # W/(m^2 K)
+
+
+@dataclass(frozen=True)
+class Equilibrium:
+    surface_temp_C: float
+    body_cooling_W: float
+    evaporation_g_h: float
+    residual_slope: float
 
 
 def p_sat(temp_c: float | np.ndarray) -> float | np.ndarray:
@@ -75,21 +93,22 @@ def passive_coeffs(surface_c: float, ambient_c: float, rh: float) -> tuple[float
     return h, km
 
 
-def equilibrium(
+def stable_equilibria(
     ambient_c: float,
     rh: float,
     water_gph: float,
     exchange_multiplier: float,
     u_body: float,
-) -> dict[str, float] | None:
-    """Solve a stable surface-temperature equilibrium.
+    grid_points: int = 1200,
+) -> list[Equilibrium]:
+    """Return all numerically detected stable equilibria.
 
-    Positive body_cooling_W means heat is drawn from the artificial skin toward
-    the evaporating surface in this model.
+    Stability criterion follows C dT/dt = residual(T): a negative local slope
+    of residual versus surface temperature is treated as stable.
     """
     water_flux_cap = (water_gph / 1000.0 / 3600.0) / A
 
-    def residual(surface_c: float) -> float:
+    def terms(surface_c: float) -> tuple[float, float, float]:
         h, km = passive_coeffs(surface_c, ambient_c, rh)
         q_body = u_body * (T_SKIN - surface_c)
         q_conv = exchange_multiplier * h * (ambient_c - surface_c)
@@ -101,40 +120,55 @@ def equilibrium(
         m_capacity = exchange_multiplier * km * vapor_drive
         m_evap = min(m_capacity, water_flux_cap)
         q_lat = L_V * m_evap
-        return q_body + q_conv + q_rad - q_lat
+        residual = q_body + q_conv + q_rad - q_lat
+        return residual, q_body, m_evap
 
-    grid = np.linspace(18.0, 39.5, 120)
-    vals = np.array([residual(t) for t in grid])
-    roots: list[tuple[float, float, float]] = []
+    grid = np.linspace(18.0, 39.5, grid_points)
+    vals = np.array([terms(t)[0] for t in grid])
+    roots: list[Equilibrium] = []
 
     for idx in np.where(vals[:-1] * vals[1:] <= 0.0)[0]:
         try:
-            root = brentq(residual, grid[idx], grid[idx + 1], maxiter=80)
+            root = brentq(lambda x: terms(x)[0], grid[idx], grid[idx + 1], maxiter=100)
         except ValueError:
             continue
 
-        eps = 1e-3
-        derivative = (residual(root + eps) - residual(root - eps)) / (2.0 * eps)
-        if derivative >= 0.0:
+        eps = 1e-4
+        slope = (terms(root + eps)[0] - terms(root - eps)[0]) / (2.0 * eps)
+        if slope >= 0.0:
             continue
 
-        _, km = passive_coeffs(root, ambient_c, rh)
-        vapor_drive = max(rho_v_sat(root) - rh * rho_v_sat(ambient_c), 0.0)
-        m_capacity = exchange_multiplier * km * vapor_drive
-        m_evap = min(m_capacity, water_flux_cap)
-        q_body_w = u_body * (T_SKIN - root) * A
-        evap_gph = m_evap * A * 3600.0 * 1000.0
-        roots.append((root, q_body_w, evap_gph))
+        _, q_body, m_evap = terms(root)
+        roots.append(
+            Equilibrium(
+                surface_temp_C=float(root),
+                body_cooling_W=float(q_body * A),
+                evaporation_g_h=float(m_evap * A * 3600.0 * 1000.0),
+                residual_slope=float(slope),
+            )
+        )
 
+    # Deduplicate roots that may be bracketed twice by a near-zero grid point.
+    unique: list[Equilibrium] = []
+    for root in sorted(roots, key=lambda r: r.surface_temp_C):
+        if not unique or abs(root.surface_temp_C - unique[-1].surface_temp_C) > 1e-5:
+            unique.append(root)
+    return unique
+
+
+def select_equilibrium(roots: list[Equilibrium], policy: str = "warm") -> Equilibrium | None:
+    """Select one stable root with an explicit policy.
+
+    warm: highest surface temperature / lowest-cooling stable branch; conservative.
+    cool: lowest surface temperature / highest-cooling stable branch; optimistic.
+    """
     if not roots:
         return None
-
-    surface_c, body_cooling_w, evap_gph = max(roots, key=lambda item: item[1])
-    return {
-        "surface_temp_C": surface_c,
-        "body_cooling_W": body_cooling_w,
-        "evaporation_g_h": evap_gph,
-    }
+    if policy == "warm":
+        return max(roots, key=lambda r: r.surface_temp_C)
+    if policy == "cool":
+        return min(roots, key=lambda r: r.surface_temp_C)
+    raise ValueError("policy must be 'warm' or 'cool'")
 
 
 def panel_geometric_multiplier(rib_height_mm: float, pitch_mm: float) -> float:
@@ -154,16 +188,17 @@ def effective_exchange_multiplier(
 
 
 def run_screen() -> pd.DataFrame:
-    """Generate a compact design screen for the current primary condition."""
+    """Generate a design screen reporting conservative and optimistic branches."""
     ambient_c = 35.0
     rh = 0.70
     water_gph = 150.0
 
-    control = equilibrium(ambient_c, rh, water_gph, 1.0, U_FLAT)
+    control_roots = stable_equilibria(ambient_c, rh, water_gph, 1.0, U_FLAT)
+    control = select_equilibrium(control_roots, "warm")
     if control is None:
         raise RuntimeError("Control equilibrium not found")
 
-    rows: list[dict[str, float]] = []
+    rows: list[dict[str, float | int]] = []
     for panel_fraction in (0.45, 0.55, 0.65, 0.70):
         for rib_height_mm in (2.0, 2.5, 3.0):
             for pitch_mm in (0.8, 1.0, 1.5):
@@ -174,8 +209,10 @@ def run_screen() -> pd.DataFrame:
                         pitch_mm,
                         accessibility,
                     )
-                    result = equilibrium(ambient_c, rh, water_gph, m_eff, U_PREVIEW)
-                    if result is None:
+                    roots = stable_equilibria(ambient_c, rh, water_gph, m_eff, U_PREVIEW)
+                    warm = select_equilibrium(roots, "warm")
+                    cool = select_equilibrium(roots, "cool")
+                    if warm is None or cool is None:
                         continue
                     rows.append(
                         {
@@ -185,11 +222,13 @@ def run_screen() -> pd.DataFrame:
                             "accessibility_alpha": accessibility,
                             "G_panel": panel_geometric_multiplier(rib_height_mm, pitch_mm),
                             "M": m_eff,
-                            "body_cooling_W": result["body_cooling_W"],
-                            "gain_over_flat_W": result["body_cooling_W"]
-                            - control["body_cooling_W"],
-                            "evaporation_g_h": result["evaporation_g_h"],
-                            "surface_temp_C": result["surface_temp_C"],
+                            "n_stable_roots": len(roots),
+                            "warm_body_cooling_W": warm.body_cooling_W,
+                            "warm_gain_over_flat_W": warm.body_cooling_W - control.body_cooling_W,
+                            "cool_body_cooling_W": cool.body_cooling_W,
+                            "cool_gain_over_flat_W": cool.body_cooling_W - control.body_cooling_W,
+                            "warm_surface_temp_C": warm.surface_temp_C,
+                            "cool_surface_temp_C": cool.surface_temp_C,
                         }
                     )
 
@@ -198,4 +237,14 @@ def run_screen() -> pd.DataFrame:
 
 if __name__ == "__main__":
     df = run_screen()
-    print(df.sort_values("gain_over_flat_W", ascending=False).head(20).to_string(index=False))
+    cols = [
+        "panel_fraction",
+        "rib_height_mm",
+        "pitch_mm",
+        "accessibility_alpha",
+        "M",
+        "n_stable_roots",
+        "warm_gain_over_flat_W",
+        "cool_gain_over_flat_W",
+    ]
+    print(df.sort_values("warm_gain_over_flat_W", ascending=False)[cols].head(20).to_string(index=False))
