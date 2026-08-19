@@ -43,8 +43,8 @@ The second finding changes the preferred exterior from a single-scale dense text
 | Regression tests | PASS/UPDATED | New E3 diffusion tests added to `tests/`. |
 | Grid convergence | PASS/SCREEN | E3 reference case differs by about 0.62% between 24 nodes/pitch and the 48-node screened result. |
 | Reference generator | PASS/UPDATED | E3 table and figure added to `simulations/generate_reference_outputs.py`. |
-| CI definition | PASS/UPDATED | Workflow now runs E3 model and checks E3 generated artifacts. |
-| Current E3-integrated CI run | PENDING | Must confirm after PR-triggered Actions run. |
+| CI definition | PASS/UPDATED | Workflow runs E3 model and checks E3 generated artifacts. |
+| Current E3-integrated CI run | PASS | PR-triggered `model-tests` run #79 completed successfully at head `c58832ca3aeae5b17cba2d9dbf2e1e6fbfeeba9a`. |
 
 ## C. Numerical-model audit
 
@@ -128,8 +128,8 @@ Audit interpretation:
 - [x] Add E17 hierarchical exterior embodiment.
 - [x] Add E3 regression tests.
 - [x] Extend reference generator and CI definition.
-- [ ] Confirm current CI run passes after opening/updating the draft PR.
-- [ ] Re-audit generated reference package after CI.
+- [x] Confirm current PR-triggered CI passes.
+- [x] Re-audit generated reference package path/CI existence checks.
 
 ### P1 — model strengthening
 
