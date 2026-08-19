@@ -22,12 +22,14 @@ All notable research-record changes are documented here.
 - low-order heat-spreader material mapping `g_sheet ~ Gamma*k*t*c/P^2`;
 - spreader mass/thickness/bending-strain and `k/rho` figure-of-merit screening;
 - two-contact thermal-resistance audit `1/g_eff = 1/g_sheet + 2/h_contact`;
-- **explicit virtual prototypes v0.1**: VP-A short-pitch, VP-B 20 mm comparison, VP-C lightweight/high-`k/rho`, VP-D shielded short-pitch;
+- explicit virtual prototypes v0.1: VP-A short-pitch, VP-B 20 mm comparison, VP-C lightweight/high-`k/rho`, VP-D shielded short-pitch;
 - deterministic topology/contact robustness screen for VP-A through VP-D;
+- **distributed direct-material 1-D spreader model** replacing scalar `g_mix` with periodic `k*t` conduction, local contact, dry shielding, wet evaporation and feed-solved continuous wet width;
+- grid/feed/energy-residual regressions for the distributed spreader bridge;
 - anisotropic 2-D heat spreading and normalized nonvolatile water/salt models;
 - future E3b/E3c/E4a/E4/E6 validation protocols and measurement/uncertainty templates;
 - regression tests and GitHub Actions CI;
-- reproducible CSV/PNG/metadata/SHA-256 reference package including material/contact and virtual-prototype outputs.
+- reproducible CSV/PNG/metadata/SHA-256 reference package including material/contact, virtual-prototype and distributed-spreader outputs.
 
 ### Corrected
 
@@ -47,24 +49,36 @@ All notable research-record changes are documented here.
 - identical evaporation mass is not assumed to imply identical body heat removal;
 - arbitrary `Xi<1` heat/vapor decoupling is not assumed physically available without a mechanism;
 - symmetric heat spreading is not credited with global cooling when wet/dry external conditions are identical;
-- a dense asymmetric `g_mix` sweep exposed a nonphysical branch jump in the old unconstrained root solver; the solver is now bounded, continuation-capable, and residual-checked;
+- dense asymmetric `g_mix` sweeps no longer rely on an unconstrained nonlinear root that could jump to a nonphysical high-beta branch;
 - infinite heat-spreader conductivity is not treated as a design goal; corrected screens show finite diminishing-return targets;
 - sparse conductive coverage is not assumed to reduce mass under the linear `t*c` conductance model;
 - sheet conductivity is not treated as sufficient without explicit routing pitch/topology/contact resistance;
-- virtual-prototype spreader-only mechanism gain is not reported as total garment-vs-control performance.
+- virtual-prototype spreader-only mechanism gain is not reported as total garment-vs-control performance;
+- VP-C sparse coverage in the distributed bridge is explicitly identified as a homogenized effective-thickness approximation rather than resolved trace geometry.
 
-### Virtual prototype v0.1
+### Virtual prototype v0.1 — scalar anchors
 
-At 100 g/h in the current asymmetric mechanism screen:
+At 100 g/h:
 
-| prototype | nominal spreader mass over 0.30 m² | nominal `g_eff` | modeled spreader-only gain over 0.195 m² |
+| prototype | nominal spreader mass over 0.30 m² | nominal `g_eff` | scalar spreader-only gain over 0.195 m² |
 |---|---:|---:|---:|
 | VP-A | ~48 g | ~286 W/(m² K) | ~5.3 W |
-| VP-B | ~96 g | ~167 W/(m² K) | ~4.9 W |
-| VP-C | ~27 g | ~197 W/(m² K) | ~5.0 W |
-| VP-D | ~48 g | ~286 W/(m² K) | ~6.1 W |
+| VP-B | ~96 g | ~167 | ~4.9 W |
+| VP-C | ~27 g | ~197 | ~5.0 W |
+| VP-D | ~48 g | ~286 | ~6.1 W |
 
-Current roles: VP-D performance anchor, VP-C lightweight anchor, VP-A short-pitch baseline, VP-B routing-distance/manufacturability comparison.
+### Distributed direct-material bridge
+
+At 100 g/h, equal-feed no-lateral baseline comparison gives:
+
+| prototype | distributed wet fraction | distributed spreader-only gain over 0.195 m² |
+|---|---:|---:|
+| VP-A | ~0.444 | ~5.48 W |
+| VP-B | ~0.448 | ~5.32 W |
+| VP-C | ~0.451 | ~5.30 W |
+| VP-D | ~0.447 | ~6.29 W |
+
+Numerical checks show feed closure better than ~0.001 g/h, outer energy residual numerically near zero, spreader-equation residual ~0.004 W/m² or below, and small grid sensitivity. Distributed gains remain within roughly 0.8 W of the scalar virtual anchors. This is hierarchy consistency, not physical validation.
 
 ### Current research direction
 
@@ -79,12 +93,12 @@ The preferred virtual architecture is:
 - explicit liquid-supply/wetness state;
 - dry-side hot-ambient shielding / selective exposure.
 
-Next model step: replace scalar `g_mix` with a distributed 1-D/2-D wet/dry heat-routing field containing direct material `k`, thickness, anisotropy, patch pitch, contacts, dry shielding and evaporative sink strength. VP-A–D remain regression anchors.
+Next model step: move from periodic 1-D to a 2-D geometry-resolved wet/dry heat-routing field containing direct `k_x/k_y`, thickness, explicit routed traces, contact maps, wet islands, dry shielding and curvature/compression sensitivity. VP-A–D remain regression anchors.
 
 ## Verification
 
 - `model-tests` #370 passed at `a01eeafc8ae6814349a3a0937251efd048823dae`, covering the pre-material-mapping expanded stack.
-- The current 19-module + virtual-prototype head requires a newer passing CI run before being recorded as the next verified integration point.
+- The current 20-module + distributed-spreader head requires a newer passing CI run before being recorded as the next verified integration point.
 
 ## Release policy
 
