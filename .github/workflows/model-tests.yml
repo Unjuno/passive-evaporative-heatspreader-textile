@@ -26,3 +26,12 @@ jobs:
         run: python simulations/heat_spreader_2d.py > /tmp/heat-spreader-demo.txt
       - name: Run normalized water-salt screen
         run: python simulations/water_salt_1d.py > /tmp/water-salt-screen.txt
+      - name: Generate reproducible reference package
+        run: |
+          python simulations/generate_reference_outputs.py --output-root /tmp/reference-output
+          test -s /tmp/reference-output/data/passive_equilibrium_branches.csv
+          test -s /tmp/reference-output/data/heat_spreader_orientation.csv
+          test -s /tmp/reference-output/data/water_salt_parameter_screen.csv
+          test -s /tmp/reference-output/figures/passive_equilibrium_branches.png
+          test -s /tmp/reference-output/metadata.json
+          test -s /tmp/reference-output/sha256.txt
