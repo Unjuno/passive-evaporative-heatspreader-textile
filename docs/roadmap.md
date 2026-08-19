@@ -33,7 +33,7 @@ Status: **in progress**
 
 ## Gate 2 — reproducible screening model stack
 
-Status: **advanced low-order stack complete; higher-fidelity external flow open**
+Status: **advanced low-order stack complete; geometry-resolved external flow and spatial wet/dry physics open**
 
 Completed:
 
@@ -48,18 +48,22 @@ Completed:
 - [x] exchange-length / centimeter-segmentation audit;
 - [x] `F` versus absolute `k_eff` audit;
 - [x] coupled open-valley wet-wall / air heat / vapor model;
-- [x] explicit liquid-supply capacity classification;
+- [x] conservative liquid-supply capacity classification;
+- [x] explicit homogenized partial-wetness/feed-limited solution;
+- [x] latent heat-source partition between body and ambient air;
+- [x] Lewis / Chilton–Colburn-style ordinary heat/mass coupling comparison;
+- [x] analytic hot/humid body-heat-flow sign boundary;
 - [x] anisotropic 2-D heat spreading;
 - [x] nonvolatile water/salt transport;
 - [x] regression tests, CI, reproducible CSV/PNG/metadata/SHA generation.
 
 Next strengthening tasks:
 
-1. physically constrain heat/mass exchange coupling instead of freely varying `delta_heat` and `delta_vapor`;
-2. add a wetting/dryout state model for supply-limited cases rather than only a capacity flag;
-3. predict lateral exchange from geometry-resolved 2-D/3-D natural convection/cross-flow;
+1. resolve wet and dry patches spatially instead of through a single homogenized `beta`;
+2. predict lateral exchange from geometry-resolved 2-D/3-D natural convection/cross-flow;
+3. use the improved geometry-resolved flow to constrain heat/vapor transfer rather than only comparing low-order analogies;
 4. re-test lumped-model multi-equilibrium behavior against improved external-flow physics;
-5. sensitivity to Nu/Sh, compression, openings, external drift, and garment curvature.
+5. sensitivity to Nu/Sh, compression, openings, external drift, radiative properties, and garment curvature.
 
 ## Gate 3 — minimum bench validation
 
@@ -71,20 +75,22 @@ Priority:
 2. **E2** — B0/B2/B3/B4 ablation.
 3. **E3/E3b** — microstructure pitch and ambient-access hierarchy.
 4. **E3c** — D1 covered vs O1 continuously open vs O2a centimeter-control vs O2b millimeter segments vs O3 islands.
-5. **E4** — 50/70/85% RH with supply-limit classification.
-6. **E5** — heat-spreader orientation.
-7. **E6** — hot-ambient sensible-heat penalty and shielding.
+5. **E4a** — feed-limit / partial-wetness transition at 35 °C / 50% RH.
+6. **E4** — 50/70/85% RH environmental mapping with transfer/supply/runoff classification.
+7. **E5** — heat-spreader orientation.
+8. **E6** — hot-ambient sensible-heat penalty and shielding.
 
 Minimum measurement package:
 
-- heater power at fixed artificial-skin temperature;
+- signed heater/cooler power or calibrated signed heat flux;
 - actual liquid feed and >=95% water-balance target;
 - wet-surface temperature;
 - ambient and local T/RH;
 - far-field and local flow where resolvable;
 - actual wet area and compressed geometry;
 - local renewal `F`;
-- evaporation mass flux / inferred `k_eff` where valid.
+- evaporation mass flux / inferred `k_eff` where valid;
+- visible or otherwise validated wetness indicator for E4a.
 
 ## Gate 4 — textile/mechanical validation
 
@@ -105,13 +111,14 @@ Current preferred family:
 - heat-routing patterns integrated into seams/stripes/panels;
 - dry-side shielding in hot ambient conditions.
 
-Do **not** rank designs by geometric area, local `F`, airflow, or evaporation alone. Compare at matched water input/wet area using:
+Do **not** rank designs by geometric area, local `F`, airflow, evaporation, or fully-wet transfer capacity alone. Compare at matched water input/wet area using:
 
 1. renewal quality `F`;
 2. absolute vapor transfer / evaporation;
-3. heater-power body cooling;
+3. signed body-side heater/heat-flux response;
 4. ambient sensible heat pickup;
-5. mass/compression/wearability.
+5. liquid-supply regime and wetness state;
+6. mass/compression/wearability.
 
 ## Gate 6 — stable public release
 
@@ -144,11 +151,13 @@ Current rejected shortcuts:
 - 20–50 mm segmentation is sufficient;
 - high `F` proves high evaporation capacity;
 - positive evaporation proves body cooling;
-- modeled transfer capacity above water feed is achievable at fixed feed.
+- modeled fully-wet transfer capacity above water feed is achievable at fixed feed;
+- stronger external exchange is always better at fixed feed;
+- arbitrary heat/vapor decoupling is physically available without a separate mechanism.
 
 Current hypothesis:
 
-> continuously ambient-connected wet microtexture with sufficient vapor conductance, controlled sensible heat pickup, and strong body-to-wet-zone heat routing.
+> continuously ambient-connected wet microtexture with enough vapor conductance to use available sweat, limited harmful sensible heat pickup, explicit liquid-supply state, and strong body-to-wet-zone heat routing.
 
 ### P2 — integration
 
@@ -156,7 +165,7 @@ Use ablation and heat-spreader orientation to determine whether the gain is trul
 
 ### P3 — failure boundaries
 
-Map high humidity, hot ambient air, supply limitation, inward sensible heat, flow reversal, stagnant humidity layers, and compression-closing of ambient paths.
+Map high humidity, hot ambient air, supply limitation, partial wetness, inward sensible heat, flow reversal, stagnant humidity layers, and compression-closing of ambient paths.
 
 ### P4 — garment viability
 
@@ -172,6 +181,8 @@ Retire a specific exterior geometry if it:
 - increases evaporation while net body heat flow becomes adverse;
 - gets high `F` by reducing absolute transfer;
 - depends on unavailable liquid supply;
+- loses body-coupled cooling after feed saturation because ambient sensible heat dominates;
+- requires heat/vapor selectivity far beyond ordinary transport without an identified mechanism;
 - depends on a flow direction that reverses;
 - loses its ambient paths under ordinary compression/wear.
 
