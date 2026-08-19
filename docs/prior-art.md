@@ -87,13 +87,28 @@ Accordingly:
 
 Publication number and claim text have been located in a public patent index. Before a stable release, verify the bibliographic record, original Japanese text, legal-family information, and any related publications against an authoritative patent-office record such as J-PlatPat or an equivalent official database.
 
-## 6. Fan-based air-conditioning garments
+## 6. Fan-based air-conditioning garment family
 
-Public patent literature also contains long-standing fan garments that draw ambient air into the clothing space and exhaust it around openings such as the collar/cuffs. These establish forced internal airflow and sweat-evaporation enhancement as known approaches.
+**WO2005063065A1, "Air-conditioning clothing / 空調衣服"; public patent-index records identify priority/filing date 2003-12-25.** A Japanese publication of the PCT family is indexed as **JPWO2005063065A1**.
 
-The primary architecture in this repository is intentionally passive and does not require an onboard fan. Fan assistance remains an optional variant/comparison case.
+The patent-family text describes an air-blowing means/fan attached to the garment so that air flows in the space between clothing and the body/underwear. The generated body-parallel airflow promotes evaporation of sweat. Public indexed embodiments include intake and exhaust arrangements, garment spacing structures, detachable fans, and quantitative fan/flow examples.
 
-Exact closest-family mapping remains a patent-search task.
+Later fan-garment patents repeatedly cite WO2005/063065 as prior literature for the now-standard architecture in which fan-driven air passes along the body/underwear and exits through garment openings while promoting sweat evaporation.
+
+### Relevance
+
+This establishes that the following broad elements are not treated as unique here:
+
+- mounting an electric fan in a garment;
+- forming an internal body-parallel airflow path;
+- exhausting air through garment openings;
+- using that airflow to accelerate sweat evaporation and cooling.
+
+The primary architecture in this repository is intentionally passive and does not require an onboard fan. Fan assistance remains an optional active embodiment and an upper-bound/comparison condition.
+
+### Verification status
+
+The publication number, PCT family relationship, priority date, and technical description have been located in public patent indexes. Before stable release, verify original bibliographic/family data and closest independent claims from an authoritative patent-office source.
 
 ## 7. What is explicitly *not* claimed as a unique premise here
 
@@ -105,7 +120,7 @@ The following ideas are known or broadly established and should not be presented
 - heat-conductive textile elements can redistribute heat;
 - increasing wet area can increase evaporation in suitable conditions;
 - humidity-responsive textile vents can alter heat/mass transfer;
-- fan garments can increase convection/evaporation;
+- fan garments can create body-parallel airflow and increase sweat evaporation;
 - sorbents/desiccants can capture water vapor;
 - sorbent cooling garments can include exterior fins.
 
@@ -138,13 +153,12 @@ For each close family record:
 
 Priority topics:
 
-- fan-assisted cooling garments;
-- dehumidifying/desiccant cooling garments;
 - heat-conductive evaporative garments;
 - finned/3D structured evaporative textiles;
 - sweat-routing clothing;
 - flexible heat-spreader apparel;
-- humidity-actuated textile ventilation.
+- humidity-actuated textile ventilation;
+- combinations of the above with capillary-fed exterior evaporation.
 
 ## 10. Interpretation rule
 
