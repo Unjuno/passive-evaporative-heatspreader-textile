@@ -10,8 +10,13 @@ patch can have a lower ambient sensible coefficient ``h_dry`` representing
 insulation, shielding, reduced exposure, or another dry-side thermal barrier.
 
 The lateral mixing conductance ``g_mix`` then routes heat from the dry patch
-into the active wet evaporator.  This is a low-order mechanism screen, not a
+into the active wet evaporator. This is a low-order mechanism screen, not a
 mapping from a textile conductivity to ``g_mix``.
+
+The deterministic screen is intentionally limited to feed values for which a
+partial-wetness solution is well behaved. Transfer-limited/full-wet operation
+belongs in ``open_valley_feed_limited.py`` rather than forcing ``beta -> 1`` in
+this two-node mechanism model.
 """
 
 from __future__ import annotations
@@ -120,7 +125,7 @@ def solve_asymmetric(
         water_balance_W_m2 = L_V * (beta * evap_wet - feed_flux)
         return np.array((wet_balance, dry_balance, water_balance_W_m2))
 
-    beta_guess = min(max(feed_total_g_h / 180.0, 0.05), 0.95)
+    beta_guess = min(max(feed_total_g_h / 180.0, 0.05), 0.90)
     solution = root(
         equations,
         np.array((30.0, 34.0, np.log(beta_guess / (1.0 - beta_guess)))),
@@ -157,13 +162,13 @@ def solve_asymmetric(
         latent_flux_W_m2=float(latent_flux),
         body_fraction_of_latent=float(body_flux / latent_flux),
         energy_error_W_m2=float(body_flux + ambient_flux - latent_flux),
-        converged=bool(solution.success),
+        converged=bool(solution.success and 0.0 < beta < 0.98),
     )
 
 
 def run_screen() -> pd.DataFrame:
     rows = []
-    for feed in (30.0, 50.0, 75.0, 100.0, 150.0, 180.0):
+    for feed in (30.0, 50.0, 75.0, 100.0, 150.0):
         for h_dry in (0.0, 5.0, 10.0, 20.0):
             for g_mix in (0.0, 10.0, 50.0, 100.0, 500.0, 5000.0):
                 result = solve_asymmetric(g_mix, h_dry, feed_total_g_h=feed)
@@ -173,7 +178,7 @@ def run_screen() -> pd.DataFrame:
 
 def gain_summary(table: pd.DataFrame) -> pd.DataFrame:
     rows = []
-    for (feed, h_dry), group in table.groupby(("feed_total_g_h", "h_dry_W_m2K")):
+    for (feed, h_dry), group in table.groupby(["feed_total_g_h", "h_dry_W_m2K"]):
         no_mix = group.loc[group["g_mix_W_m2K"].idxmin()]
         high_mix = group.loc[group["g_mix_W_m2K"].idxmax()]
         gain = high_mix["body_heat_flux_W_m2"] - no_mix["body_heat_flux_W_m2"]
