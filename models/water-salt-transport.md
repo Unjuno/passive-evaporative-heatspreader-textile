@@ -1,6 +1,6 @@
 # Water / Salt Transport Model
 
-Status: governing-model specification; numerical implementation pending.
+Status: governing specification plus a normalized 1D bookkeeping implementation in `simulations/water_salt_1d.py`.
 
 This model exists to prevent a recurring conceptual error: **water can evaporate from the garment; sweat salts are treated as nonvolatile under garment operating conditions.**
 
@@ -72,7 +72,7 @@ and therefore:
 \dot m_{salt,vapor}=0
 \]
 
-Any proposed "salt removal" mechanism must therefore be one of:
+Any proposed salt-removal mechanism must therefore be one of:
 
 - drainage/purge of salt-containing liquid;
 - washing/rinsing;
@@ -94,26 +94,58 @@ Define:
 f_{leak}=\frac{\dot m_{evap,internal}}{\dot m_{evap,total}}
 \]
 
-A design objective can be set such as:
+Possible design targets include `f_leak <= 0.10` for at least 90% terminal evaporation or `f_leak <= 0.01` for at least 99% terminal evaporation. These are engineering examples, not established requirements.
 
-- `f_leak <= 0.10` for at least 90% terminal evaporation;
-- `f_leak <= 0.01` for at least 99% terminal evaporation.
+## 8. Normalized 1D precipitation screen
 
-These are possible engineering targets, not established requirements.
+The current executable screen normalizes inlet water flow to `W_0=1` and concentration by a saturation concentration:
 
-## 8. Why leakage matters
+\[
+c_0 = \frac{C_{in}}{C_{sat}}
+\]
 
-If water evaporates continuously along a small internal liquid channel while salt remains, local salt concentration rises upstream of the intended exterior evaporator. This can increase precipitation risk in inaccessible small pores.
+For a simple steady path with no salt loss and total internal water-loss fraction `f_leak`, the remaining normalized water flow is:
 
-The design response is not to make salt volatile. It is to control **where water phase change is allowed to occur**.
+\[
+W_{out}=1-f_{leak}
+\]
 
-## 9. Ordinary washable variant
+Before precipitation, normalized dissolved-salt inventory is `S_0=c_0`. Saturation can first be reached when:
+
+\[
+W_{out} \le S_0
+\]
+
+which gives the simple onset condition:
+
+\[
+f_{leak} \ge 1-c_0
+\]
+
+Examples under this deliberately simple model:
+
+- `C_in/C_sat = 0.10` -> saturation requires at least 90% internal water loss;
+- `0.20` -> at least 80%;
+- `0.40` -> at least 60%;
+- `0.80` -> at least 20%.
+
+This does **not** establish real sweat crystallization thresholds. It shows that, for dilute inlet solution in a continuously replenished through-flow path, moderate distributed evaporation need not automatically imply upstream precipitation. Real pore-scale dry-out, stagnant zones, mixed salts, activities, nucleation, and repeated cycles can behave differently.
+
+The executable implementation conserves inlet salt between upstream solid deposition and salt reaching the terminal in liquid form. It contains no salt-vapor term.
+
+## 9. Why leakage can still matter
+
+If water evaporates continuously along a small internal liquid channel while salt remains, local salt concentration rises upstream of the intended exterior evaporator. Stagnant/local dry-out can be more severe than the simple through-flow model.
+
+The design response is not to make salt volatile. It is to control **where water phase change is allowed to occur** and then compare degradation against an ordinary textile control.
+
+## 10. Ordinary washable variant
 
 A dedicated terminal/crystallization architecture is not mandatory. Ordinary sports textiles also retain sweat residue. The default garment may simply use sufficiently open, washable capillary/exterior structures if comparative testing shows no abnormal clogging or performance loss relative to conventional controls.
 
 The dedicated protected-channel architecture should be justified experimentally rather than added by default.
 
-## 10. Variables
+## 11. Variables
 
 | Symbol | Meaning | SI unit | Assumption/type |
 |---|---|---:|---|
@@ -124,13 +156,15 @@ The dedicated protected-channel architecture should be justified experimentally 
 | `u_l` | liquid Darcy/superficial velocity | m/s | vector field |
 | `u_g` | gas velocity | m/s | vector field |
 | `C_s` | dissolved salt concentration | kg/m³ or mol/m³ | use one consistent basis |
+| `C_sat` | saturation concentration for chosen surrogate/system | same as `C_s` | parameter |
+| `c_0` | normalized inlet concentration `C_in/C_sat` | 1 | 0–1 in current screen |
 | `D_eff` | effective vapor diffusivity | m²/s | porous-media parameter |
 | `D_s` | liquid salt diffusivity | m²/s | parameter |
 | `S_evap` | water phase-change source | kg/(m³ s) | water only |
 | `S_precip` | salt precipitation source | mass/(m³ s) | salt only |
 | `f_leak` | internal evaporation fraction | 1 | 0–1 |
 
-## 11. Dimensional check
+## 12. Dimensional checks
 
 For the water-vapor diffusion term:
 
@@ -140,23 +174,25 @@ D_{eff}\nabla\rho_v
 =\frac{kg}{m^2 s}
 \]
 
-which is a mass flux, consistent with the advective term `rho_v u_g`.
+which is a mass flux, consistent with `rho_v u_g`.
 
-## 12. Minimum future numerical experiment
+For normalized concentration:
 
-A 1D internal-channel + terminal-evaporator model should sweep:
+\[
+c_0 = \frac{C_{in}}{C_{sat}}
+\]
 
-- internal vapor leakage conductance;
-- terminal vapor conductance;
-- liquid flow rate;
-- incoming normalized salt concentration `C/C_sat`;
-- channel length;
-- wash/drain boundary condition.
+has identical concentration units in numerator and denominator, so `c_0` is dimensionless.
 
-Primary output:
+## 13. Remaining model extensions
 
-- fraction of water evaporating internally vs terminally;
-- maximum normalized salt concentration along the internal path;
-- location and onset condition of precipitation.
+The normalized 1D implementation should eventually be extended to include:
 
-Until that numerical model is added, no exact crystallization threshold is claimed.
+- nonuniform/stagnant flow;
+- pore-scale or segment dry-out;
+- measured synthetic-sweat solubility/activity behavior;
+- repeated evaporation/wash cycles;
+- precipitation/dissolution kinetics;
+- coupling to actual capillary hydraulic resistance and wetting changes.
+
+Until those are added and experimentally constrained, no exact real-garment crystallization threshold is claimed.
