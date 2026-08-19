@@ -49,6 +49,10 @@ from simulations.spreader_material_mapping import (
 from simulations.split_heat_mass_screen import run_split_screen
 from simulations.split_transfer_sensitivity import run_sensitivity, summarize
 from simulations.supply_limit_audit import run_screen as run_supply_limit_audit
+from simulations.virtual_prototype_v01 import (
+    run_robustness_screen as run_virtual_prototype_robustness,
+    run_screen as run_virtual_prototype_screen,
+)
 from simulations.water_salt_1d import run_parameter_screen
 from simulations.wet_dry_two_node import run_screen as run_wet_dry_two_node_screen
 
@@ -112,7 +116,7 @@ def plot_passive_branches(df: pd.DataFrame, out_path: Path) -> None:
     for rh in sorted(df["RH_percent"].unique()):
         group = df[df["RH_percent"] == rh]
         plt.scatter(group["M"], group["gain_vs_flat_W"], s=10, label=f"RH {rh:.0f}%")
-    plt.axhline(10.0, linestyle="--", linewidth=1.0, label="+10 W physical-test target")
+    plt.axhline(10.0, linestyle="--", linewidth=1.0, label="+10 W future physical-test target")
     plt.xlabel("Effective exterior exchange multiplier M (-)")
     plt.ylabel("Modeled body-cooling gain vs flat control (W)")
     plt.title("SIMULATION: all detected stable equilibrium branches")
@@ -221,6 +225,8 @@ def main() -> None:
     outputs["asymmetric_wet_dry_spreader_gain.csv"] = asymmetric_gain_summary(asymmetric)
     outputs["spreader_material_mapping.csv"] = run_spreader_material_screen()
     outputs["spreader_contact_audit.csv"] = run_spreader_contact_screen()
+    outputs["virtual_prototype_v01.csv"] = run_virtual_prototype_screen()
+    outputs["virtual_prototype_v01_robustness.csv"] = run_virtual_prototype_robustness()
     outputs["open_valley_heat_mass_coupling_audit.csv"] = run_heat_mass_coupling_audit()
     outputs["passive_environment_boundary.csv"] = run_environment_boundary()
     outputs["passive_environment_boundary_skin_sensitivity.csv"] = run_environment_skin_sensitivity()
@@ -243,7 +249,7 @@ def main() -> None:
         "git_commit": git_commit(),
         "generator": "simulations/generate_reference_outputs.py",
         "warnings": [
-            "Physical garment performance has not been measured.",
+            "No physical garment or bench specimen currently exists; physical performance has not been measured.",
             "The passive lumped model may contain multiple stable roots.",
             "Heat and vapor transfer are not assumed to share one multiplier.",
             "Open-valley lateral exchange is parameterized through effective exchange distances, not CFD-resolved geometry.",
@@ -255,6 +261,8 @@ def main() -> None:
             "asymmetric_wet_dry_spreader.csv deliberately assigns different dry/wet ambient sensible coefficients; its bounded continuation solver is still a low-order partial-wetness mechanism model.",
             "spreader_material_mapping.csv maps g_mix to k*t/pitch^2 using an ideal periodic-stripe topology factor gamma=4; it is not a validated garment geometry correlation.",
             "spreader_contact_audit.csv uses two identical lumped contact resistances in series with the sheet path; real contact networks must be measured or geometry-resolved.",
+            "virtual_prototype_v01.csv combines these low-order assumptions into explicit computational design anchors; reported spreader_gain is relative to the same local boundary conditions with g_mix=0, not total garment-vs-control cooling.",
+            "virtual_prototype_v01_robustness.csv is deterministic topology/contact sensitivity, not a probability distribution.",
             "supply_limit_audit.csv is retained as a conservative capacity/feed classification and must not be confused with the explicit partial-wetness state.",
             "Salt vapor flux is zero in the garment-temperature models.",
         ],
