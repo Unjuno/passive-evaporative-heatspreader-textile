@@ -15,6 +15,8 @@ At the same liquid-water input and ambient conditions, does the integrated passi
 - **B4 — integrated architecture:** directional transport + heat spreader + capillary delivery + exterior ribs/fins.
 - **B5 — intentionally dense exterior:** boundary-layer-overlap/failure control.
 
+For E3b, B4/B5 exterior structures are further split into micro-rib-only and hierarchical microstructure + macro air-renewal variants.
+
 ## 3. Primary environment
 
 - artificial-skin setpoint: 34 °C;
@@ -76,10 +78,11 @@ Required:
 
 Strongly recommended:
 
-10. RH and temperature at approximately 2, 5, 10, 20, and 40 mm outside the exterior structure;
+10. RH and temperature at approximately 0.5, 1, 2, 5, 10, 20, and 40 mm outside the exterior structure where sensor size permits;
 11. infrared surface-temperature map;
 12. rib wetting fraction;
-13. compression state / rib height during operation.
+13. compression state / rib height during operation;
+14. macro-corridor dimensions/open fraction for hierarchical samples.
 
 ## 8. Experiment E1 — direct value test
 
@@ -114,11 +117,49 @@ Hold exterior material family and approximate height constant; compare pitch aro
 - 1.0 mm;
 - 1.5 mm.
 
-Use heater-power gain plus near-surface RH profiles to infer whether tighter geometry increases effective exchange or merely geometric area.
+Use heater-power gain plus near-surface RH profiles to determine whether tighter geometry increases effective exchange or merely geometric area.
 
-Hypothesis H3: an intermediate spacing maximizes effective exchange before boundary-layer overlap dominates.
+Original hypothesis H3: an intermediate spacing maximizes effective exchange before boundary-layer overlap dominates.
 
-## 11. Experiment E4 — humidity boundary
+### E3 numerical pre-screen
+
+`docs/e3-boundary-layer-screen.md` now provides a periodic 2-D pure-diffusion pre-screen. For the screened 2.5 mm-high, 65%-coverage geometry, it indicates that the idealized distance from rib tips to refreshed ambient air can dominate pitch refinement. At several-millimeter renewal gaps, the predicted benefit of changing pitch from 1.5 mm to 0.8 mm is small.
+
+This is a simulation result only. It motivates E3b rather than replacing physical E3.
+
+## 11. Experiment E3b — hierarchical air renewal
+
+Compare a micro-rib-only exterior against the same/similar wet microstructure combined with larger open air-renewal paths.
+
+Candidate macro structures include:
+
+- open corridors between rib fields;
+- valleys between discontinuous evaporator islands;
+- spacer-knit channels;
+- grooves or corrugations;
+- pleat gaps;
+- raised stand-off structures preserving an air passage.
+
+Starting research ranges:
+
+- microstructure height: about 2–3 mm;
+- local microstructure pitch: about 0.8–1.5 mm;
+- macro corridor width: about 1–6 mm;
+- evaporator-field width between corridors: about 5–25 mm.
+
+Measure heater power and RH/T approximately 0.5, 1, 2, 5, 10, and 20 mm above both rib fields and corridors.
+
+Hypothesis H3b: a two-scale exterior combining wet microstructures with macro air-renewal paths outperforms a dense micro-rib field alone under equal water input.
+
+Provisional hierarchy-specific PASS condition:
+
+- hierarchical sample exceeds micro-rib-only control by >=5 W; and
+- shows consistently lower near-surface RH over at least two measurement heights; and
+- the result is not explained by greater water input.
+
+See `experiments/e3b_hierarchical_air_renewal.md` for the detailed protocol.
+
+## 12. Experiment E4 — humidity boundary
 
 Test the best current B4 sample at 50%, 70%, and 85% RH.
 
@@ -126,19 +167,19 @@ Hypothesis H4: passive advantage decreases strongly as ambient vapor-pressure dr
 
 Record the condition where B4 no longer exceeds B0 by a practically useful margin.
 
-## 12. Experiment E5 — heat-spreader orientation
+## 13. Experiment E5 — heat-spreader orientation
 
 For an anisotropic heat spreader, compare its high-conductivity axis aligned toward the evaporative panel versus rotated approximately 90°.
 
 Hypothesis H5: alignment toward the evaporation zone improves body-side heat removal under spatially nonuniform wetting.
 
-## 13. Experiment E6 — hot-ambient shielding
+## 14. Experiment E6 — hot-ambient shielding
 
 At elevated ambient temperature, compare dry conductive exterior regions exposed versus thermally shielded.
 
 Hypothesis H6: shielding dry regions reduces parasitic inward heat pickup while preserving wet-zone evaporation.
 
-## 14. Experiment E7 — mechanical durability
+## 15. Experiment E7 — mechanical durability
 
 After a baseline measurement, apply controlled bending, stretch, compression, washing, and wet/dry cycling.
 
@@ -147,11 +188,12 @@ Track:
 - in-plane thermal conductance;
 - capillary delivery rate;
 - cooling gain;
-- exterior geometry recovery.
+- exterior geometry recovery;
+- macro-channel open fraction where applicable.
 
 Provisional durability target: retain >=80% of baseline functional performance after the defined cycle protocol.
 
-## 15. Uncertainty
+## 16. Uncertainty
 
 For each primary result, report:
 
@@ -160,12 +202,13 @@ For each primary result, report:
 - uncertainty in active area;
 - uncertainty in actual water feed;
 - humidity and temperature stability;
+- RH probe position uncertainty near structured surfaces;
 - estimated combined standard uncertainty where practical;
 - coverage factor if expanded uncertainty is reported.
 
 Do not report more numerical precision than measurement uncertainty supports.
 
-## 16. Salt/contamination protocol
+## 17. Salt/contamination protocol
 
 Salt deposition is not unique to this architecture. Compare degradation against the same synthetic-sweat exposure in B0.
 
