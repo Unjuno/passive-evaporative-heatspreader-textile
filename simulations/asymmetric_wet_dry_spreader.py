@@ -13,6 +13,12 @@ The lateral mixing conductance ``g_mix`` then routes heat from the dry patch
 into the active wet evaporator. This is a low-order mechanism screen, not a
 mapping from a textile conductivity to ``g_mix``.
 
+The partial-wetness solve uses bounded least squares in ``(T_wet, T_dry, beta)``
+rather than an unconstrained root in logit(beta). This avoids accepting
+nonphysical branch jumps during dense ``g_mix`` sweeps. A solution is marked
+converged only when the bounded optimizer succeeds and the original balance
+residuals are small.
+
 The deterministic screen is intentionally limited to feed values for which a
 partial-wetness solution is well behaved. Transfer-limited/full-wet operation
 belongs in ``open_valley_feed_limited.py`` rather than forcing ``beta -> 1`` in
@@ -25,7 +31,7 @@ from dataclasses import dataclass
 
 import numpy as np
 import pandas as pd
-from scipy.optimize import root
+from scipy.optimize import least_squares
 
 try:
     from simulations.open_valley_thermal_1d import (
@@ -45,6 +51,7 @@ except ModuleNotFoundError:
 DEFAULT_U_BODY = 100.0
 DEFAULT_SKIN_C = 34.0
 DEFAULT_AREA_M2 = 0.30 * 0.65
+MAX_PARTIAL_WET_BETA = 0.979
 
 
 @dataclass(frozen=True)
@@ -64,6 +71,7 @@ class AsymmetricWetDryResult:
     latent_flux_W_m2: float
     body_fraction_of_latent: float
     energy_error_W_m2: float
+    max_equation_residual_W_m2: float
     converged: bool
 
 
@@ -84,7 +92,14 @@ def solve_asymmetric(
     depth_mm: float = 3.0,
     delta_vapor_mm: float = 0.5,
     delta_heat_wet_mm: float = 0.5,
+    initial_state: tuple[float, float, float] | None = None,
 ) -> AsymmetricWetDryResult:
+    """Solve a bounded partial-wetness asymmetric wet/dry state.
+
+    ``initial_state`` may be supplied as ``(T_wet_C, T_dry_C, beta)`` for
+    continuation sweeps. The returned ``converged`` flag requires both optimizer
+    success and a small residual in the unscaled governing equations.
+    """
     if g_mix_W_m2K < 0.0 or h_dry_W_m2K < 0.0:
         raise ValueError("conductances must be nonnegative")
     if feed_total_g_h <= 0.0 or wet_panel_area_m2 <= 0.0:
@@ -105,10 +120,9 @@ def solve_asymmetric(
     c_inf = ambient_rh * saturated_vapor_density(ambient_c)
     feed_flux = (feed_total_g_h / 1000.0 / 3600.0) / wet_panel_area_m2
 
-    def equations(x: np.ndarray) -> np.ndarray:
-        wet_c, dry_c, logit_beta = x
-        beta = 1.0 / (1.0 + np.exp(-logit_beta))
-        evap_wet = km_eff * max(saturated_vapor_density(wet_c) - c_inf, 0.0)
+    def raw_equations(x: np.ndarray) -> np.ndarray:
+        wet_c, dry_c, beta = x
+        evap_wet = km_eff * max(saturated_vapor_density(float(wet_c)) - c_inf, 0.0)
         q_mix_total = g_mix_W_m2K * (dry_c - wet_c)
 
         wet_balance = (
@@ -125,13 +139,27 @@ def solve_asymmetric(
         water_balance_W_m2 = L_V * (beta * evap_wet - feed_flux)
         return np.array((wet_balance, dry_balance, water_balance_W_m2))
 
-    beta_guess = min(max(feed_total_g_h / 180.0, 0.05), 0.90)
-    solution = root(
-        equations,
-        np.array((30.0, 34.0, np.log(beta_guess / (1.0 - beta_guess)))),
+    if initial_state is None:
+        beta_guess = min(max(feed_total_g_h / 180.0, 0.05), 0.90)
+        x0 = np.array((30.0, 34.0, beta_guess))
+    else:
+        x0 = np.array(initial_state, dtype=float)
+        x0[2] = np.clip(x0[2], 1e-4, MAX_PARTIAL_WET_BETA - 1e-4)
+
+    solution = least_squares(
+        lambda x: raw_equations(x) / 100.0,
+        x0,
+        bounds=(
+            np.array((5.0, 5.0, 1e-6)),
+            np.array((55.0, 55.0, MAX_PARTIAL_WET_BETA)),
+        ),
+        xtol=1e-12,
+        ftol=1e-12,
+        gtol=1e-12,
+        max_nfev=5000,
     )
-    wet_c, dry_c, logit_beta = solution.x
-    beta = float(1.0 / (1.0 + np.exp(-logit_beta)))
+
+    wet_c, dry_c, beta = solution.x
     evap_wet = km_eff * max(saturated_vapor_density(float(wet_c)) - c_inf, 0.0)
     q_mix_total = g_mix_W_m2K * (dry_c - wet_c)
 
@@ -145,13 +173,14 @@ def solve_asymmetric(
     )
     latent_flux = beta * L_V * evap_wet
     evap_total_g_h = beta * evap_wet * wet_panel_area_m2 * 3.6e6
+    max_residual = float(np.max(np.abs(raw_equations(solution.x))))
 
     return AsymmetricWetDryResult(
         feed_total_g_h=feed_total_g_h,
         g_mix_W_m2K=g_mix_W_m2K,
         h_dry_W_m2K=h_dry_W_m2K,
         h_wet_W_m2K=h_wet,
-        wet_fraction_beta=beta,
+        wet_fraction_beta=float(beta),
         wet_temp_C=float(wet_c),
         dry_temp_C=float(dry_c),
         wet_dry_deltaT_C=float(dry_c - wet_c),
@@ -162,25 +191,53 @@ def solve_asymmetric(
         latent_flux_W_m2=float(latent_flux),
         body_fraction_of_latent=float(body_flux / latent_flux),
         energy_error_W_m2=float(body_flux + ambient_flux - latent_flux),
-        converged=bool(solution.success and 0.0 < beta < 0.98),
+        max_equation_residual_W_m2=max_residual,
+        converged=bool(solution.success and max_residual < 1e-5),
     )
+
+
+def continuation_screen(
+    feed_total_g_h: float,
+    h_dry_W_m2K: float,
+    g_mix_values: np.ndarray,
+) -> pd.DataFrame:
+    """Follow the bounded partial-wetness branch over increasing ``g_mix``."""
+    rows = []
+    state: tuple[float, float, float] | None = None
+    for g_mix in np.asarray(g_mix_values, dtype=float):
+        result = solve_asymmetric(
+            float(g_mix),
+            h_dry_W_m2K,
+            feed_total_g_h=feed_total_g_h,
+            initial_state=state,
+        )
+        if result.converged:
+            state = (result.wet_temp_C, result.dry_temp_C, result.wet_fraction_beta)
+        rows.append({"classification": "SIMULATION/ASYMMETRIC_CONTINUATION", **result.__dict__})
+    return pd.DataFrame(rows)
 
 
 def run_screen() -> pd.DataFrame:
     rows = []
     for feed in (30.0, 50.0, 75.0, 100.0, 150.0):
         for h_dry in (0.0, 5.0, 10.0, 20.0):
-            for g_mix in (0.0, 10.0, 50.0, 100.0, 500.0, 5000.0):
-                result = solve_asymmetric(g_mix, h_dry, feed_total_g_h=feed)
-                rows.append({"classification": "SIMULATION/ASYMMETRIC_WET_DRY", **result.__dict__})
+            table = continuation_screen(
+                feed,
+                h_dry,
+                np.array((0.0, 10.0, 50.0, 100.0, 500.0, 5000.0)),
+            )
+            rows.extend(table.to_dict(orient="records"))
     return pd.DataFrame(rows)
 
 
 def gain_summary(table: pd.DataFrame) -> pd.DataFrame:
     rows = []
     for (feed, h_dry), group in table.groupby(["feed_total_g_h", "h_dry_W_m2K"]):
-        no_mix = group.loc[group["g_mix_W_m2K"].idxmin()]
-        high_mix = group.loc[group["g_mix_W_m2K"].idxmax()]
+        valid = group[group["converged"]].sort_values("g_mix_W_m2K")
+        if valid.empty:
+            continue
+        no_mix = valid.iloc[0]
+        high_mix = valid.iloc[-1]
         gain = high_mix["body_heat_flux_W_m2"] - no_mix["body_heat_flux_W_m2"]
         rows.append(
             {
