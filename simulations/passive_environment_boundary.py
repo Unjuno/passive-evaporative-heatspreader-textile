@@ -1,28 +1,15 @@
 """Analytic environmental boundary for the same-path heat/vapor baseline.
 
-Under the open-valley screening assumptions, take the same characteristic
-external exchange length for sensible heat and water-vapor transfer and the
-same screening Nusselt/Sherwood number.  At the point where body-side heat flux
-is zero, the wet surface equals the skin-side setpoint:
-
-    T_s = T_skin.
-
-The wet-wall energy balance then reduces to
+At zero body-side heat flux the wet surface equals the controlled skin-side
+setpoint.  With the same characteristic exchange length and the same screening
+Nu/Sh for heat and vapor, the transfer factor cancels:
 
     (k_air / D_v) * (T_inf - T_skin)
       = L_v * [rho_v,sat(T_skin) - RH_inf * rho_v,sat(T_inf)].
 
-The geometry/transfer multiplier cancels.  The resulting temperature-RH curve
-is therefore an **environmental sign boundary inside this low-order linked
-heat/mass model**.
-
-Below the boundary the linked model predicts positive body-to-wet-surface heat
-flow; above it, ambient sensible heat can dominate and body-side heat flow is
-negative even while evaporation remains positive.
-
-This is not a human heat-stress limit, medical threshold, or measured garment
-limit.  It is a model boundary for the fixed skin-side temperature and transfer
-analogy stated above.
+The resulting curve is a model sign boundary, not a human safety threshold or a
+measured garment limit.  Skin/artificial-skin temperature is explicit because
+the boundary moves materially with that setpoint.
 """
 
 from __future__ import annotations
@@ -61,7 +48,6 @@ def zero_body_flux_ambient_temperature(
     skin_c: float = T_SKIN,
     upper_c: float = 80.0,
 ) -> float:
-    """Ambient dry-bulb temperature at the linked-model zero-body-flux boundary."""
     lower = skin_c
     f_lower = boundary_residual(lower, ambient_rh, skin_c)
     f_upper = boundary_residual(upper_c, ambient_rh, skin_c)
@@ -95,5 +81,25 @@ def run_screen(skin_c: float = T_SKIN) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+def run_skin_sensitivity() -> pd.DataFrame:
+    rows = []
+    for skin_c in (32.0, 33.0, 34.0, 35.0, 36.0):
+        for rh in (0.50, 0.70, 0.85, 0.90):
+            rows.append(
+                {
+                    "classification": "ANALYTIC_MODEL_BOUNDARY_SENSITIVITY",
+                    "skin_C": skin_c,
+                    "RH_percent": rh * 100.0,
+                    "zero_body_flux_ambient_C": zero_body_flux_ambient_temperature(
+                        rh, skin_c=skin_c
+                    ),
+                }
+            )
+    return pd.DataFrame(rows)
+
+
 if __name__ == "__main__":
+    print("Default skin-temperature boundary:")
     print(run_screen().to_string(index=False))
+    print("\nSkin-temperature sensitivity:")
+    print(run_skin_sensitivity().to_string(index=False))
