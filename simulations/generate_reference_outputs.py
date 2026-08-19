@@ -21,6 +21,10 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+from simulations.asymmetric_wet_dry_spreader import (
+    gain_summary as asymmetric_gain_summary,
+    run_screen as run_asymmetric_wet_dry_screen,
+)
 from simulations.corridor_buoyancy_screen import (
     neutral_curve as corridor_neutral_curve,
     run_screen as run_corridor_screen,
@@ -208,6 +212,9 @@ def main() -> None:
     outputs["open_valley_thermal_1d.csv"] = run_open_valley_thermal_screen()
     outputs["open_valley_feed_limited.csv"] = run_feed_limited_screen()
     outputs["wet_dry_two_node.csv"] = run_wet_dry_two_node_screen()
+    asymmetric = run_asymmetric_wet_dry_screen()
+    outputs["asymmetric_wet_dry_spreader.csv"] = asymmetric
+    outputs["asymmetric_wet_dry_spreader_gain.csv"] = asymmetric_gain_summary(asymmetric)
     outputs["open_valley_heat_mass_coupling_audit.csv"] = run_heat_mass_coupling_audit()
     outputs["passive_environment_boundary.csv"] = run_environment_boundary()
     outputs["passive_environment_boundary_skin_sensitivity.csv"] = run_environment_skin_sensitivity()
@@ -239,6 +246,7 @@ def main() -> None:
             "open_valley_thermal_1d.csv is the fully-wet transfer-capacity baseline at wet_fraction=1.",
             "open_valley_feed_limited.csv uses a homogenized sub-grid partial-wetness factor when liquid feed is below fully-wet capacity; it does not resolve individual dry patches or wetting fronts.",
             "wet_dry_two_node.csv resolves separate wet/dry temperatures only in a symmetric two-node screen; its global body-flux invariance to g_mix depends on equal wet/dry sensible boundary coefficients.",
+            "asymmetric_wet_dry_spreader.csv deliberately assigns different dry/wet ambient sensible coefficients; g_mix is a mechanism parameter and is not mapped to a real textile conductivity.",
             "supply_limit_audit.csv is retained as a conservative capacity/feed classification and must not be confused with the explicit partial-wetness state.",
             "Salt vapor flux is zero in the garment-temperature models.",
         ],
