@@ -43,12 +43,44 @@ Low-order self-consistent rectangular-corridor model. It solves together:
 
 The geometry is a **covered/end-renewed limiting case**. It does not include distributed lateral ambient exchange, so it must not be generalized directly to an open exterior valley.
 
-The model reports both:
+The model reports both axial mass Péclet number and vapor-driving-force retention. A large axial Péclet number does not imply useful renewal if the air nearly equilibrates with the wet wall.
 
-- axial mass Péclet number `Pe_m = |u| L / D_v`;
-- mean vapor-driving-force retention `Phi(NTU_m) = (1-exp(-NTU_m))/NTU_m`.
+### `open_valley_exchange_target.py`
 
-This distinction is important: a long channel can have `Pe_m > 10` while retaining almost none of the inlet vapor driving force because the air has nearly equilibrated with the wet wall.
+Local analytic target and measurement-inversion model for a laterally open valley.
+
+It defines:
+
+- `R = G_a/G_w`, lateral ambient-renewal conductance divided by wet-surface vapor conductance;
+- `F = R/(1+R)`, retained wet-wall vapor driving-force fraction.
+
+It does not predict `R` from geometry. Its role is to state a falsifiable renewal target and to identify `F/R` from measured T/RH where the inverse problem is well-conditioned.
+
+### `open_valley_distributed_1d.py`
+
+Distributed one-dimensional vapor model for an open valley. It includes:
+
+- axial molecular diffusion;
+- optional signed axial advection;
+- distributed wet-surface vapor input;
+- distributed lateral exchange with ambient;
+- ambient vapor loading at both ends.
+
+The current geometry mapping uses an effective lateral diffusion thickness `delta_open`, which is a **model parameter**, not a literal garment dimension.
+
+Key audit findings:
+
+- for the screened 6 × 3 mm valley, the exchange length is roughly 0.7–1.1 mm across the tested lateral-exchange range;
+- therefore 20–50 mm interruptions are too coarse to materially alter the long-valley center state when lateral exchange is weak;
+- 1–3 mm end-connected segments can materially improve retained vapor driving force;
+- few-mm/s axial flow does not rescue a 50 mm weakly renewed valley center;
+- `F` cannot be optimized alone.
+
+The module also reports
+
+`k_eff = k_w * k_a / (k_w + k_a) = k_w * F`
+
+because high `F` can be produced by lowering the wet-wall transfer coefficient, which may reduce absolute evaporation capacity.
 
 ### `heat_spreader_2d.py`
 
@@ -73,6 +105,8 @@ python simulations/split_transfer_sensitivity.py
 python simulations/rib_diffusion_screen.py
 python simulations/corridor_buoyancy_screen.py
 python simulations/self_consistent_corridor_1d.py
+python simulations/open_valley_exchange_target.py
+python simulations/open_valley_distributed_1d.py
 python simulations/heat_spreader_2d.py
 python simulations/water_salt_1d.py
 ```
@@ -96,19 +130,25 @@ The recommended low-order external balance is conceptually:
 
 `body heat + M_h * sensible convection + radiation - latent evaporation(M_m) = 0`
 
-This matters when ambient air is hotter than the wet exterior. A larger `M_h` can increase inward sensible heat pickup, while a larger `M_m` can increase evaporation capacity if vapor-pressure driving force remains positive.
+A larger `M_h` can increase inward sensible heat pickup in hot ambient air while a larger `M_m` can improve evaporation. The two mechanisms must not be collapsed into one score.
 
-The two multipliers may still be physically coupled by flow; independence is an uncertainty tool, not a claim that the mechanisms are unrelated.
+## Open-valley interpretation
 
-## Corridor interpretation
+The current air-renewal hierarchy is:
 
-The corridor models now form a hierarchy:
+1. local conductance requirement/measurement inversion (`open_valley_exchange_target.py`);
+2. distributed 1-D axial diffusion/advection plus lateral renewal (`open_valley_distributed_1d.py`);
+3. future thermal/vapor coupling and 2-D/3-D external-flow treatment.
 
-1. **Prescribed-state buoyancy screen** — asks whether a given T/RH channel state tends upward or downward.
-2. **Self-consistent end-renewed 1-D corridor** — solves velocity, wall T, and channel T/RH together for a covered rectangular-duct limit.
-3. **Next model: laterally open valley** — must add distributed lateral ambient exchange and low-Pe axial diffusion/advection-diffusion.
+The distributed model corrects two earlier design shortcuts:
 
-The self-consistent screen indicates that natural buoyancy in shallow end-renewed channels can be too weak to prevent near-saturation at 35 °C / 70% RH. It also shows that stronger downward flow in hot ambient air can coincide with inward sensible heat flow. Therefore the current garment direction favors laterally open valleys, short/segmented paths, cross-openings, and discontinuous evaporator fields rather than long covered chimneys.
+- centimeter-scale segmentation is not automatically enough;
+- high local driving-force retention `F` is not automatically high evaporation capacity.
+
+Every laterally open design should therefore be evaluated with both:
+
+- renewal quality (`F`, local vapor loading);
+- absolute transfer or cooling (`k_eff`, evaporation mass flux, and ultimately heater-power difference).
 
 ## 2D heat-spreader interpretation
 
@@ -129,9 +169,11 @@ Keep models separate rather than hiding assumptions inside one opaque solver:
 3. periodic vapor-diffusion model — rib geometry/boundary-layer sharing and candidate constraints on `M_m`;
 4. prescribed-state corridor buoyancy screen — thermo-solutal flow sign/scaling;
 5. self-consistent end-renewed corridor model — coupled T/RH/flow limit for covered channels;
-6. 2D heat-spreader model — lateral conduction and patchy cooling sinks;
-7. water/salt model — liquid water, phase change, nonvolatile salt transport;
-8. future open-valley advection-diffusion/CFD — distributed lateral exchange, entrance/opening effects, and physical coupling of `M_h`/`M_m`.
+6. local open-valley renewal target — measurable conductance-ratio requirement;
+7. distributed open-valley vapor model — axial diffusion/advection plus distributed lateral renewal;
+8. 2D heat-spreader model — lateral conduction and patchy cooling sinks;
+9. water/salt model — liquid water, phase change, nonvolatile salt transport;
+10. next coupled open-valley thermal model / CFD — relate lateral vapor renewal to sensible heat transfer and body-side cooling without assuming `M_h=M_m`.
 
 Each higher-fidelity model should be compared against lower-order models and physical measurements rather than silently replacing them.
 
@@ -142,4 +184,7 @@ See also:
 - `docs/e3-boundary-layer-screen.md`
 - `docs/corridor-buoyancy-screen.md`
 - `docs/self-consistent-corridor-model.md`
+- `docs/open-valley-renewal-target.md`
+- `docs/open-valley-distributed-model.md`
+- `docs/open-valley-metric-audit.md`
 - `experiments/e3c_open_vs_covered_corridors.md`
