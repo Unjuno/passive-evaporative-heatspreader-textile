@@ -42,6 +42,10 @@ jobs:
         run: python simulations/open_valley_feed_limited.py > /tmp/open-valley-feed-limited.txt
       - name: Run two-temperature wet-dry partial-wetness screen
         run: python simulations/wet_dry_two_node.py > /tmp/wet-dry-two-node.txt
+      - name: Run asymmetric wet-dry spreader screen
+        run: python simulations/asymmetric_wet_dry_spreader.py > /tmp/asymmetric-wet-dry-spreader.txt
+      - name: Run spreader material/contact mapping
+        run: python simulations/spreader_material_mapping.py > /tmp/spreader-material-mapping.txt
       - name: Run heat-mass coupling audit
         run: python simulations/open_valley_heat_mass_coupling_audit.py > /tmp/open-valley-coupling-audit.txt
       - name: Run passive environment boundary
@@ -67,6 +71,10 @@ jobs:
           test -s /tmp/reference-output/data/open_valley_thermal_1d.csv
           test -s /tmp/reference-output/data/open_valley_feed_limited.csv
           test -s /tmp/reference-output/data/wet_dry_two_node.csv
+          test -s /tmp/reference-output/data/asymmetric_wet_dry_spreader.csv
+          test -s /tmp/reference-output/data/asymmetric_wet_dry_spreader_gain.csv
+          test -s /tmp/reference-output/data/spreader_material_mapping.csv
+          test -s /tmp/reference-output/data/spreader_contact_audit.csv
           test -s /tmp/reference-output/data/open_valley_heat_mass_coupling_audit.csv
           test -s /tmp/reference-output/data/passive_environment_boundary.csv
           test -s /tmp/reference-output/data/passive_environment_boundary_skin_sensitivity.csv
