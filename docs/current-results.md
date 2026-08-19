@@ -1,20 +1,21 @@
 # Current Numerical Results
 
-Status: **SIMULATION / ANALYTIC SCREENING ONLY — VIRTUAL PROTOTYPE, NO PHYSICAL SPECIMEN**  
+Status: **SIMULATION / ANALYTIC SCREENING / VIRTUAL PROTOTYPE ONLY — NO PHYSICAL SPECIMEN**  
 Compiled: 2026-08-20
 
-This file lists results that currently change design or validation decisions. Values are model outputs under stated assumptions, not measured garment claims.
+This file summarizes results that currently change design decisions. Values are model outputs under stated assumptions, not measured garment claims.
 
-## 1. Heat-spreader findings retained
+## 1. Current design direction
 
-- Lateral heat spreading is most useful when evaporation/wetting or ambient exposure is spatially nonuniform.
-- Anisotropic spreader orientation can materially change heat routed toward a localized cooling band.
-- Dry high-conductivity exterior regions can collect hot ambient heat and require shielding, segmentation, selective exposure, or anisotropic routing.
-- Heat-spreader value must now be stated together with routing distance, material `k*t`, topology and thermal-contact burden.
+The working virtual architecture is:
 
-## 2. Exterior area / boundary-layer finding
+> directional liquid transport + capillary-fed wet microtexture + continuously ambient-connected open valleys/gaps/islands + short-range high-`k/rho` heat routing between thermally asymmetric wet/dry regions + explicit thermal contact + explicit water-supply state + dry-side hot-ambient protection.
 
-The E3 periodic 2-D vapor-diffusion screen shows that dense wet ribs can share one humid boundary layer.
+No physical garment or bench specimen currently exists.
+
+## 2. Exterior geometric area is not accessible evaporative area
+
+The E3 periodic 2-D vapor-diffusion screen shows strong boundary-layer sharing.
 
 For `h=2.5 mm`, structured fraction `f=0.65`:
 
@@ -24,30 +25,17 @@ For `h=2.5 mm`, structured fraction `f=0.65`:
 | 1.0 mm | 2.481 | 2.400 | 2.229 |
 | 5.0 mm | 1.312 | 1.304 | 1.286 |
 
-These are vapor mass-transfer multipliers, not cooling wattages.
+These are vapor-transfer multipliers, not cooling watts.
 
-**Current conclusion:** geometric area is not useful area unless the ambient-access mechanism is explicit.
+**Conclusion:** tighter ribs do not overcome a thick shared humidity layer.
 
-## 3. Lumped-model corrections
+## 3. Long covered passive wet corridors are not preferred
 
-- The original nonlinear passive heat/mass model can contain multiple stable roots. Historical single-value `M≈2.5–3.5` thresholds are not validated design criteria.
-- Sensible transfer and vapor transfer are modeled separately (`M_h`, `M_m`). A vapor-transfer result must not be copied into sensible heat transfer.
+The self-consistent 100 mm covered/end-renewed corridor screen at 35 °C / 70% RH gives nonzero natural flow but near-saturated interior air for representative shallow channels. Thermo-solutal conditions can reverse the flow direction.
 
-## 4. Covered/end-renewed corridor
+**Conclusion:** corridor velocity and axial Péclet number are not accepted as proof of useful renewal.
 
-At 35 °C / 70% RH, 100 mm length:
-
-| width × depth | signed velocity | axial Pe | mean RH | body-side heat flux |
-|---|---:|---:|---:|---:|
-| 3 × 2 mm | +0.228 mm/s | 0.81 | ~100% | +0.10 W/m² |
-| 6 × 3 mm | +0.594 mm/s | 2.12 | ~100% | +0.40 W/m² |
-| 10 × 5 mm | +1.60 mm/s | 5.70 | ~99.9% | +1.81 W/m² |
-
-At 35 °C / 85% RH the 10 × 5 mm case reverses flow. At 40 °C / 70% RH it gives stronger downward flow and slightly negative body-side heat flux.
-
-**Current conclusion:** long covered wet passive chimneys are not preferred. Nonzero velocity and axial Péclet number do not prove useful vapor renewal.
-
-## 5. Local open-valley renewal metric
+## 4. Open-valley renewal requires both quality and capacity
 
 Define
 
@@ -57,103 +45,56 @@ R=G_a/G_w,
 F=\frac{R}{1+R}.
 \]
 
-| `F` | required `R` |
-|---:|---:|
-| 0.50 | 1 |
-| 0.80 | 4 |
-| 0.90 | 9 |
-| 0.95 | 19 |
+`F=0.8` requires `R=4`; `F=0.9` requires `R=9`.
 
-Measured T/RH plus wet-surface temperature could identify `F` in a future bench implementation. Exact high `R` is secondary because inversion becomes poorly conditioned near ambient vapor loading.
-
-## 6. Distributed open-valley result
-
-The distributed vapor model solves
-
-\[
-D_vA\theta''-uA\theta'+G'_w(1-\theta)-G'_a\theta=0.
-\]
-
-For a representative 6 × 3 mm valley, the screened exchange length is approximately 0.7–1.1 mm.
-
-Selected zero-axial-flow center `F` values:
-
-| effective lateral parameter | segment length | center `F` |
-|---:|---:|---:|
-| 0.25 mm | 1 mm | 0.935 |
-| 0.25 mm | 20 mm | 0.680 |
-| 0.50 mm | 1 mm | 0.931 |
-| 0.50 mm | 2 mm | 0.797 |
-| 0.50 mm | 20 mm | 0.515 |
-| 1.00 mm | 1 mm | 0.929 |
-| 1.00 mm | 20 mm | 0.347 |
-
-For 6 × 3 × 50 mm, few-mm/s axial flow changes the center state negligibly in the current screen.
-
-**Correction:** 20–50 mm interruption alone is too coarse when distributed lateral exchange remains weak. Continuous lateral opening is the principal hypothesis; 1–3 mm segmentation is retained as an extreme mechanism test.
-
-## 7. Renewal quality is not absolute evaporation capacity
-
-For local resistances in series:
+Absolute series vapor conductance is
 
 \[
 k_{eff}=\frac{k_wk_a}{k_w+k_a}=k_wF.
 \]
 
-In the current geometry mapping, increasing valley depth can raise `F` while lowering `k_eff`.
+A high `F` can coexist with low absolute transfer, so both must be reported.
 
-**Correction:** do not optimize `F` alone. Pair `F` with evaporation mass flux / `k_eff` and signed body-side heat flow.
+For a representative 6 × 3 mm distributed open valley, the screened exchange length is roughly 0.7–1.1 mm. Twenty-to-fifty-millimeter interruption alone is therefore too coarse when distributed lateral access is weak.
 
-## 8. Coupled open-valley thermal / vapor result
+Current exterior roles:
 
-Representative 6 × 3 × 50 mm, zero prescribed axial flow, `U_body=100 W/(m² K)`, skin 34 °C.
+- O1 continuously laterally open: principal hypothesis;
+- O2a 20–50 mm segmentation: negative/control;
+- O2b 1–3 mm segmentation: extreme end-access test;
+- O3 ambient-connected wet islands: apparel-relevant implementation.
+
+## 5. Sensible heat and vapor transfer are distinct
+
+The current stack does not reuse vapor-transfer enhancement as sensible heat-transfer enhancement. This matters because warm ambient air can supply latent heat to evaporation while simultaneously reducing or reversing body-side cooling.
+
+## 6. Positive evaporation is not equivalent to body cooling
+
+Representative coupled open-valley screen, 6 × 3 × 50 mm, skin 34 °C, `U_body=100 W/(m² K)`:
 
 At 35 °C / 70% RH:
 
-| vapor parameter | heat parameter | evaporation | body heat flux | ambient sensible heat to wet wall |
-|---:|---:|---:|---:|---:|
-| 0.1 mm | 0.1 mm | ~700 g/m²h | +299 W/m² | +172 W/m² |
-| 0.1 mm | 0.5 mm | ~645 g/m²h | +319 W/m² | +115 W/m² |
-| 0.5 mm | 0.5 mm | ~522 g/m²h | +254 W/m² | +97 W/m² |
-| 1.0 mm | 1.0 mm | ~414 g/m²h | +216 W/m² | +63 W/m² |
+| vapor / heat parameter | evaporation | body heat flux | ambient sensible heat to wet wall |
+|---|---:|---:|---:|
+| 0.1 / 0.1 mm | ~700 g/m²h | +299 W/m² | +172 W/m² |
+| 0.5 / 0.5 mm | ~522 g/m²h | +254 W/m² | +97 W/m² |
+| 1.0 / 1.0 mm | ~414 g/m²h | +216 W/m² | +63 W/m² |
 
-At 40 °C / 70% RH, same-exchange-length cases still evaporate but body-side heat flux is negative. Example `0.5/0.5 mm`: evaporation ~215 g/m²h and body heat flux ~−16 W/m².
+At 40 °C / 70% RH, linked same-path cases still evaporate while body-side heat flux becomes negative; a representative 0.5/0.5 mm case is about −16 W/m².
 
-**Current conclusion:** positive evaporation is not equivalent to wearer cooling.
+**Conclusion:** signed body-side heat flow, not evaporation mass, is the integrated endpoint.
 
-## 9. Heat/mass coupling audit now has ordinary-transport baselines
+## 7. Hot/humid same-path sign boundary
 
-The sensitivity model defines
-
-\[
-\Xi=\delta_{vapor}/\delta_{heat}.
-\]
-
-`Xi=1` is the same-exchange-length baseline. At 40 °C / 70% RH, the low-order model requires critical `Xi` values approximately in the 0.31–0.65 range to reach zero body-side heat flux across the screened vapor-side parameters.
-
-For the same air/water-vapor screening state, the Lewis number is near one. A Chilton–Colburn-style equal-j-factor comparison gives
-
-\[
-\Xi_{CC}=Le^{-1/3},
-\]
-
-which is also near one.
-
-**Current conclusion:** the required hot-ambient selectivity is substantially stronger than ordinary same-boundary heat/mass analogy suggests. This is a design burden, not evidence that arbitrary passive decoupling is available.
-
-Candidate mechanisms include dry-side insulation, reflective/radiative control, selective wet exposure, anisotropic solid heat routing, contact-resistance engineering, and genuinely separated air/vapor pathways.
-
-## 10. Analytic environmental body-heat-flow sign boundary
-
-For the same-path heat/vapor baseline, zero body-side heat flow satisfies
+For zero body-side heat flow:
 
 \[
 \frac{k_{air}}{D_v}(T_\infty-T_{skin})
 =
-L_v\left[\rho_{v,sat}(T_{skin})-\phi_\infty\rho_{v,sat}(T_\infty)\right].
+L_v[\rho_{v,sat}(T_{skin})-\phi_\infty\rho_{v,sat}(T_\infty)].
 \]
 
-With skin/artificial skin = 34 °C:
+For artificial skin 34 °C:
 
 | RH | zero-body-flux ambient T |
 |---:|---:|
@@ -166,224 +107,189 @@ With skin/artificial skin = 34 °C:
 | 90% | 35.68 °C |
 | 95% | 34.81 °C |
 
-This is **not a human safety, survivability, or medical threshold**. It is a model sign boundary.
+This is a low-order model sign boundary, not a human-safety or measured garment limit.
 
-At RH70%, changing the artificial-skin setpoint from 32 °C to 36 °C moves the modeled boundary from about 37.54 °C to about 41.91 °C.
+## 8. Ordinary heat/mass analogy does not provide arbitrary selectivity
 
-## 11. Heat-spreader coupling does not automatically rescue above-boundary operation
-
-An exploratory linked-exchange sweep at 40 °C / 70% RH found that increasing body-to-wet-surface coupling does not restore positive body heat flow when the wet surface is already hotter than skin. Stronger coupling can instead transmit more environmental heat inward.
-
-## 12. Explicit feed-limited partial-wetness model
-
-The prior `supply_limit_audit.py` only flagged when fully-wet capacity exceeded available feed. `open_valley_feed_limited.py` solves a homogenized sub-grid wet fraction `beta`:
+Define
 
 \[
-\dot m''=\beta k_{m,w}[\rho_{v,sat}(T_s)-\rho_v],
+\Xi=\delta_{vapor}/\delta_{heat}.
 \]
 
-with `0 <= beta <= 1`. The whole floor remains sensibly coupled to the body/heat spreader and air. This is a strong-heat-spreader, fine-scale wet/dry homogenization, not a resolved dry-patch model.
+At 40 °C / 70% RH, the low-order model requires critical `Xi≈0.31–0.65` to reach zero body-side heat flux over the screened vapor-side range. Same-exchange-length and ordinary Lewis/Chilton–Colburn-style baselines remain near `Xi≈1`.
 
-For 65% of a 0.30 m² active area, 150 g/h corresponds to approximately 769 g/(m²h).
+**Conclusion:** hot-ambient protection requires a distinct physical mechanism such as dry-side shielding, radiation control, selective exposure, anisotropic solid routing, contact engineering, or genuinely separated pathways.
+
+## 9. Explicit feed limitation and partial wetness
+
+`open_valley_feed_limited.py` solves a computational sub-grid wet fraction `beta`:
+
+\[
+\dot m''=\beta k_{m,w}[\rho_{v,sat}(T_s)-\rho_v].
+\]
+
+For 0.195 m² structured area, 150 g/h corresponds to ~769 g/(m²h).
 
 At 35 °C / 50% RH with linked heat/vapor exchange:
 
-| linked exchange parameter | regime | solved `beta` | total evaporation | body heat flux |
+| linked parameter | regime | `beta` | total evaporation | body heat flux |
 |---:|---|---:|---:|---:|
 | 0.10 mm | supply-limited | ~0.37 | ~150 g/h | ~331 W/m² |
 | 0.25 mm | supply-limited | ~0.43 | ~150 g/h | ~356 W/m² |
 | 0.50 mm | supply-limited | ~0.55 | ~150 g/h | ~383 W/m² |
-| ~0.95–1.0 mm | near transition | ~1 | ~147–150 g/h | ~400–411 W/m² |
+| ~0.95–1.0 mm | transition | ~1 | ~147–150 g/h | ~400–411 W/m² |
 | 2.0 mm | transfer-limited | 1 | ~109 g/h | ~317 W/m² |
 
-**Correction:** once water supply is saturated, stronger linked external exchange can reduce body-coupled cooling because additional ambient sensible heat contributes to evaporation without increasing total evaporated water.
+**Correction:** once water supply is saturated, stronger linked external exchange can reduce body-coupled cooling because additional latent heat comes from ambient air.
 
-At 35 °C / 70% RH and 85% RH, the nominal 150 g/h linked cases remain transfer-limited over the screened range.
+## 10. Same evaporation mass can remove different body heat
 
-## 13. Latent-heat source partition
+At 35 °C / 50% RH / 150 g/h, modeled body share of latent heat is approximately:
 
-For the 35 °C / 50% RH / 150 g/h supply-limited cases, all of the following can evaporate approximately the same total 150 g/h while drawing different fractions of latent heat from the body:
+- very strong linked exchange: 62–64%;
+- linked 0.5 mm: ~74%;
+- near linked 0.75 mm: ~78%.
 
-| linked exchange parameter | body share of latent heat | ambient-air share |
-|---:|---:|
-| 0.05 mm | ~62% | ~38% |
-| 0.10 mm | ~64% | ~36% |
-| 0.25 mm | ~69% | ~31% |
-| 0.50 mm | ~74% | ~26% |
-| 0.75 mm | ~78% | ~22% |
+Thus identical evaporation mass does not imply identical body cooling.
 
-**Current conclusion:** identical evaporation mass does not imply identical body cooling.
+## 11. Symmetric heat spreading does not create global cooling by itself
 
-## 14. Measurement-resolution audit for future validation
+The symmetric wet/dry two-node model reduces the local wet/dry temperature split from roughly 4.9 °C at no mixing toward zero at high `g_mix`, but area-integrated body heat flow remains essentially invariant when wet/dry sensible boundary conditions are identical.
 
-A fixed-seed sensitivity screen for true `F=0.8` at representative 35 °C / 70% RH gave approximate 5–95% ranges:
+**Conclusion:** heat spreading only creates system-level value when it connects spatially different wetting/exposure/body-coupling conditions.
 
-| 1σ temperature | 1σ RH | `F` 5–95% |
-|---:|---:|---:|
-| 0.05 °C | 0.25 pp | 0.774–0.827 |
-| 0.10 °C | 0.50 pp | 0.748–0.854 |
-| 0.10 °C | 1.00 pp | 0.715–0.892 |
-| 0.20 °C | 1.00 pp | 0.699–0.910 |
+## 12. Asymmetric heat-spreader mechanism and solver correction
 
-This is a hypothetical sensor-uncertainty screen, not a calibration result.
+The asymmetric model gives the dry region lower ambient sensible exposure than the wet evaporator. Under that asymmetry, heat routing increases total modeled body heat removal.
 
-## 15. Symmetric wet/dry heat-spreader result
-
-At 35 °C / 50% RH / 150 g/h with symmetric wet/dry external and body-side sensible coefficients:
-
-- `g_mix=0`: wet/dry temperature split ~4.9 °C;
-- around 50 W/(m²-total K): split ~1.6 °C;
-- around 100 W/(m²-total K): split ~1.0 °C;
-- around 500 W/(m²-total K): split ~0.3 °C;
-- very high mixing approaches one temperature.
-
-But the **global body heat flux is essentially invariant** because internal lateral transfer cancels under symmetric boundary conditions.
-
-**Current conclusion:** a heat spreader does not create total cooling merely by equalizing otherwise identical patches.
-
-## 16. Asymmetric wet/dry spreader result and nonlinear-solver correction
-
-The asymmetric model gives the dry region a lower ambient sensible coefficient than the wet evaporator. Under that asymmetry, heat spreading routes body heat from the dry region into the active wet sink and increases total modeled body heat removal.
-
-A dense `g_mix` sweep exposed nonphysical high-beta branch jumps in the earlier unconstrained nonlinear solver. The solver now uses bounded least squares in `(T_wet,T_dry,beta)`, explicit equation-residual acceptance, and continuation support.
+A dense `g_mix` sweep exposed nonphysical high-beta branch jumps in the old unconstrained solver. The current solver uses bounded least squares, explicit original-equation residual acceptance, and continuation support.
 
 For `h_dry=5 W/(m² K)`, corrected approximate `g_mix` needed for 90% of the high-mixing asymptotic gain:
 
-| feed over 0.195 m² | `g_mix` for 90% gain | high-mixing gain over 0.195 m² |
+| feed | target `g_mix` | asymptotic mechanism gain over 0.195 m² |
 |---:|---:|---:|
 | 30 g/h | ~117 W/(m² K) | ~3.0 W |
-| 50 g/h | ~192 W/(m² K) | ~4.5 W |
-| 75 g/h | ~285 W/(m² K) | ~5.7 W |
-| 100 g/h | ~330 W/(m² K) | ~6.0 W |
-| 150 g/h | ~258 W/(m² K) | ~3.5 W |
+| 50 g/h | ~192 | ~4.5 W |
+| 75 g/h | ~285 | ~5.7 W |
+| 100 g/h | ~330 | ~6.0 W |
+| 150 g/h | ~258 | ~3.5 W |
 
-**Current conclusion:** infinite conductivity is not the objective. Useful heat-spreader conductance reaches diminishing returns in the few-hundred-W/(m² K) range in this mechanism screen.
+**Conclusion:** infinite spreader conductivity is not useful as a design objective; the low-order mechanism reaches diminishing returns at finite conductance.
 
-## 17. `g_mix` is now mapped to material thickness, pitch and mass
+## 13. Material / routing-pitch mapping
 
-For an ideal periodic alternating wet/dry stripe topology:
-
-\[
-g_{sheet}\approx\Gamma\frac{k_{\parallel}tc}{P^2},\qquad \Gamma=4.
-\]
-
-Dimensional check:
+The first sheet mapping is
 
 \[
-[k t/P^2]=\mathrm{W/(m^2K)}.
+g_{sheet}\approx\Gamma\frac{k_{\parallel}tc}{P^2},\qquad\Gamma=4.
 \]
 
-This is a low-order topology mapping, not a validated textile correlation.
+This is an ideal periodic-stripe topology screen, not a validated textile correlation.
 
-The main scaling result is
+The key scaling is
 
 \[
-k t \propto g_{mix}P^2.
+k t\propto g_{mix}P^2.
 \]
 
-For the representative 100 g/h / 90%-gain target (`g_mix≈330 W/(m² K)`):
+For representative `g_mix≈330 W/(m² K)`:
 
 ### Abstract `k=100 W/(m K)`, `rho=1600 kg/m³`
 
-- `P=10 mm`: ~83 µm full-coverage thickness, ~40 g over 0.30 m²;
-- `P=20 mm`: ~330 µm, ~159 g;
-- `P=30 mm`: ~743 µm, ~357 g.
+- P=10 mm: ~83 µm, ~40 g over 0.30 m²;
+- P=20 mm: ~330 µm, ~159 g;
+- P=30 mm: ~743 µm, ~357 g.
 
 ### Abstract `k=300 W/(m K)`, `rho=1800 kg/m³`
 
-- `P=10 mm`: ~28 µm, ~15 g;
-- `P=20 mm`: ~110 µm, ~59 g;
-- `P=30 mm`: ~248 µm, ~134 g.
+- P=10 mm: ~28 µm, ~15 g;
+- P=20 mm: ~110 µm, ~59 g;
+- P=30 mm: ~248 µm, ~134 g.
 
-These are abstract screening property classes, not measured named materials.
+The property values are model inputs, not measurements of named materials.
 
-**Current conclusion:** shortening dry-to-wet routing pitch from 20 mm to 10 mm reduces required `k*t` and idealized mass by a factor of four. Pattern placement is a first-class design variable.
+## 14. Sparse conductive coverage is not automatically lighter
 
-## 18. Sparse conductive coverage is not automatically lighter
-
-Under the simple mapping
+Under linear coverage scaling,
 
 \[
-g_{sheet}\propto t c,
+m=A\rho\frac{g_{sheet}P^2}{\Gamma k},
 \]
 
-lowering coverage `c` requires an inverse thickness increase to hold `g_sheet` constant. Then
+so coverage cancels. A sparse network only saves mass if it also changes path topology/effective pitch, permits a better material, removes inactive regions, or provides another non-linear advantage.
 
-\[
-m=A\rho t c=A\rho\frac{g_{sheet}P^2}{\Gamma k},
-\]
+The simple mass figure of merit is `k/rho`.
 
-so idealized mass is independent of coverage.
+## 15. Thermal contact can dominate sheet conductivity
 
-**Current conclusion:** sparse networks only save mass if they also change path topology/effective pitch, permit a better material, eliminate inactive regions, or create another non-linear advantage. The simple material mass figure of merit is `k/rho`.
-
-## 19. Thermal contact can dominate sheet conductivity
-
-A two-contact series screen gives
+A two-contact screen uses
 
 \[
 \frac{1}{g_{eff}}=\frac{1}{g_{sheet}}+\frac{2}{h_c}.
 \]
 
-Even an infinitely conductive sheet has
+For a representative `g_target≈330 W/(m² K)`:
 
-\[
-g_{eff}<h_c/2.
-\]
+- even an ideal sheet needs each-side `h_c>~660 W/(m² K)`;
+- if `g_sheet≈660 W/(m² K)`, each contact must be ~1320 W/(m² K) in the lumped model.
 
-For the representative `g_target≈330 W/(m² K)` case:
+These are validation burdens, not measured contact coefficients.
 
-- absolute minimum each-side `h_c` is ~660 W/(m² K), even for an ideal sheet;
-- if `g_sheet≈660 W/(m² K)` (twice target), each contact must be ~1320 W/(m² K) in the lumped series model.
+## 16. Explicit virtual prototypes v0.1
 
-These are validation burdens, not measured textile contact coefficients.
+At 100 g/h:
 
-**Current conclusion:** high `k` without integrated wet/dry thermal contact cannot deliver the modeled heat-routing benefit.
+| prototype | design anchor | spreader mass over 0.30 m² | nominal `g_eff` | spreader-only mechanism gain over 0.195 m² |
+|---|---|---:|---:|---:|
+| VP-A | 10 mm / `k=100` / 100 µm | ~48 g | ~286 W/(m² K) | ~5.3 W |
+| VP-B | 20 mm / same class / 200 µm | ~96 g | ~167 | ~4.9 W |
+| VP-C | 15 mm / 50% routed / higher `k/rho` class | ~27 g | ~197 | ~5.0 W |
+| VP-D | VP-A spreader + stronger dry-side shielding | ~48 g | ~286 | ~6.1 W |
 
-## 20. Current virtual-prototype design hypothesis
+Gain versus feed:
 
-1. directional liquid transport from skin;
-2. capillary delivery to wet exterior fields;
-3. low-profile micro-rib / 3D-knit / short-fin evaporative texture;
-4. continuous lateral ambient access through open valleys/gaps/islands rather than long covered ducts;
-5. short-range heat routing, initially favoring roughly 10–20 mm dry-to-wet pitch in virtual prototypes;
-6. high `k/rho` pathways rather than indiscriminate sheet thickness;
-7. explicit wet/dry thermal contact design;
-8. dry-side shielding/routing that limits harmful sensible heat pickup;
-9. evaluation using `F`, absolute vapor transfer, signed body heat flow, water supply/wetness state, `k*t/P²`, contact burden and total added mass.
+| feed | VP-A | VP-B | VP-C | VP-D |
+|---:|---:|---:|---:|---:|
+| 50 g/h | ~4.2 W | ~4.0 W | ~4.1 W | ~4.9 W |
+| 75 g/h | ~5.1 W | ~4.8 W | ~4.9 W | ~5.9 W |
+| 100 g/h | ~5.3 W | ~4.9 W | ~5.0 W | ~6.1 W |
+| 150 g/h | ~3.2 W | ~3.0 W | ~3.1 W | ~3.6 W |
 
-## 21. Results explicitly downgraded or rejected as standalone criteria
+The gains are relative to the same local wet/dry model with `g_mix=0`. They are **not total garment-vs-control cooling predictions**.
 
-The following are not current design conclusions:
+Deterministic topology/contact sensitivity at 100 g/h (`Gamma=2–4`, each-side contact 500–5000 W/(m² K)) gives:
 
-- a single `M≈2.5–3.5` validated cooling threshold;
-- geometric rib area as useful evaporative area;
-- guaranteed upward chimney flow;
-- axial Péclet number as proof of renewal;
-- 20–50 mm segmentation as a sufficient renewal mechanism;
-- high `F` as proof of high evaporation capacity;
-- positive evaporation as proof of body cooling;
-- fully-wet transfer capacity above available feed as achievable fixed-feed performance;
-- a model `beta` value as a measured visible wet-area fraction;
-- arbitrary `Xi<1` heat/vapor decoupling as physically available without a mechanism;
-- a heat spreader as a source of global cooling under symmetric local boundary conditions;
-- infinite heat-spreader conductivity as a useful design goal;
-- sparse conductive coverage as automatic mass reduction;
-- sheet conductivity as sufficient without contact resistance;
-- 39.73 °C at 70% RH as a universal garment or human limit.
+- VP-A: ~4.4–5.4 W;
+- VP-B: ~3.9–5.0 W;
+- VP-C: ~4.1–5.2 W;
+- VP-D: ~5.1–6.2 W.
 
-## 22. Next work
+Current roles:
 
-Numerical / virtual prototype:
+- VP-D: performance anchor;
+- VP-C: lightweight anchor;
+- VP-A: short-pitch baseline;
+- VP-B: routing-distance/manufacturability comparison.
 
-- replace the two-node heat-spreader mapping with a distributed 1-D/2-D wet/dry field containing direct `k`, thickness, anisotropy, contact conductance and patch pitch;
-- sweep topology factor / routing geometry rather than fixing `Gamma=4`;
-- connect lateral heat/mass exchange to geometry-resolved 2-D/3-D natural convection/cross-flow;
-- re-test multi-equilibrium behavior under improved external-flow treatment;
-- sensitivity to Nu/Sh, compression, contact degradation, opening losses, radiative properties and weak external drift;
-- freeze several explicit virtual prototype specifications with mass/thickness/thermal-routing budgets.
+## 17. Current virtual-prototype implication
 
-Future physical validation only:
+The current calculations favor:
 
-- no specimen currently exists;
-- E1/E2/E3/E3b/E3c/E4a/E4/E6 remain validation specifications for a future build, not executed experiments.
+- short dry-to-wet routing distances, initially 10–20 mm;
+- high `k/rho` paths instead of indiscriminate thickness;
+- explicit wet/dry contact design;
+- dry-side shielding as a complementary mechanism;
+- continuously ambient-connected wet exterior structures;
+- explicit water supply and wetness state.
+
+## 18. Next numerical work
+
+1. Replace scalar `g_mix` with a distributed 1-D/2-D wet/dry field using direct material `k`, thickness, anisotropy, contacts and patch geometry.
+2. Preserve VP-A–D as regression anchors for that distributed model.
+3. Add full virtual garment mass/thickness budgets including capillary and exterior microtexture layers.
+4. Add hot/humid virtual performance maps for each VP.
+5. Move exterior transfer toward geometry-resolved 2-D/3-D natural convection/cross-flow.
+6. Re-test old nonlinear lumped equilibria under the improved external-flow treatment.
+
+Future physical protocols remain specifications only; no physical experiment has been executed.
