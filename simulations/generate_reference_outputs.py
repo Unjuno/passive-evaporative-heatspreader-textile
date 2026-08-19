@@ -5,8 +5,9 @@ Usage:
 
 The generator writes:
 - CSV tables for passive equilibrium branches, split sensible/vapor transfer,
-  deterministic model-form sensitivity, 2D heat-spreader orientation,
-  normalized water/salt screening, and the E3 periodic rib-diffusion screen;
+  deterministic model-form sensitivity, moist-air corridor buoyancy,
+  2D heat-spreader orientation, normalized water/salt screening, and the E3
+  periodic rib-diffusion screen;
 - PNG figures derived directly from selected tables;
 - metadata.json including the git commit when available;
 - sha256.txt covering generated artifacts.
@@ -31,6 +32,10 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+from simulations.corridor_buoyancy_screen import (
+    neutral_curve as corridor_neutral_curve,
+    run_screen as run_corridor_screen,
+)
 from simulations.heat_spreader_2d import orientation_demo
 from simulations.passive_rib_screen import U_FLAT, stable_equilibria
 from simulations.rib_diffusion_screen import run_screen as run_diffusion_screen
@@ -184,6 +189,8 @@ def main() -> None:
     split = run_split_screen()
     sensitivity = run_sensitivity()
     sensitivity_summary = summarize(sensitivity)
+    corridor = run_corridor_screen()
+    corridor_neutral = corridor_neutral_curve()
     spreader = generate_heat_spreader_table()
     salt = run_parameter_screen()
     diffusion = run_diffusion_screen()
@@ -192,6 +199,8 @@ def main() -> None:
     split.to_csv(data_dir / "split_heat_mass_screen.csv", index=False)
     sensitivity.to_csv(data_dir / "split_transfer_sensitivity.csv", index=False)
     sensitivity_summary.to_csv(data_dir / "split_transfer_sensitivity_summary.csv", index=False)
+    corridor.to_csv(data_dir / "corridor_buoyancy_screen.csv", index=False)
+    corridor_neutral.to_csv(data_dir / "corridor_neutral_density_curve.csv", index=False)
     spreader.to_csv(data_dir / "heat_spreader_orientation.csv", index=False)
     salt.to_csv(data_dir / "water_salt_parameter_screen.csv", index=False)
     diffusion.to_csv(data_dir / "rib_diffusion_boundary_layer.csv", index=False)
@@ -214,6 +223,7 @@ def main() -> None:
             "The passive heat/mass model may contain multiple stable roots; tables include all detected stable roots.",
             "The split-transfer model treats sensible heat and vapor-transfer multipliers independently; E3 constrains only the vapor side.",
             "Sensitivity-grid fractions are deterministic grid fractions, not probabilities or confidence levels.",
+            "The corridor-buoyancy model prescribes mean channel temperature/RH and uses a laminar slot-friction balance; it is not CFD or a self-consistent channel solution.",
             "The rib-diffusion model is a 2-D pure-diffusion screen with an idealized air-renewal boundary and is not CFD or a measured alpha value.",
             "Figures and tables must not be interpreted as measured garment performance.",
         ],
