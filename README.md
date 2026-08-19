@@ -53,6 +53,19 @@ This is **pure-diffusion screening, not CFD and not a measured garment result**.
 
 See `docs/e3-boundary-layer-screen.md` and `experiments/e3b_hierarchical_air_renewal.md`.
 
+### 3. Sensible heat transfer and vapor transfer are now separated
+
+Earlier thermal screens used one exterior multiplier for both convective sensible heat transfer and water-vapor mass transfer. That is now treated as a special case rather than the default physical assumption.
+
+The split model introduces:
+
+- `M_h` — multiplier for sensible convective heat transfer;
+- `M_m` — multiplier for water-vapor mass transfer.
+
+E3 constrains only the **mass-transfer side** and must not automatically be copied into `M_h`. This matters especially in hot ambient air, where stronger sensible convection can increase inward heat pickup while stronger vapor transfer can still improve evaporation.
+
+See `docs/split-transfer-model.md` and `simulations/split_heat_mass_screen.py`.
+
 ## Key model variables
 
 For a rectangular-rib geometric screen:
@@ -75,7 +88,7 @@ where:
 - `alpha` = phenomenological effective-area factor;
 - `M` = effective exterior exchange multiplier relative to a flat wet textile.
 
-E3 shows why `alpha` must not be treated as a geometry-only material constant: boundary-layer renewal can dominate it. The newer diffusion model therefore reports a mass-transfer multiplier directly as a function of rib geometry and an idealized air-renewal boundary.
+E3 shows why `alpha` must not be treated as a geometry-only material constant: boundary-layer renewal can dominate it. The newer diffusion model therefore reports a mass-transfer multiplier directly as a function of rib geometry and an idealized air-renewal boundary. The split thermal model then keeps vapor and sensible exchange distinct as `M_m` and `M_h`.
 
 ## Repository map
 
@@ -87,6 +100,8 @@ E3 shows why `alpha` must not be treated as a geometry-only material constant: b
 - `docs/design-history.md` — retained, optional, and deprecated design branches
 - `docs/current-results.md` — consolidated numerical findings and corrections
 - `docs/e3-boundary-layer-screen.md` — periodic rib diffusion/boundary-layer interference result
+- `docs/split-transfer-model.md` — independent sensible-heat and vapor-transfer multipliers
+- `docs/model-form-uncertainty.md` — parameter/model-form uncertainty framework
 - `docs/roadmap.md` — research and publication roadmap
 - `docs/experiment-plan.md` — staged physical validation plan
 - `docs/accessibility-identification.md` — method for estimating effective exterior exchange
@@ -104,6 +119,7 @@ E3 shows why `alpha` must not be treated as a geometry-only material constant: b
 - `models/governing-equations.md` — equations, assumptions, variables, and checks
 - `models/water-salt-transport.md` — water/salt conservation model and zero salt-vapor rule
 - `simulations/passive_rib_screen.py` — nonlinear passive exterior heat/mass-transfer screen
+- `simulations/split_heat_mass_screen.py` — split sensible/vapor external-transfer screen
 - `simulations/rib_diffusion_screen.py` — periodic 2-D vapor-diffusion / boundary-layer-sharing screen
 - `simulations/heat_spreader_2d.py` — 2D anisotropic lateral heat-routing model
 - `simulations/water_salt_1d.py` — normalized nonvolatile-salt mass-balance screen
@@ -152,6 +168,9 @@ Install development dependencies and run:
 ```bash
 python -m pip install -r requirements-dev.txt
 python -m pytest -q
+python simulations/passive_rib_screen.py
+python simulations/split_heat_mass_screen.py
+python simulations/rib_diffusion_screen.py
 python simulations/generate_reference_outputs.py --output-root generated-reference
 ```
 
