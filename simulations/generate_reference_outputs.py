@@ -4,9 +4,10 @@ Usage:
     python simulations/generate_reference_outputs.py --output-root /tmp/reference-output
 
 The generator writes:
-- CSV tables for passive equilibrium branches, 2D heat-spreader orientation,
+- CSV tables for passive equilibrium branches, split sensible/vapor transfer,
+  deterministic model-form sensitivity, 2D heat-spreader orientation,
   normalized water/salt screening, and the E3 periodic rib-diffusion screen;
-- PNG figures derived directly from those tables;
+- PNG figures derived directly from selected tables;
 - metadata.json including the git commit when available;
 - sha256.txt covering generated artifacts.
 
@@ -26,8 +27,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-# Support both `python simulations/generate_reference_outputs.py` and
-# `python -m simulations.generate_reference_outputs` from the repository root.
 REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
@@ -35,6 +34,8 @@ if str(REPO_ROOT) not in sys.path:
 from simulations.heat_spreader_2d import orientation_demo
 from simulations.passive_rib_screen import U_FLAT, stable_equilibria
 from simulations.rib_diffusion_screen import run_screen as run_diffusion_screen
+from simulations.split_heat_mass_screen import run_split_screen
+from simulations.split_transfer_sensitivity import run_sensitivity, summarize
 from simulations.water_salt_1d import run_parameter_screen
 
 
@@ -55,7 +56,6 @@ def generate_passive_branch_table() -> pd.DataFrame:
         control_roots = stable_equilibria(35.0, rh, 150.0, 1.0, U_FLAT)
         if not control_roots:
             raise RuntimeError(f"no flat-control root at RH={rh}")
-        # Conservative flat reference: warmest stable branch.
         control = max(control_roots, key=lambda r: r.surface_temp_C)
 
         for m_eff in np.linspace(1.0, 10.0, 91):
@@ -100,12 +100,7 @@ def plot_passive_branches(df: pd.DataFrame, out_path: Path) -> None:
     plt.figure(figsize=(7.4, 5.0))
     for rh in sorted(df["RH_percent"].unique()):
         group = df[df["RH_percent"] == rh]
-        plt.scatter(
-            group["M"],
-            group["gain_vs_flat_W"],
-            s=10,
-            label=f"RH {rh:.0f}%",
-        )
+        plt.scatter(group["M"], group["gain_vs_flat_W"], s=10, label=f"RH {rh:.0f}%")
     plt.axhline(10.0, linestyle="--", linewidth=1.0, label="+10 W physical-test target")
     plt.xlabel("Effective exterior exchange multiplier M (-)")
     plt.ylabel("Modeled body-cooling gain vs flat control (W)")
@@ -186,11 +181,17 @@ def main() -> None:
     fig_dir.mkdir(parents=True, exist_ok=True)
 
     passive = generate_passive_branch_table()
+    split = run_split_screen()
+    sensitivity = run_sensitivity()
+    sensitivity_summary = summarize(sensitivity)
     spreader = generate_heat_spreader_table()
     salt = run_parameter_screen()
     diffusion = run_diffusion_screen()
 
     passive.to_csv(data_dir / "passive_equilibrium_branches.csv", index=False)
+    split.to_csv(data_dir / "split_heat_mass_screen.csv", index=False)
+    sensitivity.to_csv(data_dir / "split_transfer_sensitivity.csv", index=False)
+    sensitivity_summary.to_csv(data_dir / "split_transfer_sensitivity_summary.csv", index=False)
     spreader.to_csv(data_dir / "heat_spreader_orientation.csv", index=False)
     salt.to_csv(data_dir / "water_salt_parameter_screen.csv", index=False)
     diffusion.to_csv(data_dir / "rib_diffusion_boundary_layer.csv", index=False)
@@ -211,8 +212,10 @@ def main() -> None:
         },
         "warnings": [
             "The passive heat/mass model may contain multiple stable roots; tables include all detected stable roots.",
+            "The split-transfer model treats sensible heat and vapor-transfer multipliers independently; E3 constrains only the vapor side.",
+            "Sensitivity-grid fractions are deterministic grid fractions, not probabilities or confidence levels.",
             "The rib-diffusion model is a 2-D pure-diffusion screen with an idealized air-renewal boundary and is not CFD or a measured alpha value.",
-            "Figures must not be interpreted as measured garment performance.",
+            "Figures and tables must not be interpreted as measured garment performance.",
         ],
     }
     (root / "metadata.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
