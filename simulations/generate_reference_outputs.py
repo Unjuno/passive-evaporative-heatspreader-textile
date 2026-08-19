@@ -28,6 +28,7 @@ from simulations.corridor_buoyancy_screen import (
 from simulations.heat_spreader_2d import orientation_demo
 from simulations.open_valley_distributed_1d import run_screen as run_open_valley_distributed_screen
 from simulations.open_valley_exchange_target import target_table as open_valley_target_table
+from simulations.open_valley_feed_limited import run_screen as run_feed_limited_screen
 from simulations.open_valley_heat_mass_coupling_audit import run_screen as run_heat_mass_coupling_audit
 from simulations.open_valley_thermal_1d import run_screen as run_open_valley_thermal_screen
 from simulations.passive_environment_boundary import (
@@ -204,6 +205,7 @@ def main() -> None:
     outputs["open_valley_renewal_targets.csv"] = open_valley_target_table()
     outputs["open_valley_distributed_1d.csv"] = run_open_valley_distributed_screen()
     outputs["open_valley_thermal_1d.csv"] = run_open_valley_thermal_screen()
+    outputs["open_valley_feed_limited.csv"] = run_feed_limited_screen()
     outputs["open_valley_heat_mass_coupling_audit.csv"] = run_heat_mass_coupling_audit()
     outputs["passive_environment_boundary.csv"] = run_environment_boundary()
     outputs["passive_environment_boundary_skin_sensitivity.csv"] = run_environment_skin_sensitivity()
@@ -230,10 +232,11 @@ def main() -> None:
             "The passive lumped model may contain multiple stable roots.",
             "Heat and vapor transfer are not assumed to share one multiplier.",
             "Open-valley lateral exchange is parameterized through effective exchange distances, not CFD-resolved geometry.",
-            "The heat-mass coupling audit uses the same-exchange-length state as a baseline and does not prove arbitrary heat/mass decoupling is physically achievable.",
+            "The heat-mass coupling audit now compares required selectivity with same-length and Chilton-Colburn-style baselines; these are screening analogies, not validated textile correlations.",
             "The passive environment boundary is a model sign boundary and depends on the explicit skin/artificial-skin setpoint; it is not a human safety or medical threshold.",
-            "The coupled open-valley thermal solver is a fully-wet transfer-capacity model; supply_limit_audit.csv marks cases whose capacity exceeds available feed.",
-            "Supply-limited cases do not have a solved dryout/wet-fraction temperature field; capacity-model body heat flux must not be reused as a feed-limited prediction.",
+            "open_valley_thermal_1d.csv is the fully-wet transfer-capacity baseline at wet_fraction=1.",
+            "open_valley_feed_limited.csv uses a homogenized sub-grid partial-wetness factor when liquid feed is below fully-wet capacity; it does not resolve individual dry patches or wetting fronts.",
+            "supply_limit_audit.csv is retained as a conservative capacity/feed classification and must not be confused with the explicit partial-wetness state.",
             "Salt vapor flux is zero in the garment-temperature models.",
         ],
     }
