@@ -29,6 +29,7 @@ from simulations.corridor_buoyancy_screen import (
     neutral_curve as corridor_neutral_curve,
     run_screen as run_corridor_screen,
 )
+from simulations.distributed_spreader_1d import run_screen as run_distributed_spreader_screen
 from simulations.heat_spreader_2d import orientation_demo
 from simulations.open_valley_distributed_1d import run_screen as run_open_valley_distributed_screen
 from simulations.open_valley_exchange_target import target_table as open_valley_target_table
@@ -227,6 +228,7 @@ def main() -> None:
     outputs["spreader_contact_audit.csv"] = run_spreader_contact_screen()
     outputs["virtual_prototype_v01.csv"] = run_virtual_prototype_screen()
     outputs["virtual_prototype_v01_robustness.csv"] = run_virtual_prototype_robustness()
+    outputs["distributed_spreader_1d.csv"] = run_distributed_spreader_screen()
     outputs["open_valley_heat_mass_coupling_audit.csv"] = run_heat_mass_coupling_audit()
     outputs["passive_environment_boundary.csv"] = run_environment_boundary()
     outputs["passive_environment_boundary_skin_sensitivity.csv"] = run_environment_skin_sensitivity()
@@ -263,6 +265,7 @@ def main() -> None:
             "spreader_contact_audit.csv uses two identical lumped contact resistances in series with the sheet path; real contact networks must be measured or geometry-resolved.",
             "virtual_prototype_v01.csv combines these low-order assumptions into explicit computational design anchors; reported spreader_gain is relative to the same local boundary conditions with g_mix=0, not total garment-vs-control cooling.",
             "virtual_prototype_v01_robustness.csv is deterministic topology/contact sensitivity, not a probability distribution.",
+            "distributed_spreader_1d.csv replaces scalar g_mix with direct k*t in a repeating 1-D stripe bridge model; VP-C sparse coverage is homogenized into effective thickness and external transfer remains low-order.",
             "supply_limit_audit.csv is retained as a conservative capacity/feed classification and must not be confused with the explicit partial-wetness state.",
             "Salt vapor flux is zero in the garment-temperature models.",
         ],
