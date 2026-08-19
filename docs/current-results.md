@@ -79,7 +79,7 @@ This is a path-length/geometric screen, not a fatigue measurement.
 
 ## 7. Exterior exchange model and equilibrium-branch audit
 
-The current low-order passive model describes exterior performance with an effective exchange multiplier `M` relative to a flat wet textile.
+The original low-order passive model describes exterior performance with an effective exchange multiplier `M` relative to a flat wet textile.
 
 Earlier v1.3/v1.4 exploratory summaries reported single threshold values such as `M ~ 2.5–3.5` for a modeled +10 W advantage at 35 °C / 70% RH. **Those threshold values are no longer accepted as robust design criteria.**
 
@@ -140,18 +140,20 @@ These values only illustrate mass scale. Ordinary garments also retain nonvolati
 
 Before a stable versioned release, regenerate and archive:
 
-1. full stable-equilibrium branch maps versus `M`, RH, water input, and `U`;
-2. rib geometry/accessibility design space with branch count;
-3. anisotropic heat-spreader orientation comparison;
-4. hot-ambient dry-side shielding comparison;
-5. uncertainty/sensitivity bounds;
-6. reference CSVs with code commit SHA and parameter metadata.
+1. full stable-equilibrium branch maps versus exterior exchange, RH, water input, and `U`;
+2. split `M_h` / `M_m` sensitivity tables;
+3. rib geometry/accessibility design space and E3 boundary-layer tables;
+4. corridor buoyancy/neutral-density screens;
+5. anisotropic heat-spreader orientation comparison;
+6. hot-ambient dry-side shielding comparison;
+7. uncertainty/sensitivity bounds;
+8. reference CSVs with code commit SHA and parameter metadata.
 
-The primary physical experiment should determine which, if any, low-order equilibrium behavior corresponds to real textile operation.
+The primary physical experiment should determine which, if any, low-order equilibrium and corridor-flow behavior corresponds to real textile operation.
 
 ## 12. E3 periodic rib-diffusion / boundary-layer screen
 
-A new 2-D periodic steady-diffusion model isolates humidity-boundary-layer sharing between neighboring wet ribs. It solves normalized vapor diffusion with wet textile surfaces at `u=1`, a prescribed refreshed-air plane at `u=0`, and periodic lateral boundaries.
+A 2-D periodic steady-diffusion model isolates humidity-boundary-layer sharing between neighboring wet ribs. It solves normalized vapor diffusion with wet textile surfaces at `u=1`, a prescribed refreshed-air plane at `u=0`, and periodic lateral boundaries.
 
 This model reports a **mass-transfer multiplier only**. It is not CFD, does not include buoyancy or walking airflow, and must not be interpreted as a measured `alpha` or a garment cooling wattage.
 
@@ -178,4 +180,43 @@ A grid-convergence check for `p=1.0 mm`, `h=2.5 mm`, and renewal height 3.0 mm g
 
 **Design consequence:** the preferred exterior should be treated as hierarchical rather than single-scale. Wet micro-ribs/3-D-knit relief supply local area, while larger open corridors, valleys, spacer channels, discontinuous rib fields, pleats, or equivalent structures are used to connect those wet surfaces to refreshed ambient air.
 
-The next planned physical experiment is E3b (`experiments/e3b_hierarchical_air_renewal.md`), which compares micro-rib-only and hierarchical micro+macro exteriors under equal water input while measuring heater power and near-surface RH profiles.
+## 13. Split sensible-heat / vapor-transfer model
+
+The thermal model now separates:
+
+- `M_h`: multiplier applied to sensible convective heat transfer;
+- `M_m`: multiplier applied to water-vapor mass transfer;
+- `h_rad`: independent linearized radiative exchange.
+
+This corrects a strong earlier simplification in which one exterior multiplier scaled both sensible and vapor exchange. The old model remains a regression-tested special case when `M_h = M_m = M`.
+
+E3 outputs are candidates for `M_m` only. They must not be copied directly into `M_h`.
+
+**Design consequence:** in hot ambient air, increasing air access can have competing effects. Better vapor exchange can improve evaporation while stronger sensible convection can bring more ambient heat toward the cooler wet surface. The net body-cooling result therefore requires separate treatment.
+
+A deterministic sensitivity script now sweeps RH, `U_body`, radiation, `M_h`, and `M_m`. Fractions reported by that script are fractions of a predeclared screening grid, **not statistical probabilities or confidence intervals**.
+
+Absolute garment cooling wattage remains classified as model-form uncertain.
+
+## 14. Moist-air macro-corridor buoyancy screen
+
+The first explicit macro-channel model uses a prescribed mean channel temperature/RH and balances moist-air hydrostatic density head against fully developed laminar wide-slot friction:
+
+\[
+\bar u \approx \frac{b^2g(\rho_\infty-\rho_{ch})}{12\mu}.
+\]
+
+This is a low-order sign/scaling screen, not CFD. It does not solve channel temperature or humidity self-consistently.
+
+For ambient `35 °C / 70% RH`, the model finds a neutral-density condition near `34 °C / 90% RH`.
+
+Interpretation:
+
+- sufficiently cool channel air can remain denser than ambient even when very humid and can tend downward;
+- sufficiently warm/humid channel air can become lighter and tend upward;
+- near the neutral-density state, weak room drift, wearer motion, or external airflow may dominate;
+- therefore a vertical corridor should not be designed on the assumption of guaranteed upward chimney flow.
+
+The preferred hierarchical exterior should tolerate multiple flow directions through open-ended/intersecting corridors, valleys, spacer channels, pleats, or discontinuous evaporation fields.
+
+The next numerical step is a coupled 1-D channel model solving air flow, sensible heat exchange, and water-vapor addition along the channel. The next physical E3b step is to measure **signed** local flow direction in addition to heater power and RH/T profiles.
