@@ -3,12 +3,12 @@
 Status: **SIMULATION / ANALYTIC SCREENING ONLY — NO PHYSICAL GARMENT PERFORMANCE DATA YET**  
 Compiled: 2026-08-20
 
-This file lists the results that currently change design or validation decisions. Older exploratory values remain in the model-specific record but are not automatically current design criteria.
+This file lists results that currently change design or validation decisions. Values are model outputs under stated assumptions, not measured garment claims.
 
 ## 1. Heat-spreader findings retained
 
 - Lateral heat spreading is most useful when evaporation/wetting is spatially nonuniform.
-- Anisotropic heat-spreader orientation can materially change heat routed toward a localized cooling band.
+- Anisotropic spreader orientation can materially change heat routed toward a localized cooling band.
 - Dry high-conductivity exterior regions can collect hot ambient heat and require shielding, segmentation, or anisotropic routing.
 
 ## 2. Exterior area / boundary-layer finding
@@ -93,15 +93,15 @@ For 6 × 3 × 50 mm, few-mm/s axial flow changes the center state negligibly in 
 
 ## 7. Renewal quality is not absolute evaporation capacity
 
-For the local series resistance:
+For local resistances in series:
 
 \[
 k_{eff}=\frac{k_wk_a}{k_w+k_a}=k_wF.
 \]
 
-At one representative 6 mm-wide geometry mapping, increasing valley depth raises `F` while lowering `k_eff`.
+In the current geometry mapping, increasing valley depth can raise `F` while lowering `k_eff`.
 
-**Correction:** do not optimize `F` alone. Pair `F` with evaporation mass flux / `k_eff` and body-side heat flow.
+**Correction:** do not optimize `F` alone. Pair `F` with evaporation mass flux / `k_eff` and signed body-side heat flow.
 
 ## 8. Coupled open-valley thermal / vapor result
 
@@ -120,7 +120,7 @@ At 40 °C / 70% RH, same-exchange-length cases still evaporate but body-side hea
 
 **Current conclusion:** positive evaporation is not equivalent to wearer cooling.
 
-## 9. Heat/mass coupling audit
+## 9. Heat/mass coupling audit now has ordinary-transport baselines
 
 The sensitivity model defines
 
@@ -128,17 +128,19 @@ The sensitivity model defines
 \Xi=\delta_{vapor}/\delta_{heat}.
 \]
 
-`Xi=1` is the same-exchange-length baseline. At 40 °C / 70% RH, the low-order model needs `Xi<1` to reach zero/positive body-side heat flux.
+`Xi=1` is the same-exchange-length baseline. At 40 °C / 70% RH, the low-order model requires critical `Xi` values approximately in the 0.31–0.65 range to reach zero body-side heat flux across the screened vapor-side parameters.
 
-| vapor parameter | zero-flux heat parameter | critical `Xi` |
-|---:|---:|---:|
-| 0.10 mm | ~0.322 mm | ~0.31 |
-| 0.25 mm | ~0.531 mm | ~0.47 |
-| 0.50 mm | ~0.891 mm | ~0.56 |
-| 1.00 mm | ~1.63 mm | ~0.61 |
-| 2.00 mm | ~3.09 mm | ~0.65 |
+For the same air/water-vapor screening state, the Lewis number is near one. A Chilton–Colburn-style equal-j-factor comparison gives
 
-This is a **required decoupling inside the sensitivity model**, not evidence that an ordinary passive air path can achieve arbitrary heat/mass decoupling.
+\[
+\Xi_{CC}=Le^{-1/3},
+\]
+
+which is also near one.
+
+**Current conclusion:** the required hot-ambient selectivity is substantially stronger than ordinary same-boundary heat/mass analogy suggests. This is a design burden, not evidence that arbitrary passive decoupling is available.
+
+Candidate physical mechanisms that could change the ratio include dry-side insulation, reflective/radiative control, selective wet exposure, anisotropic solid heat routing, contact resistance engineering, and genuinely separated air/vapor pathways.
 
 ## 10. Analytic environmental body-heat-flow sign boundary
 
@@ -163,40 +165,59 @@ With skin/artificial skin = 34 °C:
 | 90% | 35.68 °C |
 | 95% | 34.81 °C |
 
-The analytic expression agrees with the linked distributed thermal solver to numerical precision because it is the zero-body-flux reduction of the same assumptions.
-
 This is **not a human safety, survivability, or medical threshold**. It is a model sign boundary.
 
-### Skin-setpoint sensitivity
-
-At RH 70%:
-
-| skin/artificial skin | modeled boundary |
-|---:|---:|
-| 32 °C | ~37.54 °C |
-| 33 °C | ~38.63 °C |
-| 34 °C | ~39.73 °C |
-| 35 °C | ~40.82 °C |
-| 36 °C | ~41.91 °C |
-
-Therefore skin/artificial-skin temperature must be explicit in every boundary comparison.
+At RH70%, changing the artificial-skin setpoint from 32 °C to 36 °C moves the modeled boundary from about 37.54 °C to about 41.91 °C.
 
 ## 11. Heat-spreader coupling does not automatically rescue above-boundary operation
 
-An exploratory linked-exchange sweep at 40 °C / 70% RH found that increasing body-to-wet-surface coupling did not restore positive body heat flow; when the wet surface is hotter than skin, stronger coupling can instead transmit more environmental heat inward.
+An exploratory linked-exchange sweep at 40 °C / 70% RH found that increasing body-to-wet-surface coupling does not restore positive body heat flow when the wet surface is already hotter than skin. Stronger coupling can instead transmit more environmental heat inward.
 
-**Current conclusion:** above-boundary behavior is not solved simply by increasing heat-spreader conductance.
+## 12. Explicit feed-limited partial-wetness model
 
-## 12. Water-supply audit
+The prior `supply_limit_audit.py` only flagged when fully-wet capacity exceeded available feed. The new `open_valley_feed_limited.py` now solves a homogenized sub-grid wet fraction `beta`.
 
-The thermal solver is a fully-wet transfer-capacity model. For a wet area of 65% of 0.30 m²:
+The vapor source is
 
-- at 35 °C / 70% RH, 150 g/h feed is above the linked screened capacities;
-- at 35 °C / 50% RH, stronger-transfer linked cases can exceed 150 g/h and are supply-limited.
+\[
+\dot m''=\beta k_{m,w}[\rho_{v,sat}(T_s)-\rho_v],
+\]
 
-Supply-limited cases are not assigned a fabricated dryout temperature/body-flux state. Only the capacity/feed upper bound is reported until a wetting/dryout model exists.
+with `0 <= beta <= 1`. The whole floor remains sensibly coupled to the body/heat spreader and air. This is a strong-heat-spreader, fine-scale wet/dry homogenization, not a resolved dry-patch model.
 
-## 13. Measurement-resolution audit
+For 65% of a 0.30 m² active area, 150 g/h corresponds to approximately 769 g/(m²h).
+
+At 35 °C / 50% RH with linked heat/vapor exchange:
+
+| linked exchange parameter | regime | solved `beta` | total evaporation | body heat flux |
+|---:|---|---:|---:|---:|
+| 0.10 mm | supply-limited | ~0.37 | ~150 g/h | ~331 W/m² |
+| 0.25 mm | supply-limited | ~0.43 | ~150 g/h | ~356 W/m² |
+| 0.50 mm | supply-limited | ~0.55 | ~150 g/h | ~383 W/m² |
+| ~0.95–1.0 mm | near transition | ~1 | ~147–150 g/h | ~400–411 W/m² |
+| 2.0 mm | transfer-limited | 1 | ~109 g/h | ~317 W/m² |
+
+**New correction:** once water supply is saturated, stronger linked external exchange can reduce body-coupled cooling because additional ambient sensible heat contributes to evaporation without increasing total evaporated water.
+
+At 35 °C / 70% RH and 85% RH, the nominal 150 g/h linked cases remain transfer-limited over the screened range.
+
+## 13. Latent-heat source partition
+
+For the 35 °C / 50% RH / 150 g/h supply-limited cases, all of the following can evaporate approximately the same total 150 g/h while drawing different fractions of latent heat from the body:
+
+| linked exchange parameter | body share of latent heat | ambient-air share |
+|---:|---:|---:|
+| 0.05 mm | ~62% | ~38% |
+| 0.10 mm | ~64% | ~36% |
+| 0.25 mm | ~69% | ~31% |
+| 0.50 mm | ~74% | ~26% |
+| 0.75 mm | ~78% | ~22% |
+
+The fractions are model outputs from the local energy balance and sum to approximately one.
+
+**Current conclusion:** identical evaporation mass does not imply identical body cooling.
+
+## 14. Measurement-resolution audit
 
 A fixed-seed sensitivity screen for true `F=0.8` at representative 35 °C / 70% RH gave approximate 5–95% ranges:
 
@@ -207,11 +228,11 @@ A fixed-seed sensitivity screen for true `F=0.8` at representative 35 °C / 70% 
 | 0.10 °C | 1.00 pp | 0.715–0.892 |
 | 0.20 °C | 1.00 pp | 0.699–0.910 |
 
-This is a hypothetical sensor-uncertainty screen, not a calibration result. It shows that small `F` differences require fine T/RH control and minimal probe intrusion.
+This is a hypothetical sensor-uncertainty screen, not a calibration result.
 
 Above the modeled environmental sign boundary, a heater-only artificial skin cannot quantify inward heat. E4/E6 therefore requires bidirectional plate control or calibrated signed heat-flux measurement.
 
-## 14. Current design hypothesis
+## 15. Current design hypothesis
 
 1. directional liquid transport from skin;
 2. flexible routed/whole-area in-plane heat spreading;
@@ -219,9 +240,9 @@ Above the modeled environmental sign boundary, a heater-only artificial skin can
 4. low-profile micro-rib / 3D-knit / short-fin evaporative texture;
 5. continuous lateral ambient access through open valleys/gaps/islands rather than long covered ducts;
 6. hot-ambient shielding/routing that limits harmful sensible heat pickup;
-7. design evaluation using `F` **and** absolute vapor transfer **and** signed body heat flow **and** available water supply.
+7. design evaluation using `F`, absolute vapor transfer, signed body heat flow, available water supply, and wetness state.
 
-## 15. Results explicitly downgraded or rejected as standalone criteria
+## 16. Results explicitly downgraded or rejected as standalone criteria
 
 The following are not current design conclusions:
 
@@ -233,15 +254,18 @@ The following are not current design conclusions:
 - high `F` as proof of high evaporation capacity;
 - positive evaporation as proof of body cooling;
 - fully-wet transfer capacity above available feed as achievable fixed-feed performance;
+- a model `beta` value as a measured visible wet-area fraction;
+- arbitrary `Xi<1` heat/vapor decoupling as physically available without a mechanism;
 - 39.73 °C at 70% RH as a universal garment or human limit.
 
-## 16. Next work
+## 17. Next work
 
 Numerical:
 
-- explicit wetting/dryout state under supply limitation;
-- physically constrain heat/mass coupling using Lewis/Chilton-Colburn-style or geometry-resolved transport;
-- geometry-resolved 2-D/3-D external natural-convection/cross-flow.
+- resolve wet/dry patches spatially instead of only homogenized `beta`;
+- connect lateral heat/mass exchange to geometry-resolved 2-D/3-D natural convection/cross-flow;
+- re-test multi-equilibrium behavior under improved external-flow treatment;
+- sensitivity to Nu/Sh, compression, opening losses, radiative properties and weak external drift.
 
 Physical:
 
@@ -249,4 +273,5 @@ Physical:
 - E2 ablation;
 - E3/E3b boundary-layer access;
 - E3c D1/O1/O2a/O2b/O3;
+- E4a feed-limit / wetness transition;
 - E4/E6 signed environmental-boundary and hot-ambient validation.
