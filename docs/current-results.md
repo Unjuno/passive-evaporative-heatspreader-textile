@@ -143,13 +143,13 @@ Before a stable versioned release, regenerate and archive:
 1. full stable-equilibrium branch maps versus exterior exchange, RH, water input, and `U`;
 2. split `M_h` / `M_m` sensitivity tables;
 3. rib geometry/accessibility design space and E3 boundary-layer tables;
-4. corridor buoyancy/neutral-density screens;
+4. prescribed-state and self-consistent corridor-flow screens;
 5. anisotropic heat-spreader orientation comparison;
 6. hot-ambient dry-side shielding comparison;
 7. uncertainty/sensitivity bounds;
 8. reference CSVs with code commit SHA and parameter metadata.
 
-The primary physical experiment should determine which, if any, low-order equilibrium and corridor-flow behavior corresponds to real textile operation.
+The primary physical experiments must determine which low-order branch/boundary-layer/corridor behavior corresponds to real textile operation.
 
 ## 12. E3 periodic rib-diffusion / boundary-layer screen
 
@@ -178,7 +178,7 @@ Using the older `M≈3.5` value only as a cross-model screening reference, the i
 
 A grid-convergence check for `p=1.0 mm`, `h=2.5 mm`, and renewal height 3.0 mm gave whole-area multiplier values from 3.528 at 16 nodes/pitch to 3.570 at 48 nodes/pitch; the 24-node result differs from the finest screened value by about -0.62%.
 
-**Design consequence:** the preferred exterior should be treated as hierarchical rather than single-scale. Wet micro-ribs/3-D-knit relief supply local area, while larger open corridors, valleys, spacer channels, discontinuous rib fields, pleats, or equivalent structures are used to connect those wet surfaces to refreshed ambient air.
+**Design consequence:** the preferred exterior should be treated as hierarchical rather than single-scale. Wet micro-ribs/3-D-knit relief supply local area, while larger open paths are needed to connect those wet surfaces to refreshed ambient air.
 
 ## 13. Split sensible-heat / vapor-transfer model
 
@@ -194,19 +194,13 @@ E3 outputs are candidates for `M_m` only. They must not be copied directly into 
 
 **Design consequence:** in hot ambient air, increasing air access can have competing effects. Better vapor exchange can improve evaporation while stronger sensible convection can bring more ambient heat toward the cooler wet surface. The net body-cooling result therefore requires separate treatment.
 
-A deterministic sensitivity script now sweeps RH, `U_body`, radiation, `M_h`, and `M_m`. Fractions reported by that script are fractions of a predeclared screening grid, **not statistical probabilities or confidence intervals**.
+A deterministic sensitivity script sweeps RH, `U_body`, radiation, `M_h`, and `M_m`. Fractions reported by that script are fractions of a predeclared screening grid, **not statistical probabilities or confidence intervals**.
 
 Absolute garment cooling wattage remains classified as model-form uncertain.
 
-## 14. Moist-air macro-corridor buoyancy screen
+## 14. Prescribed-state moist-air macro-corridor buoyancy screen
 
-The first explicit macro-channel model uses a prescribed mean channel temperature/RH and balances moist-air hydrostatic density head against fully developed laminar wide-slot friction:
-
-\[
-\bar u \approx \frac{b^2g(\rho_\infty-\rho_{ch})}{12\mu}.
-\]
-
-This is a low-order sign/scaling screen, not CFD. It does not solve channel temperature or humidity self-consistently.
+The first explicit macro-channel model uses a prescribed mean channel temperature/RH and balances moist-air hydrostatic density head against fully developed laminar slot friction.
 
 For ambient `35 °C / 70% RH`, the model finds a neutral-density condition near `34 °C / 90% RH`.
 
@@ -217,6 +211,66 @@ Interpretation:
 - near the neutral-density state, weak room drift, wearer motion, or external airflow may dominate;
 - therefore a vertical corridor should not be designed on the assumption of guaranteed upward chimney flow.
 
-The preferred hierarchical exterior should tolerate multiple flow directions through open-ended/intersecting corridors, valleys, spacer channels, pleats, or discontinuous evaporation fields.
+## 15. Self-consistent 1-D covered/end-renewed corridor screen
 
-The next numerical step is a coupled 1-D channel model solving air flow, sensible heat exchange, and water-vapor addition along the channel. The next physical E3b step is to measure **signed** local flow direction in addition to heater power and RH/T profiles.
+`simulations/self_consistent_corridor_1d.py` replaces prescribed channel T/RH with a coupled screen for:
+
+- signed buoyancy/friction velocity;
+- wet-wall temperature;
+- mean/outlet channel temperature and RH;
+- evaporation flux;
+- body-side heat flux.
+
+The geometry is a rectangular corridor that exchanges with ambient primarily at its ends. It is intentionally a **covered/end-renewed limiting case**, not a laterally open exterior groove.
+
+### 15.1 Primary environment, 100 mm length
+
+At 35 °C / 70% RH and `U_body=100 W/(m² K)`:
+
+| width × depth | signed velocity | Pe_m | mean RH | wet-wall body heat flux |
+|---|---:|---:|---:|---:|
+| 3 × 2 mm | +0.228 mm/s | 0.81 | ~100.0% | +0.10 W/m² |
+| 6 × 3 mm | +0.594 mm/s | 2.12 | ~99.99% | +0.40 W/m² |
+| 10 × 5 mm | +1.60 mm/s | 5.70 | ~99.92% | +1.81 W/m² |
+
+These channels have nonzero flow but the internal air approaches saturation. The small/medium cases are diffusion-dominated or mixed according to axial `Pe_m`.
+
+### 15.2 Humidity and hot-ambient reversal
+
+For 10 × 5 × 100 mm:
+
+| environment | signed velocity | Pe_m | mean RH | wet-wall body heat flux |
+|---|---:|---:|---:|---:|
+| 35 °C / 50% RH | +4.82 mm/s | 17.2 | ~99.6% | +9.94 W/m² |
+| 35 °C / 70% RH | +1.60 mm/s | 5.70 | ~99.9% | +1.81 W/m² |
+| 35 °C / 85% RH | -1.01 mm/s | 3.59 | ~99.97% | +0.42 W/m² |
+| 40 °C / 70% RH | -14.94 mm/s | 53.4 | ~99.0% | **-1.67 W/m²** |
+
+The 40 °C result is important: greater passive flow magnitude does not imply useful body cooling. Hot-air sensible input can offset or reverse local body-side heat removal.
+
+### 15.3 Segment-length effect
+
+For a 10 × 5 mm corridor at 35 °C / 70% RH:
+
+| length | signed velocity | Pe_m | mean RH | wet-wall body heat flux |
+|---:|---:|---:|---:|---:|
+| 20 mm | +1.38 mm/s | 0.98 | 99.65% | +7.67 W/m² |
+| 100 mm | +1.60 mm/s | 5.70 | 99.92% | +1.81 W/m² |
+| 200 mm | +1.63 mm/s | 11.65 | 99.96% | +0.92 W/m² |
+
+This demonstrates why axial Péclet number cannot be used alone as a renewal metric. The 200 mm case has `Pe_m > 10` but a smaller useful vapor driving force because its air is more equilibrated with the wet wall.
+
+### 15.4 Current design consequence
+
+The current preferred macro exterior is **not** a long covered chimney. It is a falsifiable hypothesis consisting of:
+
+- laterally open valleys;
+- short/segmented wet paths;
+- cross-openings;
+- discontinuous evaporator islands;
+- bidirectional flow tolerance;
+- hot-ambient thermal shielding/routing.
+
+The next physical discriminator is E3c: `experiments/e3c_open_vs_covered_corridors.md`.
+
+The next numerical model should add distributed lateral ambient exchange and axial diffusion so that an open exterior valley, rather than a covered duct, is represented directly.
