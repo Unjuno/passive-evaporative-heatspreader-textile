@@ -31,6 +31,7 @@ Secondary conditions:
 
 - RH: 50% and 85%;
 - water feed: 75 and 300 g/h equivalent;
+- feed-transition sweep for E4a;
 - hot-ambient comparison near 40 °C;
 - vertical, horizontal, and inverted orientation where relevant;
 - controlled external airflow only after the passive still-air condition is complete.
@@ -39,21 +40,23 @@ Secondary conditions:
 
 All compared samples must receive the same commanded liquid feed in a given test cell. Record actual feed mass independently and close the water balance.
 
-Do not credit a numerical transfer-capacity case for evaporation exceeding the physical liquid supply. For each experiment report whether the exterior is:
+For each run classify the exterior as:
 
 - transfer-limited;
 - supply-limited;
-- runoff-limited;
+- runoff/retention-limited;
 - uncertain.
+
+Do not reuse a fully-wet model temperature/body-flux state after the water feed becomes limiting.
 
 ## 5. Primary measurement
 
-Measure electrical heater power required to maintain the artificial skin at 34 °C.
+Measure electrical heater/cooler power or calibrated signed heat flux required to maintain the artificial skin at 34 °C.
 
 For the integrated sample relative to the flat control:
 
 \[
-\Delta Q=P_{heater,B4}-P_{heater,B0}.
+\Delta Q=P_{B4}-P_{B0}.
 \]
 
 A larger positive value indicates greater heat removal from the artificial skin.
@@ -73,7 +76,7 @@ These are internal screening thresholds, not external standards.
 
 Required:
 
-1. heater electrical power;
+1. signed heater/cooler power or heat flux;
 2. artificial-skin temperature;
 3. ambient temperature and RH;
 4. far-field air speed;
@@ -92,9 +95,10 @@ Strongly recommended:
 14. macro-path dimensions and open fraction;
 15. signed local flow direction/magnitude where resolvable;
 16. axial and transverse valley T/RH profiles;
-17. exact wet projected area used for evaporation-flux normalization.
+17. exact wet projected area used for evaporation-flux normalization;
+18. time-resolved visible/IR/electrical wetness indicator for E4a.
 
-Heater power, surface T, local air T/RH, evaporation mass and flow must be interpreted together. Do not infer `M_h=M_m` from one integrated measurement.
+Heater power, surface T, local air T/RH, evaporation mass, wetness state and flow must be interpreted together. Do not infer `M_h=M_m` or cooling from evaporation alone.
 
 ## 8. E1 — direct value test
 
@@ -146,9 +150,7 @@ Matched wet floor, continuously exposed to ambient along the path. **This is the
 
 ### O2a — centimeter-interruption negative/control
 
-Cross/end openings every approximately 20–50 mm.
-
-The distributed 1-D vapor screen predicts this spacing is generally too coarse when lateral renewal between openings is weak. O2a is therefore a negative/control condition, not the preferred design.
+Cross/end openings every approximately 20–50 mm. The distributed 1-D vapor screen predicts this spacing is generally too coarse when lateral renewal between openings is weak.
 
 ### O2b — millimeter-scale short segments
 
@@ -160,8 +162,6 @@ Small wet fields separated by ambient-connected gaps; preferred apparel implemen
 
 ### E3c mechanism metrics
 
-Convert measured ambient, wet-surface, and local-valley states to vapor density:
-
 \[
 \theta(x)=\frac{\rho_{v,valley}(x)-\rho_{v,\infty}}
 {\rho_{v,sat}(T_s(x))-\rho_{v,\infty}},
@@ -169,22 +169,20 @@ Convert measured ambient, wet-surface, and local-valley states to vapor density:
 F(x)=1-\theta(x).
 \]
 
-When the inversion is well-conditioned:
+When well-conditioned:
 
 \[
 R(x)=\frac{1-\theta(x)}{\theta(x)}.
 \]
 
-Use `F` as the primary renewal-quality metric. Exact high `R` is secondary because measurement inversion becomes ill-conditioned near ambient vapor loading.
-
-**Do not optimize `F` alone.** Pair it with absolute transfer:
+Use `F` as the primary renewal-quality metric. Pair it with absolute transfer:
 
 \[
 k_{eff,exp}=\frac{\dot m''_{evap}}
 {\rho_{v,sat}(T_s)-\rho_{v,\infty}}
 \]
 
-where water balance and wet-area assignment support the calculation, and always retain heater power as the integrated cooling metric.
+where water balance and wet-area assignment support the calculation, and always retain signed body heat flow as the integrated endpoint.
 
 ### E3c hypotheses
 
@@ -202,12 +200,6 @@ At 35 °C / 70% RH, at least one of O1/O2b/O3 must show:
 - equal liquid input within uncertainty;
 - water-balance closure >=95%.
 
-Support for the distributed-renewal interpretation is strengthened if the ordering is broadly:
-
-`O1 or O2b/O3 > O2a >= or ~= D1`
-
-in median `F`, without loss of absolute evaporation conductance.
-
 See `experiments/e3c_open_vs_covered_corridors.md`.
 
 ## 13. E4 — humidity boundary
@@ -216,32 +208,50 @@ Test the best current B4 sample at 50%, 70%, and 85% RH.
 
 **H4:** passive advantage decreases strongly as ambient vapor-pressure driving force decreases.
 
-At the dry 50% condition, explicitly check whether evaporation becomes **liquid-supply-limited** before interpreting a transfer-capacity advantage.
+At the dry 50% condition, explicitly determine whether evaporation becomes liquid-supply-limited before interpreting a transfer-capacity advantage.
 
-## 14. E5 — heat-spreader orientation
+## 14. E4a — feed-limit / partial-wetness transition
+
+At 35 °C / 50% RH, hold geometry fixed and sweep feed from low to high values.
+
+The new homogenized partial-wetness model predicts:
+
+1. a low-feed region where evaporation follows feed and modeled wet fraction `beta<1`;
+2. a transition where the effective wet fraction approaches one;
+3. a high-feed transfer-limited region where added liquid no longer increases evaporation proportionally.
+
+Required additional measurement: an image-derived or otherwise validated spatial wetness indicator. The measured wet fraction is **not assumed equal** to model `beta`.
+
+Mechanism support requires a reproducible mass-balance transition, increasing wetness with feed, and a consistent slope change in signed body-side heat flow.
+
+See `experiments/e4a_feed_limit_transition.md`.
+
+## 15. E5 — heat-spreader orientation
 
 For an anisotropic heat spreader, compare the high-conductivity axis aligned toward wet evaporation zones versus rotated approximately 90°.
 
 **H5:** alignment improves body-side heat removal under spatially nonuniform wetting.
 
-## 15. E6 — hot-ambient sensible-heat penalty and shielding
+## 16. E6 — hot-ambient sensible-heat penalty and shielding
 
 At approximately 40 °C, compare exposed versus thermally protected/routed structures while retaining the same wet-area and water-input controls.
 
 **H6:** shielding/routing reduces parasitic inward sensible heat while retaining useful vapor exchange.
 
-The coupled open-valley thermal screen explicitly shows a failure mode in which evaporation remains positive while body-side heat flux becomes negative. Therefore E6 must never use evaporation rate alone as the cooling endpoint.
+The coupled open-valley thermal screen explicitly shows a failure mode in which evaporation remains positive while body-side heat flux becomes negative. Ordinary same-boundary Lewis/Chilton–Colburn-style comparisons do not provide the strong heat/vapor selectivity required by the current 40 °C / 70% RH sensitivity screen.
+
+Therefore any successful E6 architecture must identify a real physical mechanism for selectivity, such as dry-side insulation, reflective/radiative control, selective wet exposure, anisotropic solid heat routing, or separated pathways.
 
 Required comparison variables:
 
-- heater power;
+- signed heater/cooler power or heat flux;
 - evaporation mass;
 - wet-surface T;
 - valley/ambient T/RH;
 - dry-region surface T;
 - local flow if measurable.
 
-## 16. E7 — mechanical durability
+## 17. E7 — mechanical durability
 
 After baseline measurement, apply controlled bending, stretch, compression, washing, and wet/dry cycling.
 
@@ -249,7 +259,7 @@ Track in-plane thermal conductance, capillary delivery rate, cooling gain, exter
 
 Provisional durability target: retain >=80% of baseline functional performance after the defined cycle protocol.
 
-## 17. Uncertainty
+## 18. Uncertainty
 
 For each primary result report:
 
@@ -262,11 +272,12 @@ For each primary result report:
 - low-speed flow measurement resolution;
 - wet-area and compression uncertainty;
 - propagated uncertainty in vapor density, `theta`, `F`, and where reported `R`/`k_eff`;
+- wetness-image classification uncertainty for E4a;
 - combined standard uncertainty and coverage factor where practical.
 
 Do not report more numerical precision than measurement uncertainty supports.
 
-## 18. Salt / contamination protocol
+## 19. Salt / contamination protocol
 
 Salt deposition is not unique to this architecture. Compare degradation against the same synthetic-sweat exposure in B0.
 
