@@ -1,29 +1,14 @@
 """Coupled 1-D thermal/vapor screen for a laterally open wet valley.
 
-Purpose
--------
-Extend ``open_valley_distributed_1d.py`` by solving, iteratively and
-self-consistently, for:
+Solves valley-air temperature, water-vapor density, wet-surface temperature,
+evaporation, body-side heat flux, and ambient sensible heat supplied to the wet
+surface. Heat and vapor lateral exchange remain separately parameterized for
+model-form sensitivity.
 
-- valley-air dry-bulb temperature;
-- valley-air water-vapor density;
-- wet-surface temperature;
-- evaporation mass flux;
-- body-to-wet-surface heat flux;
-- ambient-air sensible heat supplied to the wet surface.
-
-The model keeps lateral **heat** and **vapor** exchange separate.  The effective
-lateral thermal exchange distance ``delta_heat`` and vapor exchange distance
-``delta_vapor`` may be varied independently for model-form sensitivity.  A
-Lewis-like baseline can be screened by setting them equal.
-
-This is a capacity/sensitivity screen.  It does not currently impose a liquid
-water-supply cap.  If predicted evaporation exceeds the available feed for a
-specified wet area, that case must be labeled supply-limited before any garment
-interpretation.
-
-This is not CFD and does not predict a real exterior boundary-layer thickness
-from garment geometry.
+This is a fully-wet transfer-capacity screen, not CFD.  Liquid-feed limits are
+audited separately.  ``skin_c`` is explicit because the environmental heat-flow
+sign boundary depends strongly on the controlled skin/artificial-skin
+setpoint; 34 °C is only the repository's primary bench condition.
 """
 
 from __future__ import annotations
@@ -46,7 +31,7 @@ try:
         T_SKIN,
         p_sat,
     )
-except ModuleNotFoundError:  # direct execution
+except ModuleNotFoundError:
     from passive_rib_screen import D_V, K_AIR, L_V, P_ATM, R_D, R_V, T_SKIN, p_sat
 
 CP_AIR = 1006.0
@@ -59,6 +44,7 @@ U_BODY_DEFAULT = 100.0
 class OpenValleyThermalResult:
     ambient_C: float
     ambient_RH: float
+    skin_C: float
     width_mm: float
     depth_mm: float
     length_mm: float
@@ -166,6 +152,7 @@ def solve_open_valley_thermal(
     delta_vapor_mm: float = 0.5,
     delta_heat_mm: float = 0.5,
     u_body_W_m2K: float = U_BODY_DEFAULT,
+    skin_c: float = T_SKIN,
     nx: int = 81,
     max_iterations: int = 120,
     tolerance: float = 2e-7,
@@ -175,6 +162,8 @@ def solve_open_valley_thermal(
         raise ValueError("geometry must be positive")
     if delta_vapor_mm <= 0 or delta_heat_mm <= 0:
         raise ValueError("effective exchange distances must be positive")
+    if u_body_W_m2K <= 0:
+        raise ValueError("u_body must be positive")
     if nx < 5:
         raise ValueError("nx must be at least 5")
 
@@ -195,7 +184,7 @@ def solve_open_valley_thermal(
     c_inf = vapor_density(ambient_c, ambient_rh)
     rho_inf = moist_air_density(ambient_c, c_inf)
 
-    surface = np.full(nx, 33.5)
+    surface = np.full(nx, skin_c - 0.5)
     air_temp = np.full(nx, ambient_c)
     vapor = np.full(nx, c_inf)
     relax = 0.45
@@ -224,15 +213,11 @@ def solve_open_valley_thermal(
             nx=nx,
         )
 
-        # The local wet-wall balance is monotonic in surface temperature under
-        # the current assumptions, so vector Newton updates are stable/fast.
         surface_new = surface.copy()
         for _ in range(20):
-            evap_flux = k_m_wall * (
-                saturated_vapor_density(surface_new) - vapor_new
-            )
+            evap_flux = k_m_wall * (saturated_vapor_density(surface_new) - vapor_new)
             residual = (
-                u_body_W_m2K * (T_SKIN - surface_new)
+                u_body_W_m2K * (skin_c - surface_new)
                 + h_wall * (air_new - surface_new)
                 - L_V * evap_flux
             )
@@ -242,7 +227,7 @@ def solve_open_valley_thermal(
                 - L_V * k_m_wall * saturated_vapor_density_derivative(surface_new)
             )
             step = residual / derivative
-            surface_new = np.clip(surface_new - step, 10.0, 50.0)
+            surface_new = np.clip(surface_new - step, 5.0, 55.0)
             if np.max(np.abs(step)) < 1e-9:
                 break
 
@@ -259,13 +244,14 @@ def solve_open_valley_thermal(
             break
 
     evap_flux = k_m_wall * (saturated_vapor_density(surface) - vapor)
-    body_flux = u_body_W_m2K * (T_SKIN - surface)
+    body_flux = u_body_W_m2K * (skin_c - surface)
     air_to_wall = h_wall * (air_temp - surface)
     local_rh = vapor / saturated_vapor_density(air_temp)
 
     return OpenValleyThermalResult(
         ambient_C=ambient_c,
         ambient_RH=ambient_rh,
+        skin_C=skin_c,
         width_mm=width_mm,
         depth_mm=depth_mm,
         length_mm=length_mm,
@@ -291,7 +277,6 @@ def solve_open_valley_thermal(
 
 
 def run_screen() -> pd.DataFrame:
-    """Compact deterministic screen for CI/reference generation."""
     rows = []
     exchange_pairs = (
         (0.10, 0.10),
