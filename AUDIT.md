@@ -47,12 +47,12 @@ The current preferred exterior is therefore hierarchical: wet microstructures fo
 | Moist-air corridor buoyancy model | PASS/SCREEN | `simulations/corridor_buoyancy_screen.py`; prescribed channel T/RH, laminar slot-friction screen. |
 | 2-D heat-spreader model | PASS | `simulations/heat_spreader_2d.py`. |
 | Water/salt mass-balance model | PASS | `simulations/water_salt_1d.py`. |
-| Regression tests | PASS/UPDATED | Split-model, sensitivity-grid, E3, heat-spreader, salt, and corridor tests exist. |
+| Regression tests | PASS | Split-model, sensitivity-grid, E3, heat-spreader, salt, and corridor tests exist. |
 | Grid convergence | PASS/SCREEN | E3 reference case differs by about 0.62% between 24 nodes/pitch and the 48-node screened result. |
-| Reference generator | PASS/UPDATED | Split-transfer, sensitivity, E3, and corridor CSVs included. |
-| CI definition | PASS/UPDATED | CI runs all current model demos/tests and checks generated reference artifacts. |
-| Last confirmed complete CI before latest flow-model commits | PASS | PR-triggered `model-tests` run #83 completed successfully at head `468aad136e2e80e588de443920617daf376eb8b7`. |
-| Current flow-model-integrated CI | CHECK AFTER HEAD SETTLES | New commits trigger CI; success must be confirmed explicitly. |
+| Reference generator | PASS | Split-transfer, sensitivity, E3, corridor, heat-spreader and salt outputs are included with metadata/SHA generation. |
+| CI definition | PASS | CI runs all current model demos/tests and checks generated reference artifacts. |
+| Flow-model integration CI | PASS | GitHub Actions `model-tests` run #137 completed successfully at computational head `0ff7bad704f61ba45d0897ae5dbcc6c6e98882da`. |
+| Post-audit documentation head | INFO | This audit update itself creates a newer documentation commit and may trigger a new CI run; run #137 is the verified computational integration point. |
 
 ## C. Numerical-model audit
 
@@ -130,10 +130,11 @@ Audit interpretation:
 | E3 micro-rib pitch plan | PASS | Original accessibility experiment defined. |
 | E3b hierarchical air-renewal plan | PASS | Micro-rib-only versus micro+macro corridor architectures defined. |
 | Near-surface RH profile | PASS | E3b includes 0.5/1/2/5/10/20 mm sampling heights. |
-| Split heat/vapor identification | PARTIAL | Experiment should measure surface/air temperature with RH so improved vapor renewal is not mistaken for uniformly improved heat transfer. |
-| Corridor flow-direction measurement | OPEN/NEW | Add local velocity or tracer observation so upward/downward/reversing corridor flow can be tested. |
+| Split heat/vapor identification | PLANNED/PARTIAL | Master plan now requires surface/air temperature with RH so vapor renewal is not conflated with sensible exchange. Exact inverse-identification method remains open. |
+| Corridor flow-direction measurement | PLANNED | E3b now requires signed upward/downward/reversing/below-resolution classification, plus vertical/horizontal/inverted controls where practical. |
+| Corridor T/RH profile | PLANNED | E3b includes inlet/mid-height/outlet temperature and RH where sensor intrusion is acceptable. |
 | Physical data | MISSING | No bench experiment has yet been executed. |
-| Exact instrument/calibration list | PARTIAL | Measurement categories exist; hardware-specific uncertainty budget remains open. |
+| Exact instrument/calibration list | PARTIAL | Measurement categories exist; hardware-specific instrument list and uncertainty budget remain open. |
 
 ## E. Prior-art readiness
 
@@ -153,9 +154,12 @@ Audit interpretation:
 |---|---|---|
 | Public GitHub repository | PASS | Repository is public. |
 | Apache-2.0 | PASS | `LICENSE`. |
-| README | PASS/UPDATED | Split transfer and model-form uncertainty reflected; corridor model should be linked in next README sync. |
+| README | PASS | Synced with multiple-root, E3, split-transfer, model-form uncertainty, and corridor-flow findings. |
+| Current-results summary | PASS | Synced through E3, split transfer, deterministic uncertainty, and corridor-buoyancy findings. |
+| Master experiment plan | PASS | Synced with signed corridor-flow and separate sensible/vapor measurement requirements. |
+| E3b protocol | PASS | Signed flow, orientation/inversion controls, and flow-mechanism support criterion included. |
 | Citation metadata | PASS/PARTIAL | Update at stable version/tag. |
-| Reproducible generator + SHA | PASS/UPDATED | Split-transfer, E3, and corridor data included; final release must regenerate at exact release commit. |
+| Reproducible generator + SHA | PASS | Split-transfer, E3, corridor, heat-spreader and salt data included; final release must regenerate at exact release commit. |
 | Stable tag | MISSING | Development branch only. |
 | Persistent archive / DOI | MISSING | Do after stable release audit. |
 | Frozen release artifact manifest | MISSING | Generate from exact final commit. |
@@ -172,15 +176,18 @@ Audit interpretation:
 - [x] Add E17 hierarchical exterior embodiment.
 - [x] Add E3 regression tests.
 - [x] Extend reference generator and CI definition for E3.
-- [x] Confirm E3-integrated CI passes (#83 and prior runs).
+- [x] Confirm E3-integrated CI passes.
 - [x] Re-audit generated reference package path/CI existence checks.
 - [x] Separate sensible heat and vapor-transfer multipliers.
 - [x] Add split-model regression equivalence test.
 - [x] Add deterministic model-form sensitivity framework and executable sweep.
 - [x] Add first moist-air corridor buoyancy screen and regression tests.
 - [x] Add corridor outputs to reproducible reference generator and CI artifact checks.
-- [ ] Confirm current flow-model-integrated CI after the latest commits settle.
-- [ ] Sync top-level README with corridor model/result.
+- [x] Confirm flow-model integration CI: run #137 PASS at `0ff7bad704f61ba45d0897ae5dbcc6c6e98882da`.
+- [x] Sync top-level README with corridor model/result.
+- [x] Sync `docs/current-results.md` with split-transfer and corridor findings.
+- [x] Sync master experiment plan with signed-flow and split-transfer measurements.
+- [x] Extend E3b with signed-flow, orientation, and inversion controls.
 
 ### P1 — model strengthening
 
