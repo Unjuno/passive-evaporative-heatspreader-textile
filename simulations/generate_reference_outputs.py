@@ -42,6 +42,10 @@ from simulations.passive_environment_boundary import (
 from simulations.passive_rib_screen import U_FLAT, stable_equilibria
 from simulations.rib_diffusion_screen import run_screen as run_diffusion_screen
 from simulations.self_consistent_corridor_1d import run_screen as run_self_consistent_corridor_screen
+from simulations.spreader_material_mapping import (
+    run_contact_screen as run_spreader_contact_screen,
+    run_screen as run_spreader_material_screen,
+)
 from simulations.split_heat_mass_screen import run_split_screen
 from simulations.split_transfer_sensitivity import run_sensitivity, summarize
 from simulations.supply_limit_audit import run_screen as run_supply_limit_audit
@@ -215,6 +219,8 @@ def main() -> None:
     asymmetric = run_asymmetric_wet_dry_screen()
     outputs["asymmetric_wet_dry_spreader.csv"] = asymmetric
     outputs["asymmetric_wet_dry_spreader_gain.csv"] = asymmetric_gain_summary(asymmetric)
+    outputs["spreader_material_mapping.csv"] = run_spreader_material_screen()
+    outputs["spreader_contact_audit.csv"] = run_spreader_contact_screen()
     outputs["open_valley_heat_mass_coupling_audit.csv"] = run_heat_mass_coupling_audit()
     outputs["passive_environment_boundary.csv"] = run_environment_boundary()
     outputs["passive_environment_boundary_skin_sensitivity.csv"] = run_environment_skin_sensitivity()
@@ -246,7 +252,9 @@ def main() -> None:
             "open_valley_thermal_1d.csv is the fully-wet transfer-capacity baseline at wet_fraction=1.",
             "open_valley_feed_limited.csv uses a homogenized sub-grid partial-wetness factor when liquid feed is below fully-wet capacity; it does not resolve individual dry patches or wetting fronts.",
             "wet_dry_two_node.csv resolves separate wet/dry temperatures only in a symmetric two-node screen; its global body-flux invariance to g_mix depends on equal wet/dry sensible boundary coefficients.",
-            "asymmetric_wet_dry_spreader.csv deliberately assigns different dry/wet ambient sensible coefficients; g_mix is a mechanism parameter and is not mapped to a real textile conductivity.",
+            "asymmetric_wet_dry_spreader.csv deliberately assigns different dry/wet ambient sensible coefficients; its bounded continuation solver is still a low-order partial-wetness mechanism model.",
+            "spreader_material_mapping.csv maps g_mix to k*t/pitch^2 using an ideal periodic-stripe topology factor gamma=4; it is not a validated garment geometry correlation.",
+            "spreader_contact_audit.csv uses two identical lumped contact resistances in series with the sheet path; real contact networks must be measured or geometry-resolved.",
             "supply_limit_audit.csv is retained as a conservative capacity/feed classification and must not be confused with the explicit partial-wetness state.",
             "Salt vapor flux is zero in the garment-temperature models.",
         ],
