@@ -34,6 +34,8 @@ jobs:
         run: python simulations/self_consistent_corridor_1d.py > /tmp/self-consistent-corridor.txt
       - name: Run open-valley renewal target screen
         run: python simulations/open_valley_exchange_target.py > /tmp/open-valley-renewal-target.txt
+      - name: Run distributed open-valley advection-diffusion screen
+        run: python simulations/open_valley_distributed_1d.py > /tmp/open-valley-distributed.txt
       - name: Run 2D heat-spreader orientation demo
         run: python simulations/heat_spreader_2d.py > /tmp/heat-spreader-demo.txt
       - name: Run normalized water-salt screen
