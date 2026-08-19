@@ -148,3 +148,34 @@ Before a stable versioned release, regenerate and archive:
 6. reference CSVs with code commit SHA and parameter metadata.
 
 The primary physical experiment should determine which, if any, low-order equilibrium behavior corresponds to real textile operation.
+
+## 12. E3 periodic rib-diffusion / boundary-layer screen
+
+A new 2-D periodic steady-diffusion model isolates humidity-boundary-layer sharing between neighboring wet ribs. It solves normalized vapor diffusion with wet textile surfaces at `u=1`, a prescribed refreshed-air plane at `u=0`, and periodic lateral boundaries.
+
+This model reports a **mass-transfer multiplier only**. It is not CFD, does not include buoyancy or walking airflow, and must not be interpreted as a measured `alpha` or a garment cooling wattage.
+
+Screened geometry:
+
+- rib height `h = 2.5 mm`;
+- structured-panel coverage `f = 0.65`;
+- pitch `p = 0.8, 1.0, 1.5 mm`;
+- rib width approximately `0.24–0.25 mm`.
+
+Selected whole-garment vapor-transfer multipliers `M_m`:
+
+| renewal gap above rib tip | p=0.8 mm | p=1.0 mm | p=1.5 mm |
+|---:|---:|---:|---:|
+| 0.5 mm | 3.785 | 3.548 | 3.098 |
+| 1.0 mm | 2.481 | 2.400 | 2.229 |
+| 2.0 mm | 1.765 | 1.736 | 1.673 |
+| 5.0 mm | 1.312 | 1.304 | 1.286 |
+| 7.5 mm | 1.209 | 1.204 | 1.193 |
+
+Using the older `M≈3.5` value only as a cross-model screening reference, the idealized refreshed-air plane must be within roughly 0.4–0.5 mm of the rib tips for this geometry. At a several-millimeter stagnant renewal gap, pitch refinement by itself provides little additional effective transfer.
+
+A grid-convergence check for `p=1.0 mm`, `h=2.5 mm`, and renewal height 3.0 mm gave whole-area multiplier values from 3.528 at 16 nodes/pitch to 3.570 at 48 nodes/pitch; the 24-node result differs from the finest screened value by about -0.62%.
+
+**Design consequence:** the preferred exterior should be treated as hierarchical rather than single-scale. Wet micro-ribs/3-D-knit relief supply local area, while larger open corridors, valleys, spacer channels, discontinuous rib fields, pleats, or equivalent structures are used to connect those wet surfaces to refreshed ambient air.
+
+The next planned physical experiment is E3b (`experiments/e3b_hierarchical_air_renewal.md`), which compares micro-rib-only and hierarchical micro+macro exteriors under equal water input while measuring heater power and near-surface RH profiles.
