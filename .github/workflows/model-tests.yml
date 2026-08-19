@@ -24,3 +24,5 @@ jobs:
         run: python simulations/passive_rib_screen.py > /tmp/reference-screen.txt
       - name: Run 2D heat-spreader orientation demo
         run: python simulations/heat_spreader_2d.py > /tmp/heat-spreader-demo.txt
+      - name: Run normalized water-salt screen
+        run: python simulations/water_salt_1d.py > /tmp/water-salt-screen.txt
