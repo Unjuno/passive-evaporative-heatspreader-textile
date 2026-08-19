@@ -8,7 +8,7 @@ This matrix makes concrete combinations explicit rather than relying only on bro
 - **L2 — heat-spreader:** continuous, anisotropic, mesh, serpentine, or island-bridge thermal path.
 - **L3 — liquid distribution:** capillary yarn/channel/porous network.
 - **L4 — exterior evaporator:** flat, ribbed, finned, 3D-knit, pile, lamellar, pleated, scale-like, or mixed geometry.
-- **L5 — optional environmental control:** dry-side shield, passive vent, or forced airflow.
+- **L5 — optional environmental control:** dry-side shield, passive vent, macro air-renewal channel, or forced airflow.
 
 ## E01 — passive micro-rib baseline
 
@@ -144,8 +144,22 @@ This matrix makes concrete combinations explicit rather than relying only on bro
 - L4: textured portions of the same visual pattern form evaporative ribs/pleats.
 - Intended mode: integrate function into stripes, geometric motifs, seams, or panel graphics rather than adding visible machine components.
 
+## E17 — hierarchical micro-evaporator + macro air-renewal paths
+
+- L1: directional liquid transport textile.
+- L2: whole-area or routed flexible heat spreader.
+- L3: capillary feed to defined wet microstructured fields.
+- L4: wet micro-ribs, short fins, 3D-knit relief, pile, or lamellae arranged in discontinuous fields rather than one uninterrupted dense carpet.
+- L5: larger open corridors, valleys, spacer-knit channels, grooves, pleat gaps, or equivalent passages that allow refreshed ambient air to reach near the wet microstructures.
+- Representative microstructure screening range: approximately 2–3 mm height and 0.8–1.5 mm local pitch.
+- Representative macro-corridor research range: approximately 1–6 mm open width separated by approximately 5–25 mm rib-field widths; these values are starting test ranges rather than optimized dimensions.
+- Corridor orientation may be vertical, horizontal, diagonal, branched, or aligned to expected walking airflow.
+- Corridor surfaces may be dry, partially wet, or separately capillary-fed; dry conductive exposure may be thermally shielded in hot ambient conditions.
+- No onboard fan is required.
+- Intended mode: preserve high local wetted area while preventing all evaporative surfaces from sharing one thick stagnant humidity boundary layer.
+
 ## Cross-combination rule
 
-The listed embodiments are not intended to be mutually exclusive. For example, E02 anisotropic heat routing may be combined with E05 3D-knit texture, E08 dry-side shielding, and E09 humidity-responsive exposure. Likewise, E03 serpentine stretch paths may be used under E07 lamellae or E15 detachable panels.
+The listed embodiments are not intended to be mutually exclusive. For example, E02 anisotropic heat routing may be combined with E05 3D-knit texture, E08 dry-side shielding, E09 humidity-responsive exposure, and E17 macro air-renewal corridors. Likewise, E03 serpentine stretch paths may be used under E07 lamellae, E15 detachable panels, or E17 discontinuous evaporative fields.
 
 For future updates, newly proposed components should be documented both individually and in at least one concrete complete stack so that the repository records operable combinations rather than only menus of parts.
