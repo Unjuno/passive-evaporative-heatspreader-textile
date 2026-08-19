@@ -51,6 +51,7 @@ jobs:
           test -s /tmp/reference-output/data/corridor_neutral_density_curve.csv
           test -s /tmp/reference-output/data/self_consistent_corridor_1d.csv
           test -s /tmp/reference-output/data/open_valley_renewal_targets.csv
+          test -s /tmp/reference-output/data/open_valley_distributed_1d.csv
           test -s /tmp/reference-output/data/heat_spreader_orientation.csv
           test -s /tmp/reference-output/data/water_salt_parameter_screen.csv
           test -s /tmp/reference-output/data/rib_diffusion_boundary_layer.csv
