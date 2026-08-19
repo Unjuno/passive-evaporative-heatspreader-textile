@@ -5,7 +5,7 @@ Usage:
 
 The generator writes:
 - CSV tables for passive equilibrium branches, 2D heat-spreader orientation,
-  and normalized water/salt screening;
+  normalized water/salt screening, and the E3 periodic rib-diffusion screen;
 - PNG figures derived directly from those tables;
 - metadata.json including the git commit when available;
 - sha256.txt covering generated artifacts.
@@ -34,6 +34,7 @@ if str(REPO_ROOT) not in sys.path:
 
 from simulations.heat_spreader_2d import orientation_demo
 from simulations.passive_rib_screen import U_FLAT, stable_equilibria
+from simulations.rib_diffusion_screen import run_screen as run_diffusion_screen
 from simulations.water_salt_1d import run_parameter_screen
 
 
@@ -141,6 +142,28 @@ def plot_salt_threshold(out_path: Path) -> None:
     plt.close()
 
 
+def plot_rib_diffusion(df: pd.DataFrame, out_path: Path) -> None:
+    plt.figure(figsize=(7.2, 4.8))
+    for pitch in sorted(df["pitch_mm"].unique()):
+        group = df[df["pitch_mm"] == pitch]
+        plt.plot(
+            group["renewal_gap_above_tip_mm"],
+            group["whole_garment_mass_transfer_multiplier"],
+            marker="o",
+            label=f"pitch {pitch:.1f} mm",
+        )
+    plt.axhline(3.5, linestyle="--", linewidth=1.0, label="legacy screening reference M=3.5")
+    plt.xscale("log")
+    plt.xlabel("Idealized bulk-air renewal gap above rib tips (mm)")
+    plt.ylabel("Whole-garment mass-transfer multiplier M_m (-)")
+    plt.title("SIMULATION: periodic 2-D rib diffusion / boundary-layer sharing")
+    plt.grid(alpha=0.25)
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(out_path, dpi=180)
+    plt.close()
+
+
 def write_sha256(root: Path) -> None:
     lines = []
     for path in sorted(root.rglob("*")):
@@ -165,14 +188,17 @@ def main() -> None:
     passive = generate_passive_branch_table()
     spreader = generate_heat_spreader_table()
     salt = run_parameter_screen()
+    diffusion = run_diffusion_screen()
 
     passive.to_csv(data_dir / "passive_equilibrium_branches.csv", index=False)
     spreader.to_csv(data_dir / "heat_spreader_orientation.csv", index=False)
     salt.to_csv(data_dir / "water_salt_parameter_screen.csv", index=False)
+    diffusion.to_csv(data_dir / "rib_diffusion_boundary_layer.csv", index=False)
 
     plot_passive_branches(passive, fig_dir / "passive_equilibrium_branches.png")
     plot_heat_spreader(spreader, fig_dir / "heat_spreader_orientation.png")
     plot_salt_threshold(fig_dir / "water_salt_saturation_threshold.png")
+    plot_rib_diffusion(diffusion, fig_dir / "rib_diffusion_boundary_layer.png")
 
     metadata = {
         "classification": "SIMULATION",
@@ -183,10 +209,11 @@ def main() -> None:
             "water_g_h": 150.0,
             "RH_percent": [50.0, 70.0, 85.0],
         },
-        "warning": (
-            "The passive model may contain multiple stable roots. Tables include all detected stable roots; "
-            "figures must not be interpreted as measured garment performance."
-        ),
+        "warnings": [
+            "The passive heat/mass model may contain multiple stable roots; tables include all detected stable roots.",
+            "The rib-diffusion model is a 2-D pure-diffusion screen with an idealized air-renewal boundary and is not CFD or a measured alpha value.",
+            "Figures must not be interpreted as measured garment performance.",
+        ],
     }
     (root / "metadata.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
     write_sha256(root)
