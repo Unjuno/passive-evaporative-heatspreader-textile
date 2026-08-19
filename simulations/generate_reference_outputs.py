@@ -30,7 +30,10 @@ from simulations.open_valley_distributed_1d import run_screen as run_open_valley
 from simulations.open_valley_exchange_target import target_table as open_valley_target_table
 from simulations.open_valley_heat_mass_coupling_audit import run_screen as run_heat_mass_coupling_audit
 from simulations.open_valley_thermal_1d import run_screen as run_open_valley_thermal_screen
-from simulations.passive_environment_boundary import run_screen as run_environment_boundary
+from simulations.passive_environment_boundary import (
+    run_screen as run_environment_boundary,
+    run_skin_sensitivity as run_environment_skin_sensitivity,
+)
 from simulations.passive_rib_screen import U_FLAT, stable_equilibria
 from simulations.rib_diffusion_screen import run_screen as run_diffusion_screen
 from simulations.self_consistent_corridor_1d import run_screen as run_self_consistent_corridor_screen
@@ -203,6 +206,7 @@ def main() -> None:
     outputs["open_valley_thermal_1d.csv"] = run_open_valley_thermal_screen()
     outputs["open_valley_heat_mass_coupling_audit.csv"] = run_heat_mass_coupling_audit()
     outputs["passive_environment_boundary.csv"] = run_environment_boundary()
+    outputs["passive_environment_boundary_skin_sensitivity.csv"] = run_environment_skin_sensitivity()
     outputs["supply_limit_audit.csv"] = run_supply_limit_audit()
     outputs["heat_spreader_orientation.csv"] = generate_heat_spreader_table()
     outputs["water_salt_parameter_screen.csv"] = run_parameter_screen()
@@ -227,7 +231,7 @@ def main() -> None:
             "Heat and vapor transfer are not assumed to share one multiplier.",
             "Open-valley lateral exchange is parameterized through effective exchange distances, not CFD-resolved geometry.",
             "The heat-mass coupling audit uses the same-exchange-length state as a baseline and does not prove arbitrary heat/mass decoupling is physically achievable.",
-            "The passive environment boundary is a model sign boundary for fixed skin temperature, not a human safety or medical threshold.",
+            "The passive environment boundary is a model sign boundary and depends on the explicit skin/artificial-skin setpoint; it is not a human safety or medical threshold.",
             "The coupled open-valley thermal solver is a fully-wet transfer-capacity model; supply_limit_audit.csv marks cases whose capacity exceeds available feed.",
             "Supply-limited cases do not have a solved dryout/wet-fraction temperature field; capacity-model body heat flux must not be reused as a feed-limited prediction.",
             "Salt vapor flux is zero in the garment-temperature models.",
