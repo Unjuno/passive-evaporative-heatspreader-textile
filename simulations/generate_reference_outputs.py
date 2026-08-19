@@ -42,6 +42,7 @@ from simulations.split_heat_mass_screen import run_split_screen
 from simulations.split_transfer_sensitivity import run_sensitivity, summarize
 from simulations.supply_limit_audit import run_screen as run_supply_limit_audit
 from simulations.water_salt_1d import run_parameter_screen
+from simulations.wet_dry_two_node import run_screen as run_wet_dry_two_node_screen
 
 
 def git_commit() -> str:
@@ -206,6 +207,7 @@ def main() -> None:
     outputs["open_valley_distributed_1d.csv"] = run_open_valley_distributed_screen()
     outputs["open_valley_thermal_1d.csv"] = run_open_valley_thermal_screen()
     outputs["open_valley_feed_limited.csv"] = run_feed_limited_screen()
+    outputs["wet_dry_two_node.csv"] = run_wet_dry_two_node_screen()
     outputs["open_valley_heat_mass_coupling_audit.csv"] = run_heat_mass_coupling_audit()
     outputs["passive_environment_boundary.csv"] = run_environment_boundary()
     outputs["passive_environment_boundary_skin_sensitivity.csv"] = run_environment_skin_sensitivity()
@@ -232,10 +234,11 @@ def main() -> None:
             "The passive lumped model may contain multiple stable roots.",
             "Heat and vapor transfer are not assumed to share one multiplier.",
             "Open-valley lateral exchange is parameterized through effective exchange distances, not CFD-resolved geometry.",
-            "The heat-mass coupling audit now compares required selectivity with same-length and Chilton-Colburn-style baselines; these are screening analogies, not validated textile correlations.",
+            "The heat-mass coupling audit compares required selectivity with same-length and Chilton-Colburn-style baselines; these are screening analogies, not validated textile correlations.",
             "The passive environment boundary is a model sign boundary and depends on the explicit skin/artificial-skin setpoint; it is not a human safety or medical threshold.",
             "open_valley_thermal_1d.csv is the fully-wet transfer-capacity baseline at wet_fraction=1.",
             "open_valley_feed_limited.csv uses a homogenized sub-grid partial-wetness factor when liquid feed is below fully-wet capacity; it does not resolve individual dry patches or wetting fronts.",
+            "wet_dry_two_node.csv resolves separate wet/dry temperatures only in a symmetric two-node screen; its global body-flux invariance to g_mix depends on equal wet/dry sensible boundary coefficients.",
             "supply_limit_audit.csv is retained as a conservative capacity/feed classification and must not be confused with the explicit partial-wetness state.",
             "Salt vapor flux is zero in the garment-temperature models.",
         ],
