@@ -8,7 +8,7 @@ This matrix makes concrete combinations explicit rather than relying only on bro
 - **L2 — heat-spreader:** continuous, anisotropic, mesh, serpentine, or island-bridge thermal path.
 - **L3 — liquid distribution:** capillary yarn/channel/porous network.
 - **L4 — exterior evaporator:** flat, ribbed, finned, 3D-knit, pile, lamellar, pleated, scale-like, or mixed geometry.
-- **L5 — optional environmental control:** dry-side shield, passive vent, macro air-renewal channel, or forced airflow.
+- **L5 — optional environmental control:** dry-side shield, passive vent, macro air-renewal path, or forced airflow.
 
 ## E01 — passive micro-rib baseline
 
@@ -152,14 +152,57 @@ This matrix makes concrete combinations explicit rather than relying only on bro
 - L4: wet micro-ribs, short fins, 3D-knit relief, pile, or lamellae arranged in discontinuous fields rather than one uninterrupted dense carpet.
 - L5: larger open corridors, valleys, spacer-knit channels, grooves, pleat gaps, or equivalent passages that allow refreshed ambient air to reach near the wet microstructures.
 - Representative microstructure screening range: approximately 2–3 mm height and 0.8–1.5 mm local pitch.
-- Representative macro-corridor research range: approximately 1–6 mm open width separated by approximately 5–25 mm rib-field widths; these values are starting test ranges rather than optimized dimensions.
+- Representative macro-path research range: approximately 1–10 mm width, approximately 1–5 mm depth/open height, and approximately 5–25 mm evaporator-field spacing; these are starting test ranges rather than optimized dimensions.
 - Corridor orientation may be vertical, horizontal, diagonal, branched, or aligned to expected walking airflow.
 - Corridor surfaces may be dry, partially wet, or separately capillary-fed; dry conductive exposure may be thermally shielded in hot ambient conditions.
 - No onboard fan is required.
 - Intended mode: preserve high local wetted area while preventing all evaporative surfaces from sharing one thick stagnant humidity boundary layer.
 
+## E18 — laterally open evaporative valley
+
+- L1: directional liquid transport textile.
+- L2: flexible whole-area or routed heat spreader beneath the valley floor and adjacent wet fields.
+- L3: capillary feed to the valley floor, valley side features, or adjacent micro-rib fields.
+- L4: micro-ribs, short fins, 3D-knit relief, or porous wet texture on the floor and/or edges of a shallow valley.
+- L5: the valley has **no continuous roof** and remains directly exposed to ambient air along its length, allowing lateral/normal exchange rather than relying only on two end openings.
+- Representative starting geometry: valley width approximately 3–15 mm, depth approximately 1–5 mm, with adjacent microstructure height approximately 1–3 mm.
+- The valley may be straight, branched, diagonal, curved, or integrated into seams/panel lines.
+- Openings may widen periodically or intersect transverse grooves.
+- Intended mode: maintain ambient access to wet structures when end-renewed covered channels would become humid or saturated.
+
+## E19 — segmented open valley / cross-vented path
+
+- L1–L4: as E18.
+- L5: a long visual stripe or valley is divided by transverse openings, cuts, widened nodes, perforations, or unroofed intersections so that the uninterrupted wet-flow path is short.
+- Representative starting segment length: approximately 20–50 mm; shorter and longer variants are included.
+- Adjacent segments may be staggered to preserve garment aesthetics and structural continuity.
+- Intended mode: reduce local humidity accumulation without requiring a powered fan or a single preferred buoyancy-flow direction.
+
+## E20 — discontinuous evaporator islands with ambient-connected gaps
+
+- L1: directional liquid transport.
+- L2: heat spreader routes heat laterally between body regions and separated wet islands.
+- L3: branched capillary network feeds discrete wet islands.
+- L4: each island may use ribs, fins, 3D knit, pile, lamellae, or porous evaporative texture.
+- L5: dry or weakly wet gaps between islands remain open to ambient air and act as renewal zones; gaps may form grids, stripes, chevrons, dots, or apparel panel patterns.
+- Representative island width/length: approximately 5–30 mm, with approximately 1–10 mm ambient-connected gaps as starting research ranges.
+- Intended mode: avoid one continuous saturated boundary layer and provide lateral air access while retaining large-area heat routing.
+
+## E21 — covered/end-renewed corridor comparison or assisted variant
+
+- L1: directional liquid transport.
+- L2: heat spreader beneath a wet corridor floor.
+- L3: capillary feed to the corridor floor and optionally sidewalls.
+- L4: wet porous/ribbed floor inside a corridor with a roof or cover.
+- L5: ambient connection primarily at two ends; optional additional end vents, external wind coupling, motion-induced pressure, or auxiliary fan may be used.
+- Representative research dimensions: width approximately 3–10 mm, depth approximately 2–5 mm, end-to-end length approximately 20–200 mm.
+- Passive still-air simulations indicate that long covered corridors may approach saturation under hot/humid conditions; this is a disclosed implementation and comparison case, not the currently preferred passive geometry.
+- Intended mode: comparison control, protected channel, airflow-assisted embodiment, or implementation where contamination/mechanical protection outweighs passive still-air exchange loss.
+
 ## Cross-combination rule
 
-The listed embodiments are not intended to be mutually exclusive. For example, E02 anisotropic heat routing may be combined with E05 3D-knit texture, E08 dry-side shielding, E09 humidity-responsive exposure, and E17 macro air-renewal corridors. Likewise, E03 serpentine stretch paths may be used under E07 lamellae, E15 detachable panels, or E17 discontinuous evaporative fields.
+The listed embodiments are not intended to be mutually exclusive. For example, E02 anisotropic heat routing may be combined with E05 3D-knit texture, E08 dry-side shielding, E09 humidity-responsive exposure, E18 open valleys, E19 segmentation, or E20 evaporator islands. Likewise, E03 serpentine stretch paths may be used under E07 lamellae, E15 detachable panels, E18 open valleys, or E21 covered corridors.
+
+E17 is the broad hierarchical family; E18–E21 make specific ambient-access topologies explicit. A design may mix open and covered regions, transition between them, or use covered sections only where motion/external airflow is available.
 
 For future updates, newly proposed components should be documented both individually and in at least one concrete complete stack so that the repository records operable combinations rather than only menus of parts.
