@@ -34,6 +34,8 @@ jobs:
           test -s /tmp/reference-output/data/passive_equilibrium_branches.csv
           test -s /tmp/reference-output/data/heat_spreader_orientation.csv
           test -s /tmp/reference-output/data/water_salt_parameter_screen.csv
+          test -s /tmp/reference-output/data/rib_diffusion_boundary_layer.csv
           test -s /tmp/reference-output/figures/passive_equilibrium_branches.png
+          test -s /tmp/reference-output/figures/rib_diffusion_boundary_layer.png
           test -s /tmp/reference-output/metadata.json
           test -s /tmp/reference-output/sha256.txt
