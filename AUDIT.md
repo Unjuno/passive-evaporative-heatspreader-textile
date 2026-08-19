@@ -5,147 +5,166 @@ Branch audited: `agent/initial-research-disclosure`
 
 ## Overall assessment
 
-The repository now has a coherent technical disclosure, explicit design variants, three executable screening models, regression tests, a reproducible table/figure generation pipeline, prior-art working notes, and a staged physical experiment plan. It is **not yet a finished stable release**.
+The branch now contains a coherent technical disclosure, explicit implementation variants, **four** executable screening-model families, regression tests, a reproducible output generator, prior-art working notes, and staged physical experiment protocols.
 
-The most important numerical audit finding remains that the nonlinear passive heat/mass model can have multiple stable equilibria. Earlier exploratory calculations sometimes selected the most-cooling root, creating an overly optimistic single-value exchange threshold. The repository model now exposes all stable roots and distinguishes warm/conservative and cool/optimistic branches.
+It is still a development branch, not a frozen stable release, and it contains **no physical garment-performance measurements yet**.
 
-GitHub Actions has successfully executed the test suite, all three current model demos, and the reproducible reference-output generator. Remaining high-priority gaps are authoritative patent-family/claim verification, final-release artifact freezing/provenance, higher-fidelity boundary-layer/model-uncertainty work, and physical bench data.
+Two numerical audit findings currently dominate the research plan:
+
+1. the low-order nonlinear passive heat/mass model can contain multiple stable equilibria, so earlier single-value `M` cooling thresholds are not treated as validated criteria;
+2. the new E3 periodic 2-D diffusion screen shows that dense wet micro-ribs can share one stagnant humidity layer, making near-surface air renewal at least as important as geometric rib area.
+
+The second finding changes the preferred exterior from a single-scale dense texture toward a **hierarchical exterior**: wet microstructures for area plus larger open corridors/valleys/spacer paths for passive or motion-assisted air renewal.
 
 ## A. Technical coherence
 
 | Item | Status | Audit note |
 |---|---|---|
-| Core architecture defined | PASS | Passive directional-liquid transport + heat spreading + capillary delivery + exterior evaporation is consistent. |
-| Numbered architecture | PASS | `docs/architecture.md` defines functional layers and transport paths. |
-| Concrete complete embodiments | PASS | `docs/embodiment-matrix.md` records 16 implementation stacks and cross-combinations. |
-| Design-history consistency | PASS | `docs/design-history.md` separates retained, optional, and deprecated branches. |
-| Fan requirement | PASS | Fan is optional, not part of the primary architecture. |
-| MOF/sorbent role | PASS | Optional secondary embodiment only. |
-| Salt physics | PASS | Water evaporation and nonvolatile salt transport are separated; salt evaporation is explicitly rejected. |
-| Water/salt model | PASS/PARTIAL | Governing multi-phase specification plus normalized 1D mass-balance screen implemented; pore-scale/kinetic model still open. |
-| Hot-ambient reversal risk | PASS | Dry high-conductivity exterior heat pickup and shielding embodiments are included. |
-| Apparel/exterior design | PASS | Low-profile ribs, 3D knit, lamellae, pleats, pile, and pattern-as-function embodiments are explicit. |
-| Simulation vs measurement labels | PASS | No physical garment result is currently claimed. |
+| Core passive architecture | PASS | Directional liquid transport + heat spreading + capillary delivery + exterior evaporation remains consistent. |
+| Whole-body/routed heat spreading | PASS | Continuous, anisotropic, mesh, serpentine, island-bridge and redundant paths documented. |
+| Exterior geometry families | PASS | Ribs, fins, 3D knit, pile, lamellae, pleats and related structures explicit. |
+| Hierarchical air-renewal exterior | PASS/NEW | E17 and E3b now make microstructure + macro corridor combinations explicit. |
+| Hot-ambient dry-side risk | PASS | Dry conductive regions may require shielding/thermal isolation. |
+| Fan requirement | PASS | Fan remains optional; primary architecture is fanless. |
+| MOF/sorbent role | PASS | Secondary optional embodiment only. |
+| Salt physics | PASS | Water evaporates; salt vapor flux is zero in garment-temperature models. |
+| Apparel integration | PASS | Low-profile textile-like textures and pattern-as-function variants recorded. |
+| Simulation vs measurement labeling | PASS | Physical performance is not claimed. |
 
 ## B. Reproducibility
 
 | Item | Status | Audit note |
 |---|---|---|
-| Governing equations | PASS | Current low-order heat/mass model documented. |
-| Variable definitions and units | PASS | Included in governing and water/salt documents. |
-| Passive exterior source | PASS | `simulations/passive_rib_screen.py`. |
-| 2D anisotropic heat-spreader source | PASS | `simulations/heat_spreader_2d.py`. |
-| Normalized water/salt source | PASS | `simulations/water_salt_1d.py`. |
-| Dependencies | PASS | `requirements.txt` and `requirements-dev.txt`. |
-| Multi-equilibrium handling | PASS | All stable roots exposed; explicit selection policy required. |
-| Unit/regression tests | PASS | Includes vapor-pressure, geometry, equilibrium, multi-root, 2D orientation, and salt-conservation tests. |
-| CI workflow | PASS | GitHub Actions completes tests and current model demos. |
-| Reproducible output generator | PASS | `simulations/generate_reference_outputs.py` creates CSVs, PNGs, metadata with git commit, and SHA-256 manifest. |
-| Reference output CSV | PASS/PARTIAL | Existing branch-map record plus generator; stable-release outputs must be regenerated at the final tag/commit. |
-| Consolidated numerical-results record | PASS | `docs/current-results.md`. |
-| Figure regeneration | PASS | Plotting/generation pipeline is CI-validated; stable-release figures still need freezing from the release commit. |
+| Governing equations | PASS | Heat/mass and water/salt assumptions documented. |
+| Passive nonlinear heat/mass model | PASS | `simulations/passive_rib_screen.py`. |
+| Periodic rib diffusion model | PASS/NEW | `simulations/rib_diffusion_screen.py`. |
+| 2-D heat-spreader model | PASS | `simulations/heat_spreader_2d.py`. |
+| Water/salt mass-balance model | PASS | `simulations/water_salt_1d.py`. |
+| Regression tests | PASS/UPDATED | New E3 diffusion tests added to `tests/`. |
+| Grid convergence | PASS/SCREEN | E3 reference case differs by about 0.62% between 24 nodes/pitch and the 48-node screened result. |
+| Reference generator | PASS/UPDATED | E3 table and figure added to `simulations/generate_reference_outputs.py`. |
+| CI definition | PASS/UPDATED | Workflow now runs E3 model and checks E3 generated artifacts. |
+| Current E3-integrated CI run | PENDING | Must confirm after PR-triggered Actions run. |
 
 ## C. Numerical-model audit
 
-| Item | Status | Audit note |
-|---|---|---|
-| Single `M` threshold accepted? | NO | Earlier `M ~2.5–3.5` +10 W values are not treated as robust thresholds. |
-| Multiple stable roots detected? | YES | Present low-order model exhibits coexisting stable branches near the transition. |
-| Root selection visible? | YES | Warm and cool policies are explicit. |
-| Physical hysteresis established? | NO | Multi-root behavior may be a low-order-model artifact and requires experiment/higher-fidelity analysis. |
-| Conservative interpretation | PASS | README/current-results no longer present a single `M` as validated design criterion. |
-| 2D anisotropy direction | PASS/MODEL | In the current right-side sink geometry, x-aligned high conductivity routes more body-side heat than the 90°-rotated anisotropy; regression-tested. |
-| Salt conservation | PASS/MODEL | Normalized model conserves salt between upstream solids and terminal liquid; no salt vapor flux exists. |
-| RH branch sweep | PASS/PARTIAL | Reproducible output generator maps stable branches at 50/70/85% RH; broader coefficient/model-form uncertainty remains open. |
+### C1 — nonlinear equilibrium branches
+
+- Earlier single-value thresholds such as `M ~ 2.5–3.5` for +10 W are retained only as historical screening references.
+- The current passive model exposes all stable roots.
+- Any future single-number comparison must state root-selection policy.
+- Whether the multi-equilibrium behavior is physical or a low-order natural-convection artifact remains open.
+
+### C2 — E3 boundary-layer interference
+
+E3 fixes one idealized refreshed-air plane above periodic wet ribs and solves steady vapor diffusion.
+
+For `h=2.5 mm`, structured-panel coverage `f=0.65`:
+
+| renewal gap above tips | p=0.8 mm | p=1.0 mm | p=1.5 mm |
+|---:|---:|---:|---:|
+| 0.5 mm | 3.785 | 3.548 | 3.098 |
+| 1.0 mm | 2.481 | 2.400 | 2.229 |
+| 5.0 mm | 1.312 | 1.304 | 1.286 |
+
+Values are whole-area **mass-transfer multipliers**, not cooling wattages.
+
+Audit interpretation:
+
+- geometric area alone is insufficient;
+- pitch refinement has weak benefit once the whole field lies under a several-millimeter stagnant humidity layer;
+- the idealized air-renewal boundary dominates numerical grid error;
+- a hierarchical micro+macro exterior should be physically tested.
 
 ## D. Experimental readiness
 
 | Item | Status | Audit note |
 |---|---|---|
-| Control sample defined | PASS | B0 flat fast-dry textile. |
-| Integrated sample defined | PASS | B4. |
-| Ablation controls | PASS | B2/B3/B4. |
+| B0 flat control | PASS | Defined. |
+| B2/B3/B4 ablation | PASS | Defined. |
 | Primary condition | PASS | 35 °C / 70% RH / 150 g/h / nominal still air / 34 °C artificial skin. |
-| Primary endpoint | PASS | Heater-power difference at equal water input. |
-| PASS/FAIL rule | PASS | >=10 W provisional PASS; <5 W FAIL for future physical test. |
+| Primary endpoint | PASS | Heater-power difference at equal liquid feed. |
 | Water balance | PASS | >=95% closure target. |
-| Exterior `alpha` identification | PASS/PROTOCOL | `docs/accessibility-identification.md` defines geometry/RH profiling method. |
-| Uncertainty plan | PARTIAL | Categories defined; exact instruments/calibration and propagation pending. |
-| Physical data | MISSING | No bench measurements yet. |
+| E3 micro-rib pitch plan | PASS | Original accessibility experiment defined. |
+| E3b hierarchical air-renewal plan | PASS/NEW | Micro-rib-only versus micro+macro corridor architectures defined. |
+| Near-surface RH profile | PASS/NEW | E3b includes 0.5/1/2/5/10/20 mm sampling heights. |
+| Physical data | MISSING | No bench experiment has yet been executed. |
+| Exact instrument/calibration list | PARTIAL | Measurement categories exist; hardware-specific uncertainty budget remains open. |
 
 ## E. Prior-art readiness
 
 | Item | Status | Audit note |
 |---|---|---|
-| i-Cool heat conduction + sweat transport | PASS | Explicitly acknowledged as close prior art. |
-| Directional liquid transport | PASS | 2020 Science Advances work recorded. |
-| Humidity-responsive ventilation | PASS | 2021 Science Advances work recorded. |
-| 2026 sweat-pumping cooling fabric | PASS | Recorded. |
-| Early sorbent cooling garment + exterior fins | PASS/PARTIAL | JPH04209808A recorded from a public patent index; authoritative office/family verification remains. |
-| Fan garment family | PASS/PARTIAL | WO2005/063065 family identified; detailed authoritative claim/family mapping still needed. |
-| Ribbed capillary exterior evaporation | PASS/PARTIAL | EP1978836 family identified as highly relevant: capillary textile ribs/walls transport sweat away from skin toward an exterior evaporation web. |
-| Wicking evaporative cooling garment | PASS/PARTIAL | US8443463 / US20110283722 family identified: liquid supply + wicking garment + exterior evaporation. |
-| 3D spacer-knit outward moisture/evaporation | PASS/PARTIAL | US12209335 / US20240125016 family identified; 3D-knit evaporation media also found outside clothing. |
-| Patent working notes | PASS | `docs/patent-notes.md` records close families and design consequences. |
-| Selection/combination escape routes | PASS/PARTIAL | Concrete embodiment matrix added; still needs claim-oriented professional review. |
+| Directional sweat transport | PASS | Acknowledged. |
+| Heat-conductive + sweat-transport textiles | PASS | i-Cool and related work acknowledged as close prior art. |
+| Capillary exterior ribs/walls | PASS/PARTIAL | Close patent family identified; authoritative claim mapping still needed. |
+| 3-D spacer-knit moisture/evaporation | PASS/PARTIAL | Relevant families recorded. |
+| Fan/sorbent cooling garments | PASS/PARTIAL | Relevant prior families recorded. |
+| Concrete implementation combinations | PASS | `docs/embodiment-matrix.md`, now including hierarchical E17. |
+| Authoritative patent-office verification | OPEN | Highest-priority release/legal-strengthening item. |
 
 ## F. Public-release readiness
 
 | Item | Status | Audit note |
 |---|---|---|
-| Public GitHub repository | PASS | Public repository. |
-| Apache-2.0 | PASS | Existing `LICENSE`. |
-| README | PASS | Updated after numerical audit. |
-| Citation metadata | PASS/PARTIAL | Update version/date at stable tag. |
-| Changelog | PASS | `CHANGELOG.md`. |
-| Stable-release checklist | PASS | `docs/release-checklist.md`. |
-| Artifact SHA-256 capability | PASS | Reference generator creates a manifest; stable release still needs the frozen final manifest. |
-| Stable release tag | MISSING | Current work remains a development branch/draft PR. |
-| Persistent archive/DOI | MISSING | Do after stable release audit. |
+| Public GitHub repository | PASS | Repository is public. |
+| Apache-2.0 | PASS | `LICENSE`. |
+| README | PASS/UPDATED | E3 caveat and hierarchical exterior reflected. |
+| Citation metadata | PASS/PARTIAL | Update at stable version/tag. |
+| Reproducible generator + SHA | PASS | Final release must regenerate at exact release commit. |
+| Stable tag | MISSING | Development branch only. |
+| Persistent archive / DOI | MISSING | Do after stable release audit. |
+| Frozen release artifact manifest | MISSING | Generate from exact final commit. |
 
 ## G. Remaining queue
 
-### P0 — before stable release
+### P0 — current branch / PR quality
 
-- [x] Concrete embodiment matrix.
-- [x] Current quantitative-results summary.
-- [x] Reference branch-map CSV.
-- [x] Automated model tests/CI definition.
-- [x] CI passes for current models and reference-output generator.
-- [x] Stable-release checklist and changelog.
-- [x] Numbered architecture schematic.
-- [x] Correct simulation/measurement labeling.
-- [x] Reproducible CSV/figure/SHA generation pipeline.
-- [ ] Verify closest patent families/claims from authoritative patent-office records.
-- [ ] Regenerate/freeze reference artifacts from the final release commit and record that exact SHA.
-- [ ] Update `CITATION.cff`, changelog, and version metadata for the stable tag.
+- [x] Add E3 periodic diffusion model.
+- [x] Add E3 raw screening CSVs.
+- [x] Add E3 grid-convergence record.
+- [x] Add E3 interpretation document.
+- [x] Add E3b physical protocol.
+- [x] Add E17 hierarchical exterior embodiment.
+- [x] Add E3 regression tests.
+- [x] Extend reference generator and CI definition.
+- [ ] Confirm current CI run passes after opening/updating the draft PR.
+- [ ] Re-audit generated reference package after CI.
 
-### P1 — technical strengthening
+### P1 — model strengthening
 
-- [x] Add consolidated 2D anisotropic heat-spreader source model.
-- [x] Add normalized water/salt mass-balance numerical model with zero salt vapor flux.
-- [ ] Add higher-fidelity water/salt pore-scale or cyclic model if experiments justify it.
-- [x] Add RH 50/70/85 stable-branch sensitivity generation.
-- [ ] Add systematic parameter/model-form uncertainty study.
-- [x] Add exterior boundary-layer/accessibility identification method.
-- [ ] Investigate whether multi-equilibrium behavior survives a better natural-convection/boundary-layer model.
-- [x] Add plotting/regeneration pipeline for quantitative figures.
+- [ ] Couple a better natural-convection / boundary-layer model to E3 rather than prescribing a renewal plane.
+- [ ] Separate mass-transfer and sensible-heat multipliers explicitly in the thermal model.
+- [ ] Investigate whether passive macro corridors can create/maintain near-tip air renewal in 2-D/3-D flow models.
+- [ ] Add systematic model-form uncertainty ranges.
+- [ ] Re-test nonlinear multi-equilibrium behavior with the improved boundary-layer treatment.
 
 ### P2 — physical evidence
 
-- [ ] Execute E1 direct comparison.
+- [ ] Execute E1 direct B0 vs B4 comparison.
 - [ ] Execute E2 ablation.
-- [ ] Execute E3 rib-pitch/accessibility test.
+- [ ] Execute E3/E3b rib/accessibility/hierarchical-air-renewal comparison.
+- [ ] Execute humidity boundary test.
 - [ ] Publish raw data, calibration metadata, analysis, and negative results.
+
+### P3 — stable publication
+
+- [ ] Verify closest patent families and claims from authoritative patent-office sources.
+- [ ] Freeze a consistent technical disclosure at one exact commit.
+- [ ] Regenerate all reference outputs and SHA-256 manifest at that commit.
+- [ ] Update `CITATION.cff`, version/date and changelog.
+- [ ] Tag the stable release.
+- [ ] Create a persistent public archive/DOI without replacing the original release record.
 
 ## H. Audit rule going forward
 
-Every significant update should answer:
+Every significant update must answer:
 
-1. Is this statement a **measurement**, **simulation**, **inference**, or **hypothesis**?
-2. Can another person reproduce it from the repository?
-3. Does it conflict with an earlier statement or deprecated branch?
-4. Does known prior art already disclose the broad idea?
+1. Is the statement a **measurement**, **simulation**, **inference**, or **hypothesis**?
+2. Can another person reproduce it from repository code/data?
+3. Does it contradict or supersede an earlier result?
+4. Does known prior art already disclose the broad mechanism?
 5. If a nonlinear model has multiple solutions, is branch selection explicit?
+6. If added geometric area is claimed to help, is the **air/vapor access mechanism** explicit?
 
-If an answer is unclear, keep the item open rather than silently treating it as complete.
+If any answer is unclear, keep the item open rather than silently marking it complete.
