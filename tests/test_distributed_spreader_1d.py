@@ -1,9 +1,11 @@
 import pytest
 
-from simulations.distributed_spreader_1d import (
-    evaluate_virtual_prototype_distributed,
-)
-from simulations.virtual_prototype_v01 import evaluate_prototype
+from simulations.distributed_spreader_1d import evaluate_virtual_prototype_distributed
+from simulations.virtual_prototype_v01 import PROTOTYPES, evaluate_prototype
+
+
+def _prototype(name):
+    return next(item for item in PROTOTYPES if item.name == name)
 
 
 def test_distributed_vp_states_close_feed_and_energy_residuals():
@@ -50,10 +52,7 @@ def test_distributed_bridge_remains_close_to_two_node_virtual_anchor():
         "VP-D_shielded_short",
     ):
         distributed = evaluate_virtual_prototype_distributed(name, 100.0, n=64)
-        scalar = evaluate_prototype(
-            next(p for p in __import__("simulations.virtual_prototype_v01", fromlist=["PROTOTYPES"]).PROTOTYPES if p.name == name),
-            100.0,
-        )
+        scalar = evaluate_prototype(_prototype(name), 100.0)
         assert distributed["distributed_spreader_gain_W_over_0p195m2"] == pytest.approx(
             scalar["spreader_gain_W_over_0p195m2"], abs=0.8
         )
