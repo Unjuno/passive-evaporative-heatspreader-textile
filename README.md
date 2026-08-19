@@ -111,25 +111,48 @@ With a 34 °C artificial-skin setpoint, representative model boundaries are abou
 
 This is a **low-order model sign boundary**, not a human heat-safety limit or measured garment threshold. It changes materially with skin/artificial-skin temperature; at 70% RH the modeled boundary moves from about 37.54 °C for a 32 °C skin setpoint to about 41.91 °C for a 36 °C setpoint.
 
-### 9. Same-path heat/mass coupling is restrictive above the boundary
+### 9. Ordinary same-boundary heat/mass analogies do not supply the hot-ambient selectivity the sensitivity model requires
 
-Define the coupling audit quantity
+Define
 
 \[
 \Xi=\delta_{vapor}/\delta_{heat}.
 \]
 
-`Xi=1` is the model's same-exchange-length baseline. At 40 °C / 70% RH, zero body-side heat flux in the current low-order model requires `Xi<1`; the screened critical values rise from about 0.31 to 0.65 as the vapor-side exchange parameter increases from 0.1 to 2 mm.
+`Xi=1` is the same-exchange-length baseline. At 40 °C / 70% RH, zero body-side heat flux in the current low-order model requires critical `Xi` values of roughly 0.31–0.65 across the screened vapor-side range.
 
-This does **not** prove a passive textile can arbitrarily decouple heat from vapor transfer. It quantifies what the sensitivity model would require and therefore defines a falsifiable design burden.
+For ordinary same-boundary air/water-vapor transport, the screening Lewis number is near one. A Chilton–Colburn-style equal-j-factor comparison gives an equivalent `Xi` also near one, not near 0.3–0.6.
 
-### 10. Water supply can become the limit
+**Current interpretation:** simply opening the same air path more strongly is unlikely to provide the modeled hot-ambient selectivity. Dry-side shielding, radiation control, anisotropic heat routing, selective wet exposure, or another genuinely different heat/vapor pathway must be physically tested.
 
-The thermal model is a fully-wet transfer-capacity screen. At 35 °C / 70% RH, the linked screened cases remain below the planned 150 g/h supply when scaled to 65% of 0.30 m². At 35 °C / 50% RH, stronger-transfer cases can exceed the available feed and must be classified as supply-limited.
+This is still a low-order comparison, not a validated textile correlation.
 
-Supply-limited cases are **not** assigned a fabricated dryout temperature field; only the capacity/feed upper bound is reported until a wetting/dryout model exists.
+### 10. Water supply can become the limit, and an explicit first partial-wetness state now exists
 
-### 11. Physical measurement resolution is part of the experiment
+The fully-wet thermal model reports transfer capacity. `simulations/open_valley_feed_limited.py` now solves a homogenized sub-grid wet fraction `beta` when available liquid feed is below that capacity.
+
+For the nominal structured area `0.30 × 0.65 = 0.195 m²`, a 150 g/h feed corresponds to about 769 g/(m² h).
+
+At 35 °C / 50% RH with linked heat/vapor exchange:
+
+- strong exchange can be supply-limited with `beta < 1`;
+- the same 150 g/h evaporation can remove different amounts of heat from the body because ambient air supplies part of the latent heat;
+- the current linked-exchange sweep gives a finite body-cooling optimum near the point where evaporation capacity approximately matches available feed;
+- making exchange still stronger after feed saturation can **reduce body-coupled cooling**.
+
+At 35 °C / 70% RH and 85% RH, the primary 150 g/h linked cases in the current screen remain transfer-limited over the tested range.
+
+The model `beta` is not a measured visible wet fraction. E4a is designed to test whether a comparable feed-dependent wetness transition exists physically.
+
+### 11. Same evaporation does not imply the same body cooling
+
+For the 35 °C / 50% RH / 150 g/h feed-limited screen, the latent heat can be partitioned into body-side and ambient sensible contributions.
+
+Representative linked-exchange cases that all evaporate approximately the same 150 g/h total feed show body fractions of latent heat ranging from roughly 62% at very strong exchange to roughly 78% near the modeled transition region.
+
+This reinforces the primary metric choice: **signed body-side heat flow / heater power**, not evaporation mass alone.
+
+### 12. Physical measurement resolution is part of the experiment
 
 The E3c mechanism target can be only a few watts and local `F` differences can be small. A pre-bench uncertainty screen shows that, for a representative true `F=0.8`:
 
@@ -162,6 +185,7 @@ This is a research hypothesis, not a validated product architecture.
 - `docs/open-valley-distributed-model.md` — distributed open-valley vapor model
 - `docs/open-valley-metric-audit.md` — `F` versus absolute `k_eff`
 - `docs/open-valley-thermal-model.md` — coupled open-valley heat/vapor result
+- `docs/feed-limited-open-valley.md` — explicit homogenized partial-wetness/feed-limit model
 - `docs/passive-environment-boundary.md` — analytic hot/humid body-heat-flow sign boundary
 - `docs/measurement-uncertainty-budget.md` — pre-bench resolution and uncertainty requirements
 - `docs/roadmap.md` — research/publication roadmap
@@ -173,6 +197,7 @@ This is a research hypothesis, not a validated product architecture.
 
 - `experiments/e3b_hierarchical_air_renewal.md`
 - `experiments/e3c_open_vs_covered_corridors.md`
+- `experiments/e4a_feed_limit_transition.md`
 - `experiments/e4_e6_environment_boundary.md`
 - `experiments/README.md`
 
@@ -188,6 +213,7 @@ simulations/self_consistent_corridor_1d.py
 simulations/open_valley_exchange_target.py
 simulations/open_valley_distributed_1d.py
 simulations/open_valley_thermal_1d.py
+simulations/open_valley_feed_limited.py
 simulations/open_valley_heat_mass_coupling_audit.py
 simulations/passive_environment_boundary.py
 simulations/supply_limit_audit.py
@@ -201,6 +227,8 @@ simulations/water_salt_1d.py
 python -m pip install -r requirements-dev.txt
 python -m pytest -q
 python simulations/open_valley_thermal_1d.py
+python simulations/open_valley_feed_limited.py
+python simulations/open_valley_heat_mass_coupling_audit.py
 python simulations/passive_environment_boundary.py
 python simulations/generate_reference_outputs.py --output-root generated-reference
 ```
