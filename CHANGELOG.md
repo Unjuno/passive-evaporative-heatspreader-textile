@@ -19,9 +19,12 @@ All notable research-record changes will be documented here.
 - regression test proving the split model reduces to the older coupled model when `M_h = M_m`;
 - deterministic model-form sensitivity sweep over RH, `U_body`, radiation, `M_h`, and `M_m`;
 - model-form uncertainty framework distinguishing screening-grid fractions from probabilities;
-- low-order moist-air vertical-corridor buoyancy screen with neutral-density analysis and regression tests;
-- corridor buoyancy outputs in the reproducible reference package;
-- regression tests and GitHub Actions workflow;
+- prescribed-state moist-air vertical-corridor buoyancy screen with neutral-density analysis;
+- **self-consistent 1-D rectangular-corridor model** solving signed buoyancy/friction velocity, wet-wall temperature, channel T/RH, evaporation, and body-side heat flux for an end-renewed covered-duct limit;
+- self-consistent corridor regression tests covering rectangular-duct resistance, low-Pe behavior, humidity-driven flow reversal, hot-ambient inward heat, and segment-length effects;
+- vapor-driving-force-retention output `Phi(NTU_m)` so axial Péclet number is not mistaken for proof of useful renewal;
+- E3c open-valley versus covered-corridor physical validation protocol;
+- self-consistent corridor outputs in the reproducible reference package and GitHub Actions workflow;
 - experiment, data, and figure conventions;
 - embodiment matrix and design-history record;
 - consolidated numerical-results summary;
@@ -38,13 +41,22 @@ All notable research-record changes will be documented here.
 - corrected the assumption that a vapor-transfer enhancement must produce the same multiplier in sensible convective heat transfer;
 - clarified that E3 outputs are vapor mass-transfer multipliers, not cooling wattages or measured effective-area factors;
 - clarified that deterministic sensitivity-grid fractions are not reliability estimates or statistical confidence levels;
-- corrected the design intuition that a vertical wet corridor must generate upward chimney flow: evaporative cooling and humidification can oppose each other, so the buoyancy direction can reverse or become near-neutral.
+- corrected the design intuition that a vertical wet corridor must generate upward chimney flow: evaporative cooling and humidification can oppose each other, so the buoyancy direction can reverse or become near-neutral;
+- corrected a second corridor intuition: **nonzero velocity or large axial `Pe_m` does not prove useful air renewal** if the channel also has high mass-transfer NTU and approaches saturation;
+- separated the covered/end-renewed duct limit from the laterally open exterior-valley hypothesis so the former is not generalized to the latter.
 
 ### Current research direction
 
-The exterior architecture has shifted from a single-scale dense rib field toward a hierarchical structure combining wet micro-ribs / 3D-knit features with larger open corridors, valleys, spacer paths, or discontinuous fields for air renewal.
+The exterior architecture has shifted from a single-scale dense rib field and from long covered “chimney” channels toward a hierarchical, laterally open structure combining:
 
-The first explicit corridor model now screens moist-air buoyancy direction and laminar slot-flow scaling with prescribed channel temperature/RH. The next major numerical task is a self-consistent channel model that solves flow, heat, and water-vapor conservation together and thereby constrains both `M_h` and `M_m`.
+- wet micro-ribs / 3D-knit features for local area;
+- open valleys and cross-openings for ambient access;
+- short/segmented wet paths;
+- discontinuous evaporator fields;
+- bidirectional flow tolerance;
+- hot-ambient shielding/routing where sensible heat pickup becomes adverse.
+
+The next major numerical task is distributed lateral ambient exchange plus low-Pe axial diffusion/advection-diffusion for an **open exterior valley**. The next major physical discriminator is E3c: covered/end-renewed duct versus laterally open and segmented valleys under equal water input and matched wet area.
 
 ## Release policy
 
