@@ -1,24 +1,26 @@
 # Repository Audit
 
-Audit date: 2026-08-19  
+Audit date: 2026-08-20  
 Branch audited: `agent/initial-research-disclosure`
 
 ## Overall assessment
 
-The branch contains a coherent technical disclosure, explicit implementation variants, **nine executable screening/sensitivity/identification modules**, regression tests, a reproducible output generator, prior-art working notes, and staged physical experiment protocols.
+The branch contains a coherent technical disclosure, explicit implementation variants, **ten executable screening/sensitivity/identification modules**, regression tests, a reproducible output generator, prior-art working notes, and staged physical experiment protocols.
 
 It remains a development branch, not a frozen stable release, and it contains **no physical garment-performance measurements yet**.
 
-Six numerical/analytic audit findings currently dominate the research plan:
+Eight numerical/analytic audit findings currently dominate the research plan:
 
 1. the low-order nonlinear passive heat/mass model can contain multiple stable equilibria, so earlier single-value `M` cooling thresholds are not treated as validated criteria;
 2. the E3 periodic 2-D diffusion screen shows that dense wet micro-ribs can share one stagnant humidity layer, making near-surface air renewal at least as important as geometric rib area;
 3. sensible convective heat transfer and vapor mass transfer are modeled with independent multipliers (`M_h`, `M_m`) rather than assigning one multiplier to both mechanisms;
 4. moist-air buoyancy can reverse corridor flow direction because evaporative cooling increases air density while humidification lowers it;
 5. the self-consistent 1-D end-renewed corridor model shows that nonzero buoyancy flow and even large axial Péclet number do not guarantee useful vapor renewal: long covered channels can remain nearly saturated;
-6. the open-valley conductance target shows that preserving a large fraction of wet-wall vapor driving force requires ambient-renewal conductance comparable to or larger than wet-surface vapor conductance, and that exact large inferred `R` values become measurement-ill-conditioned.
+6. the open-valley conductance target shows that preserving a large fraction of wet-wall vapor driving force requires ambient-renewal conductance comparable to or larger than wet-surface vapor conductance, and that exact large inferred `R` values become measurement-ill-conditioned;
+7. the distributed open-valley model shows that **centimeter-scale segmentation is too coarse** in the representative screen: axial end effects decay over an exchange length of roughly 0.7–1.1 mm, so 20–50 mm interruptions do not materially rescue a weakly laterally renewed interior;
+8. high vapor-driving-force retention `F` cannot be optimized alone, because `F` can rise when wet-wall transfer is weakened. Absolute useful transfer must also be represented by evaporation flux, heater power, or an effective series vapor conductance `k_eff`.
 
-The current preferred exterior is therefore hierarchical and laterally open: wet microstructures for local evaporation area plus open valleys, cross-openings, short segments, spacer paths, or discontinuous fields that remain exposed to ambient air along more than just two channel ends.
+The current preferred exterior is therefore hierarchical and continuously/largely laterally open: wet microstructures for local evaporation area plus open valleys, cross-openings, millimeter-scale interruptions where practical, spacer paths, or discontinuous fields that remain exposed to ambient air along more than just two channel ends.
 
 ## A. Technical coherence
 
@@ -27,12 +29,14 @@ The current preferred exterior is therefore hierarchical and laterally open: wet
 | Core passive architecture | PASS | Directional liquid transport + heat spreading + capillary delivery + exterior evaporation remains consistent. |
 | Whole-body/routed heat spreading | PASS | Continuous, anisotropic, mesh, serpentine, island-bridge and redundant paths documented. |
 | Exterior geometry families | PASS | Ribs, fins, 3D knit, pile, lamellae, pleats and related structures explicit. |
-| Hierarchical air-renewal exterior | PASS | E17 plus E18–E21 cover broad hierarchy, open valleys, segmentation/islands, and covered/end-renewed comparison channels. |
+| Hierarchical air-renewal exterior | PASS/UPDATED | E17 plus E18–E21 cover broad hierarchy, open valleys, segmentation/islands, and covered/end-renewed comparison channels; centimeter-scale interruption is no longer assumed sufficient. |
 | Sensible/vapor exchange separation | PASS | `M_h` and `M_m` separated; E3 maps only to vapor side. |
 | Corridor buoyancy direction | PASS/SCREEN | Up/down/near-neutral tendency derived rather than assumed. |
 | Self-consistent covered corridor | PASS/SCREEN | Signed velocity + wet-wall T + channel T/RH solved for an end-renewed rectangular-duct limit. |
-| Open-valley renewal target | PASS/ANALYTIC | Required/inferred conductance ratio `R` and retained driving-force `F` explicit; geometry-specific `k_a` remains unknown. |
-| Laterally open valley transport physics | OPEN | Distributed lateral ambient exchange and axial diffusion/advection-diffusion are not yet solved from geometry. |
+| Open-valley renewal target | PASS/ANALYTIC | Required/inferred conductance ratio `R` and retained driving-force `F` explicit; geometry-specific external-flow coefficient remains unknown. |
+| Distributed open-valley vapor transport | PASS/SCREEN | Axial diffusion/advection + distributed lateral exchange solved using an effective `delta_open`; not CFD. |
+| Absolute vapor-conductance metric | PASS/NEW | `k_eff = k_w k_a/(k_w+k_a)` reported so high `F` cannot masquerade as high evaporation capacity. |
+| Geometry-resolved external flow | OPEN | Real 2-D/3-D natural convection/cross-flow above an open textile valley is not yet predicted. |
 | Hot-ambient dry-side risk | PASS | Stronger air exchange can increase inward sensible heat pickup; shielding/routing remains required. |
 | Fan requirement | PASS | Fan remains optional; primary architecture is fanless. |
 | MOF/sorbent role | PASS | Secondary optional embodiment only. |
@@ -52,14 +56,16 @@ The current preferred exterior is therefore hierarchical and laterally open: wet
 | Prescribed-state corridor buoyancy | PASS/SCREEN | `simulations/corridor_buoyancy_screen.py`. |
 | Self-consistent corridor model | PASS | `simulations/self_consistent_corridor_1d.py`. |
 | Open-valley renewal target/identification | PASS | `simulations/open_valley_exchange_target.py`. |
+| Distributed open-valley model | PASS/NEW | `simulations/open_valley_distributed_1d.py`; includes axial diffusion/advection, distributed lateral renewal, exchange length, `F`, and `k_eff`. |
 | 2-D heat-spreader model | PASS | `simulations/heat_spreader_2d.py`. |
 | Water/salt model | PASS | `simulations/water_salt_1d.py`. |
-| Regression tests | PASS | Includes multi-root, split-transfer, E3, corridor, open-valley inversion, heat-spreader and salt checks. |
+| Regression tests | PASS/UPDATED | Includes long-valley analytic limit, short-segment effect, centimeter-scale non-rescue, low axial-flow effect, grid convergence, and `F` vs `k_eff` audit. |
 | E3 grid convergence | PASS/SCREEN | 24 nodes/pitch differs by ~0.62% from the 48-node screened reference. |
-| Reference generator | PASS | Includes self-consistent corridor and open-valley renewal-target CSVs plus metadata/SHA-256. |
-| CI definition | PASS | Current models/tests/reference outputs are exercised by GitHub Actions. |
-| Current verified code integration | **PASS** | GitHub Actions `model-tests` **#183** passed at SHA `1b052ecc2b31f9719a80852eefc58204e533e5a9`. |
-| Documentation commits after code integration | INFO | Later protocol/audit/docs commits do not change the verified numerical core; they can trigger additional CI runs. |
+| Open-valley grid convergence | PASS/SCREEN | Center `F` is numerically stable across the tested grid; mean `F` converges more slowly because end layers occupy fewer cells as resolution increases. |
+| Reference generator | PASS/UPDATED | Distributed open-valley CSV added to generated package plus metadata/SHA-256. |
+| CI definition | PASS/UPDATED | Distributed open-valley model/tests are exercised and generated output is existence-checked. |
+| Previous verified code integration | PASS | GitHub Actions `model-tests` #183 passed at SHA `1b052ecc2b31f9719a80852eefc58204e533e5a9`. |
+| Current distributed-model integration | CHECK | Record the new passing CI SHA before treating the latest model as verified. |
 
 ## C. Numerical / analytic model audit
 
@@ -157,19 +163,62 @@ Required ratios:
 | 0.90 | 9 |
 | 0.95 | 19 |
 
-The model also identifies
+The model identifies `theta`, primary `F`, and conditional `R` from measured local T/RH and wet-surface temperature.
+
+A hypothetical uncertainty screen using 1σ values of 0.2 °C for temperatures and 1 RH percentage point found that exact large `R` becomes poorly conditioned. Therefore **`F`/`theta` is the primary mechanism metric and `R` is secondary**.
+
+### C8 — distributed open-valley transport and segmentation correction
+
+The distributed model solves
 
 \[
-\theta=\frac{\rho_{v,valley}-\rho_{v,\infty}}{\rho_{v,sat}(T_s)-\rho_{v,\infty}},
-\quad F=1-\theta,
-\quad R=\frac{1-\theta}{\theta}
+D_v A\theta''-uA\theta'+G'_w(1-\theta)-G'_a\theta=0
 \]
 
-from measured local T/RH and wet-surface temperature.
+with ambient vapor loading at both ends.
 
-A hypothetical uncertainty screen using 1σ values of 0.2 °C for temperatures and 1 RH percentage point found that exact large `R` becomes poorly conditioned: for true `R=9`, the simulated 5th–95th percentile identified range was roughly 3.8–50. Therefore **`F`/`theta` is the primary mechanism metric and `R` is secondary**.
+For a representative 6 × 3 mm valley, the tested effective lateral-exchange range gives
 
-This analytic model states a target and an identification method; it does not predict `G_a` from valley geometry.
+\[
+\ell_{exchange}\approx0.7\text{–}1.1\;mm.
+\]
+
+Selected still-axial-flow center retention values:
+
+| effective `delta_open` | segment length | center `F` |
+|---:|---:|---:|
+| 0.25 mm | 1 mm | 0.935 |
+| 0.25 mm | 20 mm | 0.680 |
+| 0.50 mm | 1 mm | 0.931 |
+| 0.50 mm | 2 mm | 0.797 |
+| 0.50 mm | 20 mm | 0.515 |
+| 1.00 mm | 1 mm | 0.929 |
+| 1.00 mm | 20 mm | 0.347 |
+
+At 6 × 3 × 50 mm and `delta_open=0.5 mm`, center `F` stays approximately 0.515 from 0 through 100 mm/s axial flow; substantial center improvement appears only at hundreds of mm/s in this screen.
+
+Audit interpretation:
+
+- 20–50 mm interruption is not sufficient when the interior lateral exchange remains weak;
+- end-opening benefit is localized to a few exchange lengths;
+- continuous lateral ambient access is the primary hypothesis;
+- 1–3 mm interruption/island scales are retained as a testable extreme, not as a final apparel dimension.
+
+### C9 — retention versus absolute conductance
+
+For two local mass-transfer resistances in series:
+
+\[
+k_{eff}=\frac{k_wk_a}{k_w+k_a}=k_wF.
+\]
+
+In the current 6 mm-wide diffusion-only geometry screen at `delta_open=0.1 mm`, increasing depth from 0.5 to 8 mm raises `F` from ~0.55 to ~0.90 while **lowering** `k_eff` from ~0.126 to ~0.0277 m/s.
+
+Therefore:
+
+- low valley RH / high `F` is a renewal-quality metric;
+- evaporation flux / `k_eff` / heater power is an absolute-performance metric;
+- neither may substitute for the other.
 
 ## D. Experimental readiness
 
@@ -182,9 +231,10 @@ This analytic model states a target and an identification method; it does not pr
 | Water balance | PASS | >=95% closure target. |
 | E3 micro-rib pitch plan | PASS | Defined. |
 | E3b hierarchical air-renewal plan | PASS | Signed flow and orientation controls defined. |
-| E3c open-vs-covered validation | PASS | D1/O1/O2/O3 defined. |
-| T/RH-based renewal identification | PASS/NEW | E3c now calculates `theta`, primary `F`, and conditional `R`. |
-| Measurement-uncertainty policy | PASS/NEW | High `R` point estimates are not over-interpreted; `F` is primary. |
+| E3c open-vs-covered validation | PASS/UPDATED | D1/O1/O2a/O2b/O3 now distinguish 20–50 mm negative/control interruption from 1–3 mm short segments. |
+| T/RH-based renewal identification | PASS | E3c calculates `theta`, primary `F`, and conditional `R`. |
+| Absolute vapor-transfer metric | PASS/NEW | E3c should pair `F` with evaporation mass flux / inferred `k_eff` where water balance permits. |
+| Measurement-uncertainty policy | PASS | High `R` point estimates are not over-interpreted. |
 | Split heat/vapor identification | PLANNED/PARTIAL | Exact inverse identification of `M_h`/`M_m` remains open. |
 | Corridor flow-direction measurement | PLANNED | Signed flow classification required. |
 | Physical data | MISSING | No bench experiment has yet been executed. |
@@ -208,13 +258,15 @@ This analytic model states a target and an identification method; it does not pr
 |---|---|---|
 | Public GitHub repository | PASS | Repository is public. |
 | Apache-2.0 | PASS | `LICENSE`. |
-| README / technical disclosure / embodiment matrix | PASS | Current design family and alternatives are explicit. |
-| Current-results / roadmap / experiment plan | PASS | Synced through self-consistent corridor direction. |
-| Open-valley renewal target document | PASS/NEW | `docs/open-valley-renewal-target.md`. |
-| E3c protocol | PASS | Uses vapor-density-corrected `F/R` identification. |
-| Draft PR narrative | PASS | PR #1 includes current model/design/verification state. |
+| README / technical disclosure / embodiment matrix | PASS/PARTIAL | Current design family is explicit; top-level summary should be synced to distributed-model correction. |
+| Current-results / roadmap / experiment plan | PARTIAL | Need synchronization with centimeter-scale segmentation correction and `F`/`k_eff` dual-metric rule. |
+| Open-valley renewal target document | PASS | `docs/open-valley-renewal-target.md`. |
+| Distributed open-valley document | PASS/NEW | `docs/open-valley-distributed-model.md`. |
+| Open-valley metric audit | PASS/NEW | `docs/open-valley-metric-audit.md`. |
+| E3c protocol | PASS/UPDATED | Uses continuous opening plus centimeter-scale negative control and 1–3 mm short-segment test. |
+| Draft PR narrative | PARTIAL | Sync after latest CI. |
 | Citation metadata | PASS/PARTIAL | Update at stable version/tag. |
-| Reproducible generator + SHA | PASS | Open-valley targets included. |
+| Reproducible generator + SHA | PASS/UPDATED | Distributed open-valley output included. |
 | Stable tag | MISSING | Development branch only. |
 | Persistent archive / DOI | MISSING | Do after stable-release audit. |
 | Frozen release artifact manifest | MISSING | Generate from exact final commit. |
@@ -232,30 +284,32 @@ This analytic model states a target and an identification method; it does not pr
 - [x] E3c open-vs-covered protocol.
 - [x] E18–E21 explicit ambient-access embodiments.
 - [x] open-valley renewal target + measurement inversion + tests.
-- [x] reference generator/CI integration for the open-valley target.
-- [x] CI verification: `model-tests` #183 PASS at `1b052ecc2b31f9719a80852eefc58204e533e5a9`.
-- [x] PR narrative synchronized.
-
-**P0 status: complete for the current development stage.**
+- [x] distributed open-valley axial diffusion/advection + lateral-renewal model.
+- [x] regression tests for segmentation, low axial-flow effect, grid convergence, and `F`/`k_eff` metric audit.
+- [x] reference generator/CI definition updated for distributed model.
+- [ ] confirm passing CI for distributed-model integration.
+- [ ] synchronize README/current-results/roadmap/PR narrative.
 
 ### P1 — model strengthening
 
 - [x] Solve covered/end-renewed corridor T/RH and buoyancy/friction self-consistently.
 - [x] State measurable lateral-renewal conductance requirements without inventing a geometry-specific coefficient.
-- [ ] Predict distributed lateral ambient exchange for an open exterior valley from geometry/flow.
-- [ ] Add axial diffusion for low-Pe corridors or solve 2-D advection-diffusion.
-- [ ] Constrain physical `M_h`/`M_m` coupling from improved external-flow physics.
+- [x] Add axial molecular diffusion and distributed lateral exchange to a 1-D open-valley vapor model.
+- [ ] Predict the lateral exchange coefficient from geometry-resolved 2-D/3-D natural convection/cross-flow rather than an effective `delta_open`.
+- [ ] Couple the distributed open-valley vapor model to sensible heat and wet-wall energy balance.
+- [ ] Constrain physical `M_h`/`M_m` coupling from the improved external-flow model.
 - [ ] Re-test nonlinear multi-equilibrium behavior with improved boundary-layer treatment.
-- [ ] Add sensitivity to Nu/Sh, entrance losses, opening losses, compression, and external drift.
+- [ ] Add sensitivity to Nu/Sh, entrance/opening losses, compression, and external drift.
 
 ### P2 — physical evidence
 
 - [ ] E1 B0 vs B4.
 - [ ] E2 ablation.
 - [ ] E3/E3b rib/accessibility/hierarchical comparison.
-- [ ] E3c covered vs open/segmented/island validation.
+- [ ] E3c covered vs continuously open / centimeter-control / millimeter-segment / island validation.
 - [ ] E4 humidity boundary.
 - [ ] Measure T/RH/flow with enough accuracy to separate vapor renewal from sensible heat effects.
+- [ ] Pair `F` with evaporation mass flux or experimental `k_eff` where water balance permits.
 - [ ] Publish raw data, calibration metadata, analysis, and negative results.
 
 ### P3 — stable publication
@@ -282,6 +336,8 @@ Every significant update must answer:
 9. Is passive corridor flow direction assumed instead of derived or measured?
 10. Is axial Péclet number being mistaken for proof that useful vapor driving force remains?
 11. Is a covered/end-renewed corridor model being generalized incorrectly to a laterally open valley?
-12. Is a large inferred `R` being reported more precisely than the T/RH uncertainty supports?
+12. Is a large inferred `R` being reported more precisely than T/RH uncertainty supports?
+13. Is centimeter-scale segmentation being assumed effective without comparing segment length to the exchange length?
+14. Is high `F` being mistaken for high absolute evaporation capacity without checking `k_eff`, evaporation mass flux, or heater power?
 
 If any answer is unclear, keep the item open rather than silently marking it complete.
