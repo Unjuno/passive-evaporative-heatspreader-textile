@@ -66,6 +66,16 @@ E3 constrains only the **mass-transfer side** and must not automatically be copi
 
 See `docs/split-transfer-model.md` and `simulations/split_heat_mass_screen.py`.
 
+### 4. A vertical wet corridor does not guarantee upward chimney flow
+
+The first explicit macro-corridor model evaluates moist-air density and a laminar vertical-slot pressure/friction balance. Evaporative cooling tends to make channel air denser, while humidification tends to make it lighter.
+
+For the common 35 °C / 70% RH ambient screen, the model places a neutral-density condition near 34 °C at roughly 90% RH. Depending on channel temperature and humidity, a vertical corridor can therefore have upward, downward, or near-neutral buoyancy tendency.
+
+This is a **prescribed-state screening model**, not CFD. Channel temperature and RH are inputs rather than solved fields. The design implication is that macro air-renewal paths should tolerate reversed, weak, wearer-motion-assisted, and externally driven flow rather than relying on one-way chimney action.
+
+See `docs/corridor-buoyancy-screen.md` and `simulations/corridor_buoyancy_screen.py`.
+
 ## Key model variables
 
 For a rectangular-rib geometric screen:
@@ -88,7 +98,7 @@ where:
 - `alpha` = phenomenological effective-area factor;
 - `M` = effective exterior exchange multiplier relative to a flat wet textile.
 
-E3 shows why `alpha` must not be treated as a geometry-only material constant: boundary-layer renewal can dominate it. The newer diffusion model therefore reports a mass-transfer multiplier directly as a function of rib geometry and an idealized air-renewal boundary. The split thermal model then keeps vapor and sensible exchange distinct as `M_m` and `M_h`.
+E3 shows why `alpha` must not be treated as a geometry-only material constant: boundary-layer renewal can dominate it. The newer diffusion model therefore reports a vapor mass-transfer multiplier as a function of rib geometry and an idealized air-renewal boundary. The split thermal model then keeps vapor and sensible exchange distinct as `M_m` and `M_h`.
 
 ## Repository map
 
@@ -102,6 +112,7 @@ E3 shows why `alpha` must not be treated as a geometry-only material constant: b
 - `docs/e3-boundary-layer-screen.md` — periodic rib diffusion/boundary-layer interference result
 - `docs/split-transfer-model.md` — independent sensible-heat and vapor-transfer multipliers
 - `docs/model-form-uncertainty.md` — parameter/model-form uncertainty framework
+- `docs/corridor-buoyancy-screen.md` — thermo-solutal vertical-corridor flow-direction screen
 - `docs/roadmap.md` — research and publication roadmap
 - `docs/experiment-plan.md` — staged physical validation plan
 - `docs/accessibility-identification.md` — method for estimating effective exterior exchange
@@ -120,7 +131,9 @@ E3 shows why `alpha` must not be treated as a geometry-only material constant: b
 - `models/water-salt-transport.md` — water/salt conservation model and zero salt-vapor rule
 - `simulations/passive_rib_screen.py` — nonlinear passive exterior heat/mass-transfer screen
 - `simulations/split_heat_mass_screen.py` — split sensible/vapor external-transfer screen
+- `simulations/split_transfer_sensitivity.py` — deterministic model-form sensitivity grid
 - `simulations/rib_diffusion_screen.py` — periodic 2-D vapor-diffusion / boundary-layer-sharing screen
+- `simulations/corridor_buoyancy_screen.py` — moist-air vertical-corridor buoyancy screen
 - `simulations/heat_spreader_2d.py` — 2D anisotropic lateral heat-routing model
 - `simulations/water_salt_1d.py` — normalized nonvolatile-salt mass-balance screen
 - `simulations/generate_reference_outputs.py` — reproducible CSV/PNG/metadata/SHA generator
@@ -134,6 +147,7 @@ E3 shows why `alpha` must not be treated as a geometry-only material constant: b
 - `data/e3_grid_convergence.csv` — E3 numerical convergence check
 - `data/e3_M3p5_thresholds.csv` — cross-model legacy-reference threshold screen
 - `data/reference_branch_map_35C_70RH_150gph.csv` — retained multi-equilibrium audit table
+- generated reference packages include split-transfer, sensitivity, corridor-buoyancy, heat-spreader, salt, and E3 tables plus SHA-256 metadata
 - `data/README.md` — data conventions
 - `figures/README.md` — figure conventions
 - `AUDIT.md` — repository completeness and uncertainty audit
@@ -170,7 +184,9 @@ python -m pip install -r requirements-dev.txt
 python -m pytest -q
 python simulations/passive_rib_screen.py
 python simulations/split_heat_mass_screen.py
+python simulations/split_transfer_sensitivity.py
 python simulations/rib_diffusion_screen.py
+python simulations/corridor_buoyancy_screen.py
 python simulations/generate_reference_outputs.py --output-root generated-reference
 ```
 
