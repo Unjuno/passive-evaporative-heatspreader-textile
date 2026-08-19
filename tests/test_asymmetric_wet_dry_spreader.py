@@ -1,6 +1,11 @@
+import numpy as np
 import pytest
 
-from simulations.asymmetric_wet_dry_spreader import DEFAULT_AREA_M2, solve_asymmetric
+from simulations.asymmetric_wet_dry_spreader import (
+    DEFAULT_AREA_M2,
+    continuation_screen,
+    solve_asymmetric,
+)
 from simulations.wet_dry_two_node import solve_two_node
 
 
@@ -9,6 +14,7 @@ def test_asymmetric_screen_closes_feed_and_energy_balance():
     assert result.converged
     assert result.evap_total_g_h == pytest.approx(100.0, rel=3e-4)
     assert abs(result.energy_error_W_m2) < 1e-3
+    assert result.max_equation_residual_W_m2 < 1e-5
 
 
 def test_equal_dry_and_wet_sensible_coefficients_recover_symmetric_global_flux():
@@ -45,3 +51,17 @@ def test_intermediate_feed_can_show_more_spreader_value_than_higher_partial_wet_
     high_gain = high_hi.body_heat_flux_W_m2 - high_no.body_heat_flux_W_m2
     assert mid_gain > 20.0
     assert mid_gain > high_gain + 10.0
+
+
+def test_dense_continuation_does_not_jump_to_nonphysical_high_beta_branch():
+    table = continuation_screen(
+        feed_total_g_h=75.0,
+        h_dry_W_m2K=5.0,
+        g_mix_values=np.geomspace(100.0, 300.0, 40),
+    )
+    assert table["converged"].all()
+    assert (table["max_equation_residual_W_m2"] < 1e-5).all()
+    assert (table["wet_fraction_beta"] < 0.98).all()
+    # The corrected branch is smooth and remains in the few-hundred W/m² range.
+    assert table["body_heat_flux_W_m2"].max() < 260.0
+    assert table["body_heat_flux_W_m2"].diff().abs().dropna().max() < 2.0
