@@ -39,6 +39,15 @@ thickness**, not a directly measured geometric opening height.  Natural
 convection, cross-flow, wearer motion, and turbulence can make the real lateral
 exchange stronger or weaker than this diffusion-only mapping.
 
+Important audit rule: high retention ``F`` is not by itself proof of high
+absolute vapor transfer.  The local long-valley series conductance is also
+reported:
+
+    k_eff = k_w k_a / (k_w + k_a) = k_w F.
+
+A design can obtain higher F simply by reducing k_w; that would make the local
+air less loaded while also reducing evaporation capacity.
+
 This is a SCREENING model, not CFD and not a garment cooling prediction.
 """
 
@@ -67,6 +76,9 @@ class OpenValleyResult:
     velocity_mm_s: float
     effective_open_exchange_distance_mm: float
     hydraulic_diameter_mm: float
+    wet_surface_transfer_coefficient_m_s: float
+    lateral_renewal_coefficient_m_s: float
+    effective_series_vapor_conductance_m_s: float
     renewal_to_wet_ratio_R: float
     local_long_valley_retention_F: float
     exchange_length_mm: float
@@ -121,6 +133,7 @@ def solve_open_valley(
 
     ratio = g_a / g_w
     local_retention = ratio / (1.0 + ratio)
+    k_eff = k_w * k_a / (k_w + k_a)
     source_rate = g_w / area
     total_relaxation_rate = (g_w + g_a) / area
     exchange_length = np.sqrt(D_V / total_relaxation_rate)
@@ -155,6 +168,9 @@ def solve_open_valley(
         velocity_mm_s=velocity_mm_s,
         effective_open_exchange_distance_mm=effective_open_exchange_distance_mm,
         hydraulic_diameter_mm=dh * 1e3,
+        wet_surface_transfer_coefficient_m_s=k_w,
+        lateral_renewal_coefficient_m_s=k_a,
+        effective_series_vapor_conductance_m_s=k_eff,
         renewal_to_wet_ratio_R=ratio,
         local_long_valley_retention_F=local_retention,
         exchange_length_mm=exchange_length * 1e3,
