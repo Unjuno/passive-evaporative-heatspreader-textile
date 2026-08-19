@@ -124,7 +124,45 @@ This is implemented in `simulations/open_valley_exchange_target.py`.
 
 If the measured state lies outside the assumed local balance interval, the code returns an explicit status instead of clipping the value. Such a result can indicate probe disturbance, condensation, nonlocal transport, temperature mismatch, transient behavior, or model inadequacy.
 
-## 7. Experimental use in E3c
+## 7. Measurement-uncertainty audit
+
+`R` becomes ill-conditioned as `theta` approaches zero because
+
+\[
+R=\theta^{-1}-1.
+\]
+
+Therefore a highly renewed valley can be physically good while its exact numerical `R` is difficult to estimate precisely.
+
+A screening Monte Carlo example used the following **hypothetical one-standard-deviation instrument uncertainties**:
+
+- ambient temperature: 0.2 °C;
+- valley temperature: 0.2 °C;
+- wet-surface temperature: 0.2 °C;
+- ambient RH: 1 percentage point;
+- valley RH: 1 percentage point.
+
+The constructed reference state was 35 °C / 70% RH ambient, 34 °C wet surface, and 34 °C local valley dry-bulb temperature.
+
+Approximate 5th/median/95th percentiles from 100,000 simulated measurement sets were:
+
+| True `R` | True `F` | Identifiable fraction | estimated `R` p05 | median | p95 |
+|---:|---:|---:|---:|---:|---:|
+| 1 | 0.50 | ~100% | 0.67 | 1.00 | 1.50 |
+| 4 | 0.80 | ~99.8% | 2.32 | 4.00 | 9.98 |
+| 9 | 0.90 | ~92.4% | 3.83 | 8.42 | 50.2 |
+
+These values are an uncertainty-screen example, not specifications for a selected sensor.
+
+**Measurement policy:**
+
+- treat `F` (or equivalently `theta`) as the primary mechanism metric;
+- use `R` as a secondary derived quantity;
+- do not over-interpret large estimated `R` values;
+- report uncertainty intervals or admissible ranges rather than excessive decimal precision;
+- if `theta` approaches the combined measurement uncertainty, report a lower bound such as “`R` exceeds the identifiable range” instead of a point estimate.
+
+## 8. Experimental use in E3c
 
 For D1/O1/O2/O3, report at every usable sampling position:
 
@@ -133,7 +171,7 @@ For D1/O1/O2/O3, report at every usable sampling position:
 - ambient T and RH;
 - inferred `theta`;
 - inferred `F`;
-- inferred `R` where the local balance is admissible.
+- inferred `R` where the local balance is admissible and identifiable.
 
 Suggested mechanism-support targets:
 
@@ -142,14 +180,14 @@ Suggested mechanism-support targets:
 
 These are project mechanism thresholds only. Physical cooling PASS remains based on heater-power and water-balance criteria in E3c.
 
-## 8. H / T / D / C / U
+## 9. H / T / D / C / U
 
-**H:** laterally open or segmented geometries can produce larger inferred `R` and `F` than a covered/end-renewed corridor under equal water input.
+**H:** laterally open or segmented geometries can produce larger `F` and lower `theta` than a covered/end-renewed corridor under equal water input; `R` should increase where it remains identifiable.
 
-**T:** infer `R` from spatial T/RH/surface-T data in E3c while also measuring heater power and water balance.
+**T:** infer `theta`, `F`, and conditionally `R` from spatial T/RH/surface-T data in E3c while also measuring heater power and water balance.
 
-**D:** mechanism support if open designs repeatedly increase `F`/`R` relative to D1; product-value PASS still requires heater-power improvement.
+**D:** mechanism support if open designs repeatedly increase `F` relative to D1; product-value PASS still requires heater-power improvement.
 
 **C:** the local two-conductance model may be too simple when axial flow, transient plumes, condensation, probe heating, or strong temperature gradients dominate.
 
-**U:** dominant uncertainty arises from near-surface RH/T probe placement and wet-surface temperature. Propagate those measurement uncertainties into `theta`, `F`, and `R`; do not report `R` when the denominator or `theta` is near zero.
+**U:** dominant uncertainty arises from near-surface RH/T probe placement and wet-surface temperature. Propagate those measurement uncertainties into `theta`, `F`, and `R`; use `F` as the primary mechanism metric because `R` becomes ill-conditioned at high renewal.
