@@ -7,8 +7,9 @@ The generator writes:
 - CSV tables for passive equilibrium branches, split sensible/vapor transfer,
   deterministic model-form sensitivity, prescribed-state corridor buoyancy,
   self-consistent 1-D corridor transport, analytic open-valley renewal targets,
-  2D heat-spreader orientation, normalized water/salt screening, and the E3
-  periodic rib-diffusion screen;
+  distributed open-valley axial/lateral vapor transport, 2D heat-spreader
+  orientation, normalized water/salt screening, and the E3 periodic
+  rib-diffusion screen;
 - PNG figures derived directly from selected tables;
 - metadata.json including the git commit when available;
 - sha256.txt covering generated artifacts.
@@ -39,6 +40,7 @@ from simulations.corridor_buoyancy_screen import (
     run_screen as run_corridor_screen,
 )
 from simulations.heat_spreader_2d import orientation_demo
+from simulations.open_valley_distributed_1d import run_screen as run_open_valley_distributed_screen
 from simulations.open_valley_exchange_target import target_table as open_valley_target_table
 from simulations.passive_rib_screen import U_FLAT, stable_equilibria
 from simulations.rib_diffusion_screen import run_screen as run_diffusion_screen
@@ -197,6 +199,7 @@ def main() -> None:
     corridor_neutral = corridor_neutral_curve()
     corridor_self_consistent = run_self_consistent_corridor_screen()
     open_valley_targets = open_valley_target_table()
+    open_valley_distributed = run_open_valley_distributed_screen()
     spreader = generate_heat_spreader_table()
     salt = run_parameter_screen()
     diffusion = run_diffusion_screen()
@@ -209,6 +212,7 @@ def main() -> None:
     corridor_neutral.to_csv(data_dir / "corridor_neutral_density_curve.csv", index=False)
     corridor_self_consistent.to_csv(data_dir / "self_consistent_corridor_1d.csv", index=False)
     open_valley_targets.to_csv(data_dir / "open_valley_renewal_targets.csv", index=False)
+    open_valley_distributed.to_csv(data_dir / "open_valley_distributed_1d.csv", index=False)
     spreader.to_csv(data_dir / "heat_spreader_orientation.csv", index=False)
     salt.to_csv(data_dir / "water_salt_parameter_screen.csv", index=False)
     diffusion.to_csv(data_dir / "rib_diffusion_boundary_layer.csv", index=False)
@@ -234,6 +238,7 @@ def main() -> None:
             "The prescribed-state corridor-buoyancy model is not CFD and does not solve channel temperature/RH.",
             "The self-consistent corridor model is a covered/end-renewed limiting case; lateral ambient exchange and axial diffusion are omitted.",
             "The open-valley renewal-target model is a local conductance-ratio requirement/identification equation; it does not predict the geometry-specific lateral exchange coefficient.",
+            "The distributed open-valley model includes axial diffusion/advection and distributed lateral renewal, but maps lateral renewal through an effective diffusion thickness rather than CFD-resolved external flow.",
             "The rib-diffusion model is a 2-D pure-diffusion screen with an idealized air-renewal boundary and is not CFD or a measured alpha value.",
             "Figures and tables must not be interpreted as measured garment performance.",
         ],
