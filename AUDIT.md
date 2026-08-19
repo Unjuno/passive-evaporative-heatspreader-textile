@@ -5,11 +5,11 @@ Branch audited: `agent/initial-research-disclosure`
 
 ## Overall assessment
 
-The repository now has a coherent technical disclosure, explicit design variants, reproducible low-order model source, regression tests, reference numerical data, and a staged physical experiment plan. It is **not yet a finished stable release**.
+The repository now has a coherent technical disclosure, explicit design variants, three executable screening models, regression tests, reference numerical data, and a staged physical experiment plan. It is **not yet a finished stable release**.
 
 The most important audit finding was numerical: the nonlinear passive heat/mass model can have multiple stable equilibria. Earlier exploratory calculations sometimes selected the most-cooling root, creating an overly optimistic single-value exchange threshold. The repository model has been corrected to expose all stable roots and distinguish warm/conservative and cool/optimistic branches.
 
-Remaining high-priority gaps are verified patent mapping, CI execution on the PR, higher-fidelity/sensitivity models, and physical bench data.
+GitHub Actions has successfully executed the test suite and all three current model demos on the development PR. Remaining high-priority gaps are authoritative patent-family/claim verification, release-commit-generated figures/data provenance, higher-fidelity boundary-layer/sensitivity work, and physical bench data.
 
 ## A. Technical coherence
 
@@ -22,7 +22,7 @@ Remaining high-priority gaps are verified patent mapping, CI execution on the PR
 | Fan requirement | PASS | Fan is optional, not part of the primary architecture. |
 | MOF/sorbent role | PASS | Optional secondary embodiment only. |
 | Salt physics | PASS | Water evaporation and nonvolatile salt transport are separated; salt evaporation is explicitly rejected. |
-| Water/salt model specification | PASS/PARTIAL | Governing two-species/phase specification exists; numerical implementation still pending. |
+| Water/salt model | PASS/PARTIAL | Governing multi-phase specification plus normalized 1D mass-balance screen implemented; pore-scale/kinetic model still open. |
 | Hot-ambient reversal risk | PASS | Dry high-conductivity exterior heat pickup and shielding embodiments are included. |
 | Apparel/exterior design | PASS | Low-profile ribs, 3D knit, lamellae, pleats, pile, and pattern-as-function embodiments are explicit. |
 | Simulation vs measurement labels | PASS | No physical garment result is currently claimed. |
@@ -32,26 +32,29 @@ Remaining high-priority gaps are verified patent mapping, CI execution on the PR
 | Item | Status | Audit note |
 |---|---|---|
 | Governing equations | PASS | Current low-order heat/mass model documented. |
-| Variable definitions and units | PASS | Included in `models/governing-equations.md` and water/salt model. |
-| Runnable source file present | PASS | `simulations/passive_rib_screen.py`. |
+| Variable definitions and units | PASS | Included in governing and water/salt documents. |
+| Passive exterior source | PASS | `simulations/passive_rib_screen.py`. |
+| 2D anisotropic heat-spreader source | PASS | `simulations/heat_spreader_2d.py`. |
+| Normalized water/salt source | PASS | `simulations/water_salt_1d.py`. |
 | Dependencies | PASS | `requirements.txt` and `requirements-dev.txt`. |
 | Multi-equilibrium handling | PASS | All stable roots exposed; explicit selection policy required. |
-| Unit/regression tests | PASS/PENDING CI | Tests include vapor-pressure, geometry, control equilibrium, and multi-root regression. |
-| CI workflow | PASS/PENDING RUN | GitHub Actions workflow is defined; verify on PR. |
-| Reference output CSV | PASS | `data/reference_branch_map_35C_70RH_150gph.csv`. |
+| Unit/regression tests | PASS | Includes vapor-pressure, geometry, equilibrium, multi-root, 2D orientation, and salt-conservation tests. |
+| CI workflow | PASS | GitHub Actions completed tests and all current model demos successfully on PR #1. |
+| Reference output CSV | PASS/PARTIAL | Branch-map CSV exists; release automation/provenance still needed. |
 | Consolidated numerical-results record | PASS | `docs/current-results.md`. |
-| Figure regeneration | MISSING | Add plotting script after branch-map output is generated directly by repository code. |
-| 2D heat-spreader source | MISSING | Earlier results are recorded, consolidated source still needed. |
+| Figure regeneration | MISSING | Add plotting script and commit-linked generated figures. |
 
 ## C. Numerical-model audit
 
 | Item | Status | Audit note |
 |---|---|---|
 | Single `M` threshold accepted? | NO | Earlier `M ~2.5–3.5` +10 W values are not treated as robust thresholds. |
-| Multiple stable roots detected? | YES | Present model exhibits coexisting stable branches near the transition. |
+| Multiple stable roots detected? | YES | Present low-order model exhibits coexisting stable branches near the transition. |
 | Root selection visible? | YES | Warm and cool policies are explicit. |
 | Physical hysteresis established? | NO | Multi-root behavior may be a low-order-model artifact and requires experiment/higher-fidelity analysis. |
 | Conservative interpretation | PASS | README/current-results no longer present a single `M` as validated design criterion. |
+| 2D anisotropy direction | PASS/MODEL | In the current right-side sink geometry, x-aligned high conductivity routes more body-side heat than the 90°-rotated anisotropy; regression-tested. |
+| Salt conservation | PASS/MODEL | Normalized model conserves salt between upstream solids and terminal liquid; no salt vapor flux exists. |
 
 ## D. Experimental readiness
 
@@ -76,9 +79,10 @@ Remaining high-priority gaps are verified patent mapping, CI execution on the PR
 | Directional liquid transport | PASS | 2020 Science Advances work recorded. |
 | Humidity-responsive ventilation | PASS | 2021 Science Advances work recorded. |
 | 2026 sweat-pumping cooling fabric | PASS | Recorded. |
-| Patent landscape | MISSING | Verify publication numbers, priority dates, independent claims, and family members. |
+| Early sorbent cooling garment + exterior fins | PASS/PARTIAL | JPH04209808A recorded from a public patent index; authoritative office/family verification remains. |
+| Fan garment family | PARTIAL | WO2005/063065 identified as a major reference family; detailed claim mapping still needed. |
 | 3D rib/fin textile search | MISSING | Dedicated literature/patent search needed. |
-| Selection/combination escape routes | PASS/PARTIAL | Concrete embodiment matrix added; still needs patent-claim-oriented review. |
+| Selection/combination escape routes | PASS/PARTIAL | Concrete embodiment matrix added; still needs claim-oriented review. |
 
 ## F. Public-release readiness
 
@@ -90,7 +94,7 @@ Remaining high-priority gaps are verified patent mapping, CI execution on the PR
 | Citation metadata | PASS/PARTIAL | Update version/date at stable tag. |
 | Changelog | PASS | `CHANGELOG.md`. |
 | Stable-release checklist | PASS | `docs/release-checklist.md`. |
-| Stable release tag | MISSING | Current work remains a development branch/PR. |
+| Stable release tag | MISSING | Current work remains a development branch/draft PR. |
 | Persistent archive/DOI | MISSING | Do after stable release audit. |
 | SHA-256 release manifest | MISSING | Generate for frozen release bundle. |
 
@@ -102,20 +106,23 @@ Remaining high-priority gaps are verified patent mapping, CI execution on the PR
 - [x] Current quantitative-results summary.
 - [x] Reference branch-map CSV.
 - [x] Automated model tests/CI definition.
+- [x] CI passes on current development PR.
 - [x] Stable-release checklist and changelog.
 - [x] Numbered architecture schematic.
 - [x] Correct simulation/measurement labeling.
-- [ ] Verify patent landscape entries from authoritative patent records.
-- [ ] Confirm CI passes on the exact release candidate.
-- [ ] Generate reference CSV/figures directly from the release commit and record commit SHA.
+- [ ] Verify closest patent families/claims from authoritative patent-office records.
+- [ ] Generate reference CSV/figures directly from the final release commit and record commit SHA.
+- [ ] Generate SHA-256 manifest for frozen release artifacts.
 
 ### P1 — technical strengthening
 
-- [ ] Add consolidated 2D anisotropic heat-spreader source model.
-- [ ] Implement the water/salt transport numerical model specified in `models/water-salt-transport.md`.
+- [x] Add consolidated 2D anisotropic heat-spreader source model.
+- [x] Add normalized water/salt mass-balance numerical model with zero salt vapor flux.
+- [ ] Add higher-fidelity water/salt pore-scale or cyclic model if experiments justify it.
 - [ ] Add high-humidity sensitivity/uncertainty study.
 - [x] Add exterior boundary-layer/accessibility identification method.
 - [ ] Investigate whether multi-equilibrium behavior survives a better natural-convection/boundary-layer model.
+- [ ] Add plotting/regeneration pipeline for quantitative figures.
 
 ### P2 — physical evidence
 
