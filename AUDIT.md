@@ -5,28 +5,29 @@ Branch: `agent/initial-research-disclosure`
 
 ## Overall assessment
 
-The branch contains a coherent technical disclosure, explicit implementation variants, **15 executable screening/sensitivity/audit modules**, regression tests, reproducible reference-output generation, prior-art working notes, and staged physical protocols.
+The branch contains a coherent technical disclosure, explicit implementation variants, **16 executable screening/sensitivity/audit modules**, regression tests, reproducible reference-output generation, prior-art working notes, and staged physical protocols.
 
 It remains a development branch. **No physical garment-performance measurements have been published yet.**
 
 The present numerical record supports a narrower and more falsifiable exterior design direction:
 
-> wet microstructures + strong lateral heat routing + continuously ambient-connected exterior valleys/islands + explicit liquid-supply state + hot-ambient sensible-heat protection.
+> wet microstructures + spatially purposeful heat routing + continuously ambient-connected exterior valleys/islands + explicit liquid-supply/wetness state + hot-ambient sensible-heat protection.
 
-Long covered passive chimneys, geometric area alone, centimeter-scale interruption alone, high local vapor-retention `F` alone, positive evaporation alone, and fully-wet capacity above available feed are no longer accepted as sufficient design criteria.
+Long covered passive chimneys, geometric area alone, centimeter-scale interruption alone, high local vapor-retention `F` alone, positive evaporation alone, fully-wet capacity above available feed, and heat spreading without spatially heterogeneous boundary conditions are no longer accepted as sufficient design criteria.
 
 ## A. Technical coherence
 
 | Item | Status | Audit note |
 |---|---|---|
 | Directional sweat transport | PASS | Core layer retained. |
-| Flexible whole-garment/routed heat spreader | PASS | Continuous, anisotropic, mesh, serpentine, island-bridge variants documented. |
+| Flexible whole-garment/routed heat spreader | PASS/REFINED | Value is tied to spatially nonuniform wetting/exposure/coupling, not internal mixing alone. |
 | Capillary liquid delivery | PASS | Distributed liquid path retained. |
 | Exterior micro-ribs / 3D knit / fins / lamellae | PASS | Multiple concrete families documented. |
 | Hierarchical ambient-access exterior | PASS | Open valleys, cross-openings, short interruptions, islands and covered comparison channels explicit. |
 | Sensible/vapor separation | PASS | Heat and vapor exchange are not forced to share one multiplier. |
 | Ordinary heat/mass analogy baseline | PASS/SCREEN | Lewis and Chilton–Colburn-style comparison added; not a validated textile correlation. |
-| Explicit feed-limited state | PASS/SCREEN | Homogenized sub-grid wet fraction `beta` now solved when feed is below fully-wet capacity. |
+| Explicit feed-limited state | PASS/SCREEN | Homogenized sub-grid wet fraction `beta` is solved when feed is below fully-wet capacity. |
+| Separate wet/dry temperatures | PASS/SCREEN | Symmetric two-node model now tests when the one-temperature `beta` assumption is locally credible. |
 | Hot-ambient dry-side protection | PASS/HYPOTHESIS | Required by several screens; physical validation still open. |
 | Fan | OPTIONAL | Not required by primary architecture. |
 | Sorbent/MOF | OPTIONAL | Secondary embodiment only. |
@@ -43,13 +44,14 @@ Long covered passive chimneys, geometric area alone, centimeter-scale interrupti
 6. `simulations/self_consistent_corridor_1d.py` — covered/end-renewed corridor T/RH/flow coupling.
 7. `simulations/open_valley_exchange_target.py` — local open-valley `R/F` target and measurement inversion.
 8. `simulations/open_valley_distributed_1d.py` — axial diffusion/advection plus distributed lateral vapor renewal.
-9. `simulations/open_valley_thermal_1d.py` — distributed open-valley heat/vapor/wet-wall energy coupling, now with optional homogenized wet fraction.
+9. `simulations/open_valley_thermal_1d.py` — distributed open-valley heat/vapor/wet-wall energy coupling with optional homogenized wet fraction.
 10. `simulations/open_valley_feed_limited.py` — explicit feed-limited partial-wetness closure and latent heat-source partition.
-11. `simulations/open_valley_heat_mass_coupling_audit.py` — required heat/vapor selectivity plus same-length and Chilton–Colburn-style baselines.
-12. `simulations/passive_environment_boundary.py` — analytic hot/humid body-heat-flow sign boundary and skin-setpoint sensitivity.
-13. `simulations/supply_limit_audit.py` — conservative capacity/feed classification retained as a non-dryout upper-bound audit.
-14. `simulations/heat_spreader_2d.py` — anisotropic lateral heat-routing screen.
-15. `simulations/water_salt_1d.py` — nonvolatile salt/water mass-balance screen.
+11. `simulations/wet_dry_two_node.py` — separate wet/dry temperatures linked by lateral heat-spreader mixing at fixed feed.
+12. `simulations/open_valley_heat_mass_coupling_audit.py` — required heat/vapor selectivity plus same-length and Chilton–Colburn-style baselines.
+13. `simulations/passive_environment_boundary.py` — analytic hot/humid body-heat-flow sign boundary and skin-setpoint sensitivity.
+14. `simulations/supply_limit_audit.py` — conservative capacity/feed classification retained as a non-dryout upper-bound audit.
+15. `simulations/heat_spreader_2d.py` — anisotropic lateral heat-routing screen.
+16. `simulations/water_salt_1d.py` — nonvolatile salt/water mass-balance screen.
 
 `simulations/generate_reference_outputs.py` is the reproducibility generator rather than a physical model.
 
@@ -59,16 +61,17 @@ All models remain screening models. None is a validated CFD replacement or physi
 
 | Item | Status | Audit note |
 |---|---|---|
-| Regression tests | PASS/UPDATED | Include multi-root, split transfer, E3, corridor, open-valley, feed-limited, coupling, heat-spreader and salt checks. |
+| Regression tests | PASS/UPDATED | Include multi-root, split transfer, E3, corridor, open-valley, feed-limited, wet/dry two-node, coupling, heat-spreader and salt checks. |
 | E3 grid convergence | PASS/SCREEN | 24 nodes/pitch within ~0.62% of 48-node reference for the screened case. |
 | Distributed open-valley convergence | PASS/SCREEN | Center `F` stable over tested grids. |
 | Wall-energy closure | PASS | Thermal open-valley tests enforce `q_body + q_air = L_v m_evap` numerically. |
-| Feed balance closure | PASS/NEW | Supply-limited solver regression requires evaporation to match imposed feed within numerical tolerance. |
-| Latent-source partition | PASS/NEW | Feed-limited test requires body + ambient latent fractions to close to approximately one. |
-| Reference generator | PASS/UPDATED | Explicit feed-limited CSV added to generated package. |
-| CI definition | PASS/UPDATED | New feed-limited model and generated artifact are exercised. |
+| Feed balance closure | PASS | Supply-limited solver regression requires evaporation to match imposed feed within numerical tolerance. |
+| Latent-source partition | PASS | Feed-limited test requires body + ambient latent fractions to close to approximately one. |
+| Wet/dry two-node global energy closure | PASS/NEW | Separate wet/dry temperatures conserve feed and energy in the symmetric screen. |
+| Reference generator | PASS/UPDATED | Explicit feed-limited and wet/dry two-node CSVs are included. |
+| CI definition | PASS/UPDATED | Feed-limited and wet/dry two-node modules plus generated artifacts are exercised. |
 | Previously verified computational integration | PASS | `model-tests` #231 succeeded at SHA `7f015b8e1b0278f29b545f41d24674b5a394ee79`. |
-| Current feed-limited integration | CHECK | New code/tests/generator/CI are committed; record the new passing run before declaring this integration verified. |
+| Current expanded integration | CHECK | New feed-limited, heat/mass analogy, and two-node code/tests/CI are committed; record a newer passing run before declaring the expanded stack verified. |
 
 ## D. Major numerical findings
 
@@ -171,6 +174,24 @@ At 35 °C / 50% RH / 150 g/h, several supply-limited cases evaporate the same to
 
 Therefore evaporation mass and body heat removal must remain separate reported quantities.
 
+### D13 — two-temperature wet/dry screen refines the heat-spreader interpretation
+
+At 35 °C / 50% RH / 150 g/h with symmetric wet/dry external and body-side sensible coefficients, the new two-node model separates wet and dry temperatures while varying lateral mixing conductance `g_mix`.
+
+Representative behavior:
+
+- `g_mix=0`: wet/dry temperature split ~4.9 °C;
+- around 50 W/(m²-total K): split ~1.6 °C;
+- around 100 W/(m²-total K): split ~1.0 °C;
+- around 500 W/(m²-total K): split ~0.3 °C;
+- very high mixing approaches one temperature.
+
+The solved wet fraction also changes materially with `g_mix`.
+
+However the **global body heat flux is essentially invariant** in this deliberately symmetric fixed-feed screen because internal wet-to-dry heat transfer cancels in the area-integrated energy balance.
+
+**Audit interpretation:** a heat spreader does not create total cooling merely by equalizing two otherwise identical patches. Its total-value mechanism requires spatial heterogeneity in wetting, ambient exposure, body coupling, dry shielding, sink placement, or related boundary conditions. This is consistent with the separate 2-D heat-spreader result, where lateral routing matters under spatially patchy cooling.
+
 ## E. Experimental readiness
 
 | Item | Status | Audit note |
@@ -181,7 +202,7 @@ Therefore evaporation mass and body heat removal must remain separate reported q
 | Water balance | PASS | >=95% target. |
 | E3/E3b | PASS/PLANNED | Pitch/boundary-layer and hierarchical access tests defined. |
 | E3c | PASS/UPDATED | D1/O1/O2a/O2b/O3 defined with `F` plus absolute-transfer metrics. |
-| E4a feed transition | PASS/NEW | Feed sweep plus visible/derived wetness comparison defined. |
+| E4a feed transition | PASS | Feed sweep plus visible/derived wetness comparison defined. |
 | E4 humidity | PASS/PLANNED | Supply-limit classification included. |
 | E6 hot ambient | PASS/UPDATED | Positive evaporation with negative body cooling is an explicit failure mode. |
 | Physical data | **MISSING** | No bench experiment executed yet. |
@@ -213,12 +234,13 @@ Therefore evaporation mass and body heat removal must remain separate reported q
 - [x] explicit homogenized feed-limited partial-wetness model;
 - [x] latent heat-source partition output;
 - [x] Lewis / Chilton–Colburn-style heat/mass analogy comparison;
-- [x] regression energy/feed closure and hot-ambient sign tests;
-- [x] reference-generator / CI definition integration;
+- [x] two-temperature wet/dry patch screen;
+- [x] regression energy/feed/wet-dry closure and hot-ambient sign tests;
+- [x] reference-generator / CI definition integration including wet/dry two-node output;
 - [x] E4a physical feed-transition protocol;
-- [x] synchronize README/current-results with the new model;
-- [ ] confirm new feed-limited integration CI passes at a recorded SHA;
-- [ ] synchronize roadmap/changelog/master experiment plan/PR narrative.
+- [x] synchronize README/current-results/roadmap/changelog/master experiment plan/simulations README;
+- [ ] confirm expanded integration CI passes at a recorded SHA;
+- [ ] synchronize PR narrative after the passing run.
 
 ### P1 — model strengthening
 
@@ -226,7 +248,8 @@ Therefore evaporation mass and body heat removal must remain separate reported q
 - [x] low-order open-valley heat/vapor/wet-wall coupling;
 - [x] explicit liquid-feed-limited homogenized solution;
 - [x] ordinary Lewis/Chilton–Colburn-style coupling comparison;
-- [ ] resolve wet and dry patches spatially rather than through one homogenized `beta`;
+- [x] first separate-temperature wet/dry patch test in a symmetric two-node limit;
+- [ ] resolve wet/dry patches in a distributed 1-D/2-D field with unequal local boundary conditions;
 - [ ] predict lateral exchange from geometry-resolved 2-D/3-D natural convection/cross-flow;
 - [ ] re-test lumped-model multi-equilibrium behavior under improved external-flow treatment;
 - [ ] sensitivity to Nu/Sh, compression, opening losses, radiation and external drift.
@@ -271,6 +294,7 @@ Every significant result must answer:
 14. is a fully-wet body-flux state being reused after supply limitation?
 15. is model `beta` being misreported as measured visible wet fraction?
 16. is ordinary heat/mass analogy being violated without a physical mechanism?
-17. is any large inferred `R` reported more precisely than T/RH uncertainty supports?
+17. is a symmetric internal heat-spreading result being generalized to spatially heterogeneous boundary conditions?
+18. is any large inferred `R` reported more precisely than T/RH uncertainty supports?
 
 If any answer is unclear, keep the item open.
