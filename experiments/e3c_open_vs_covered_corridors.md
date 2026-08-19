@@ -1,15 +1,18 @@
 # E3c — Open Valley vs Covered Corridor Validation
 
-Date: 2026-08-19  
+Date: 2026-08-20  
 Status: planned physical experiment
 
 ## Objective
 
-Test the central limitation identified by the self-consistent 1-D corridor screen:
+Test two numerical limitations now present in the repository:
 
-> a long end-renewed covered channel can carry some buoyancy flow while still becoming nearly saturated and losing most of its vapor driving force.
+1. a long end-renewed covered channel can carry some buoyancy flow while still becoming nearly saturated;
+2. centimeter-scale end segmentation does not materially rescue vapor renewal when the interior lateral exchange is weak.
 
-The experiment therefore compares an exterior path that is open to ambient air along its length against a geometrically similar covered/end-renewed path.
+The physical question is therefore:
+
+> does **continuous lateral ambient access** preserve vapor driving force better than an end-renewed or sparsely interrupted path at the same water input and wet area?
 
 ## Samples
 
@@ -21,25 +24,45 @@ Flat fast-dry exterior at the same water input.
 
 A rectangular channel with a wet floor, sidewalls/cover, and ambient connection primarily at the two ends.
 
-Suggested starting geometry:
+Starting geometry:
 
 - width: 6–10 mm;
 - depth: 3–5 mm;
-- length: 100 mm.
+- length: 50–100 mm.
 
-This sample approximates the limiting case represented by `simulations/self_consistent_corridor_1d.py`.
+This approximates the limiting case represented by `simulations/self_consistent_corridor_1d.py`.
 
-### O1 — laterally open valley
+### O1 — continuously laterally open valley
 
-Same or closely matched wet floor width/depth/length, but with the path exposed to ambient air continuously along its length rather than covered.
+Same or closely matched wet floor width/depth/length as D1, but exposed to ambient air continuously along its length.
 
-### O2 — segmented open valley
+This is the principal design candidate.
 
-Same local valley cross-section as O1, divided by openings/cross-cuts so no continuous wet segment exceeds approximately 20–50 mm.
+### O2a — centimeter-scale interrupted valley negative/control case
+
+Same local cross-section as O1, with end/cross openings approximately every 20–50 mm.
+
+The distributed 1-D screen predicts that this spacing is too coarse to materially change the interior vapor state when lateral exchange remains weak. O2a is retained as a falsification/control condition rather than a preferred design.
+
+### O2b — millimeter-scale short segments
+
+Same local cross-section but with wet path lengths around:
+
+- 1 mm;
+- 2 mm;
+- 3 mm;
+
+where manufacturable and measurable.
+
+The current 6 × 3 mm numerical screen gives an exchange length of roughly 0.7–1.1 mm for the tested lateral-exchange range, so millimeter-scale end access can change the interior state whereas 20–50 mm segmentation usually does not.
+
+O2b may be implemented as short wet bars, interrupted ribs, transverse cuts, or small evaporator islands rather than literal covered ducts.
 
 ### O3 — discontinuous evaporator islands
 
 Wet microstructured fields separated by open ambient-connected gaps. Total wet area should be matched to O1/O2 as closely as practical.
+
+This is the most apparel-relevant implementation of frequent ambient access if 1–3 mm literal segments are impractical.
 
 ## Primary environment
 
@@ -55,7 +78,8 @@ Secondary conditions:
 - 35 °C / 50% RH;
 - 35 °C / 85% RH;
 - 40 °C / 70% RH;
-- vertical, horizontal, and inverted orientation where mechanically possible.
+- vertical, horizontal, and inverted orientation where mechanically possible;
+- optional controlled external airflow after the passive still-air condition is complete.
 
 ## Required measurements
 
@@ -64,12 +88,13 @@ Secondary conditions:
 3. sample mass change / evaporation balance;
 4. wet-surface temperature;
 5. ambient T/RH and far-field air speed;
-6. channel/valley T and RH at inlet, 25%, 50%, 75%, and outlet positions;
-7. local T/RH approximately 1–5 mm above an open valley;
+6. channel/valley T and RH at multiple axial positions;
+7. local T/RH approximately 0.5–5 mm above continuously open regions;
 8. signed local air velocity or tracer-flow direction where measurable;
-9. actual wet area and geometry after wetting/compression.
+9. actual wet area and geometry after wetting/compression;
+10. exact spacing between ambient-connected interruptions or islands.
 
-Wet-surface temperature and local dry-bulb temperature are required with RH because relative humidity alone cannot be used as a vapor-density driving-force measure when temperatures differ.
+Wet-surface temperature and local dry-bulb temperature are required with RH because RH alone is not a vapor-density driving-force measure when temperatures differ.
 
 ## Derived metrics
 
@@ -81,53 +106,49 @@ Wet-surface temperature and local dry-bulb temperature are required with RH beca
 
 Positive values favor the laterally open geometry.
 
-### Humidity saturation penalty
-
-For each axial position `x`, report
-
-\[
-S(x)=RH(x)-RH_{ambient}.
-\]
-
-Also report the fraction of the channel/valley length with `RH > 95%`.
-
-The 95% threshold is only a reporting marker, not a universal physical cutoff.
-
 ### Vapor-driving-force retention
 
-Convert ambient, wet-surface, and local valley states to water-vapor density and calculate
+For each measurement position `x`, calculate
 
 \[
 \theta(x)=
 \frac{\rho_{v,valley}(x)-\rho_{v,\infty}}
-{\rho_{v,sat}(T_s(x))-\rho_{v,\infty}}.
+{\rho_{v,sat}(T_s(x))-\rho_{v,\infty}},
+\qquad
+F(x)=1-\theta(x).
 \]
 
-Then
-
-\[
-F(x)=1-\theta(x)
-\]
-
-is the locally retained fraction of the full ambient-to-saturated-wall vapor-density difference.
-
-When `0 < theta < 1`, infer the local renewal-to-wet vapor-conductance ratio
+When `0 < theta < 1`, the local renewal-to-wet vapor-conductance ratio may be inferred as
 
 \[
 R(x)=\frac{1-\theta(x)}{\theta(x)}.
 \]
 
-This identification follows `simulations/open_valley_exchange_target.py` and `docs/open-valley-renewal-target.md`.
+`F` is the primary mechanism metric. Exact large `R` values are secondary because the inverse problem becomes ill-conditioned as valley air approaches ambient conditions.
 
-Interpretation targets used only for mechanism screening:
+Interpretation targets:
 
 - `F >= 0.50` corresponds to `R >= 1`;
 - `F >= 0.80` corresponds to `R >= 4`;
 - `F >= 0.90` corresponds to `R >= 9`.
 
-These are not product PASS thresholds. A geometry can have high inferred renewal and still fail to improve body-side cooling if sensible heat pickup or thermal coupling dominates.
+These are mechanism targets, not garment PASS thresholds.
 
-Do not report `R` if the measured valley vapor density lies outside the local balance interval or if uncertainty makes `theta` indistinguishable from zero.
+### Segment-length normalization
+
+For each interrupted sample report
+
+\[
+\Lambda=L_{segment}/\ell_{exchange},
+\]
+
+where the numerical screening exchange length is
+
+\[
+\ell_{exchange}=\sqrt{\frac{D_v A}{G'_w+G'_a}}.
+\]
+
+The current model predicts that end openings become weakly relevant once `Lambda` is much larger than one. This dimensionless ratio should be compared with physical RH/T profiles rather than treated as a validated material constant.
 
 ### Water balance
 
@@ -141,11 +162,13 @@ for a primary PASS-quality run.
 
 ## Hypotheses
 
-**H3c-1:** O1 maintains lower local vapor loading `theta` and higher retained driving force `F` than D1 under equal water input.
+**H3c-1:** O1 maintains lower local vapor loading `theta` and higher `F` than D1 under equal water input.
 
-**H3c-2:** O2 reduces the saturated-length fraction and increases inferred renewal ratio `R` relative to O1 while retaining or improving heater-power benefit.
+**H3c-2:** O2a (20–50 mm interruptions) gives little or no improvement over a long weakly renewed path when its interior remains laterally stagnant.
 
-**H3c-3:** at 40 °C / 70% RH, greater air renewal can increase sensible heat input; therefore the geometry with the largest velocity or `R` need not produce the largest useful body cooling.
+**H3c-3:** O2b/O3 with millimeter-scale or continuously distributed ambient access produces higher `F` than O2a at matched wet area.
+
+**H3c-4:** at 40 °C / 70% RH, greater air exchange can increase sensible heat input; the geometry with the largest velocity or vapor renewal need not produce the largest useful body cooling.
 
 ## Decision rules
 
@@ -153,51 +176,52 @@ These are project screening rules, not external standards.
 
 ### PASS open-valley premise
 
-At 35 °C / 70% RH, at least one open configuration must satisfy all of:
+At 35 °C / 70% RH, at least one of O1/O2b/O3 must satisfy all of:
 
-- lower mean local RH than D1 by >=5 percentage points over at least half of sampled positions **and/or** a clearly higher vapor-density driving-force retention `F` after temperature correction;
+- clearly higher temperature-corrected vapor-driving-force retention `F` than D1;
 - heater-power advantage over D1 >=3 W over the tested active area after area normalization;
 - equal liquid input within measurement uncertainty;
 - water-balance closure >=95%.
 
-### Mechanism support
+### SUPPORT for the distributed-renewal model
 
-In addition to the integrated PASS/FAIL result, report whether the open geometry achieves:
+The numerical interpretation is supported if the physical ordering is broadly:
 
-- median `F >= 0.50` over the wet valley (`R >= 1` where identifiable);
-- stronger mechanism support if median `F >= 0.80` (`R >= 4`).
+`O1 or O2b/O3 > O2a > or ~= D1`
 
-These mechanism thresholds do not substitute for heater-power improvement.
+in median `F`, with centimeter-scale interruption showing materially less benefit than continuous/millimeter-scale ambient access.
+
+Exact agreement with a numerical `delta_open` value is **not** required because `delta_open` is an effective exchange thickness, not direct geometry.
 
 ### STRONG PASS
 
 In addition to PASS:
 
-- open configuration also exceeds the flat control by >=10 W over 0.30 m² equivalent;
+- open configuration also exceeds flat control by >=10 W over 0.30 m² equivalent;
 - result repeats with CV <=10%;
 - the advantage remains after controlling for wet area.
 
 ### FAIL
 
-- open geometry does not reduce vapor loading relative to D1; or
-- local vapor renewal improves but heater power does not, indicating another bottleneck; or
-- any apparent gain is explained by unequal water input, different wet area, or uncontrolled external airflow.
+- continuous lateral opening does not improve `F` relative to D1; or
+- `F` improves but heater power does not, indicating another bottleneck; or
+- apparent gain is explained by unequal water input, wet area, or uncontrolled airflow.
 
 ### UNCERTAIN
 
-- repeatable local vapor-renewal improvement without a clear heater-power gain;
+- repeatable vapor-renewal improvement without clear heater-power gain;
 - large run-to-run variation;
-- local velocity too small for reliable sign measurement;
-- inferred `R` is dominated by RH/T placement uncertainty.
+- local probes materially disturb the small flow;
+- inferred `F` is dominated by T/RH position uncertainty.
 
 ## H / T / D / C / U
 
-**H:** continuous lateral ambient access and/or segmentation provides more useful vapor renewal than an end-renewed covered corridor.
+**H:** continuous or millimeter-scale ambient access provides more useful vapor renewal than long end-renewed or centimeter-scale interrupted paths.
 
-**T:** C0/D1/O1/O2/O3 at the primary environment, n>=3, equal liquid input, with spatial T/RH, wet-surface T, heater power, water balance, and signed flow where measurable.
+**T:** C0/D1/O1/O2a/O2b/O3 at the primary environment, n>=3, equal liquid input, spatial T/RH, wet-surface T, heater power, water balance, and signed flow where measurable.
 
-**D:** use PASS/STRONG PASS/FAIL/UNCERTAIN above and separately report the `F/R` mechanism classification.
+**D:** use PASS/STRONG PASS/FAIL/UNCERTAIN above and separately report the `F` mechanism classification.
 
-**C:** open geometry may simply reduce wet area, probe intrusion may alter the small flow, external room currents may dominate buoyancy, the local two-conductance model may be inadequate, or heat-spreader coupling may be the true limit.
+**C:** open geometry may reduce wet area; probe intrusion may alter the local field; the screened Sherwood number may overestimate wet-wall transfer; external room currents may dominate; heat-spreader coupling may be limiting.
 
-**U:** dominant uncertainties are low-speed velocimetry, RH probe size and position, wet-surface temperature, wet-area determination, local compression, thermal contact, and far-field air-speed stability. Propagate T/RH uncertainty into vapor density, `theta`, `F`, and `R`; do not report more numerical precision than those uncertainties support.
+**U:** dominant uncertainties are low-speed flow measurement, RH/T probe size and position, wet-surface temperature, wet-area determination, local compression, thermal contact, and far-field stability. Propagate T/RH uncertainty into vapor density, `theta`, and `F`. Avoid over-interpreting exact large `R` values.
