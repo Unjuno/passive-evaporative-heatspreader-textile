@@ -26,9 +26,9 @@ import pandas as pd
 from scipy.optimize import brentq
 
 try:
-    from simulations.open_valley_thermal_1d import solve_open_valley_thermal
+    from simulations.open_valley_thermal_1d import L_V, solve_open_valley_thermal
 except ModuleNotFoundError:
-    from open_valley_thermal_1d import solve_open_valley_thermal
+    from open_valley_thermal_1d import L_V, solve_open_valley_thermal
 
 DEFAULT_PROJECTED_AREA_M2 = 0.30
 DEFAULT_STRUCTURED_FRACTION = 0.65
@@ -44,7 +44,11 @@ class FeedLimitedResult:
     regime: str
     wet_fraction_beta: float
     mean_evap_flux_g_m2_h: float
+    latent_flux_W_m2: float
     mean_body_heat_flux_W_m2: float
+    mean_air_to_wall_W_m2: float
+    body_fraction_of_latent: float
+    ambient_fraction_of_latent: float
     mean_surface_C: float
     mean_air_RH: float
     full_wet_capacity_g_m2_h: float
@@ -107,6 +111,14 @@ def solve_feed_limited(
         result.mean_evap_flux_g_m2_h - target_evap
     ) / max(target_evap, 1e-12)
 
+    latent_flux = L_V * (result.mean_evap_flux_g_m2_h / 3.6e6)
+    if latent_flux > 0.0:
+        body_fraction = result.mean_body_heat_flux_W_m2 / latent_flux
+        ambient_fraction = result.mean_air_to_wall_W_m2 / latent_flux
+    else:
+        body_fraction = np.nan
+        ambient_fraction = np.nan
+
     return FeedLimitedResult(
         ambient_C=ambient_c,
         ambient_RH=ambient_rh,
@@ -116,7 +128,11 @@ def solve_feed_limited(
         regime=regime,
         wet_fraction_beta=beta,
         mean_evap_flux_g_m2_h=result.mean_evap_flux_g_m2_h,
+        latent_flux_W_m2=latent_flux,
         mean_body_heat_flux_W_m2=result.mean_body_heat_flux_W_m2,
+        mean_air_to_wall_W_m2=result.mean_air_to_wall_W_m2,
+        body_fraction_of_latent=body_fraction,
+        ambient_fraction_of_latent=ambient_fraction,
         mean_surface_C=result.mean_surface_C,
         mean_air_RH=result.mean_air_RH,
         full_wet_capacity_g_m2_h=capacity,
@@ -178,6 +194,7 @@ def summarize_optima(table: pd.DataFrame) -> pd.DataFrame:
                 "best_body_heat_flux_W_m2": float(best["mean_body_heat_flux_W_m2"]),
                 "wet_fraction_beta_at_best": float(best["wet_fraction_beta"]),
                 "evap_total_g_h_at_best": float(best["evap_total_g_h"]),
+                "body_fraction_of_latent_at_best": float(best["body_fraction_of_latent"]),
                 "regime_at_best": str(best["regime"]),
             }
         )
@@ -212,7 +229,4 @@ def run_screen() -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    screen = run_screen()
-    print(screen.to_string(index=False))
-    print("\nLinked-exchange optima at 150 g/h:")
-    print(summarize_optima(linked_exchange_optimization()).to_string(index=False))
+    print(run_screen().to_string(index=False))
