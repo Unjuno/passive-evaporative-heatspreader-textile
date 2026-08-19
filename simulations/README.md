@@ -12,12 +12,14 @@
 8. **`open_valley_distributed_1d.py`** — axial diffusion/advection plus distributed lateral vapor renewal; reports exchange length, `F`, and `k_eff`.
 9. **`open_valley_thermal_1d.py`** — coupled valley-air T, vapor density, surface T, evaporation and body-side heat flow; optional homogenized `wet_fraction`.
 10. **`open_valley_feed_limited.py`** — solves the homogenized wet fraction `beta` required to satisfy imposed feed when fully-wet transfer capacity is too high; reports latent heat-source partition.
-11. **`wet_dry_two_node.py`** — separate wet/dry temperatures at fixed feed, coupled through a lateral heat-spreader mixing conductance.
-12. **`open_valley_heat_mass_coupling_audit.py`** — heat/mass coupling audit using `Xi=delta_vapor/delta_heat`, Lewis number, a Chilton–Colburn-style comparison, and the hot-ambient zero-body-flux threshold.
-13. **`passive_environment_boundary.py`** — analytic same-path environmental sign boundary and skin-temperature sensitivity.
-14. **`supply_limit_audit.py`** — conservative capacity/feed classification retained separately from the explicit partial-wetness solution.
-15. **`heat_spreader_2d.py`** — anisotropic 2-D lateral heat-routing model.
-16. **`water_salt_1d.py`** — normalized water/nonvolatile-salt mass-balance screen.
+11. **`wet_dry_two_node.py`** — separate wet/dry temperatures at fixed feed, coupled through a lateral heat-spreader mixing conductance under symmetric external coefficients.
+12. **`asymmetric_wet_dry_spreader.py`** — bounded/continuation wet-dry mechanism screen with a shielded or weakly exposed dry region; tests when heat routing changes total body heat removal.
+13. **`spreader_material_mapping.py`** — maps abstract `g_mix` to `k*t/pitch²`, mass, bending-strain screening and a two-contact thermal-resistance burden.
+14. **`open_valley_heat_mass_coupling_audit.py`** — heat/mass coupling audit using `Xi=delta_vapor/delta_heat`, Lewis number, a Chilton–Colburn-style comparison, and the hot-ambient zero-body-flux threshold.
+15. **`passive_environment_boundary.py`** — analytic same-path environmental sign boundary and skin-temperature sensitivity.
+16. **`supply_limit_audit.py`** — conservative capacity/feed classification retained separately from the explicit partial-wetness solution.
+17. **`heat_spreader_2d.py`** — anisotropic 2-D lateral heat-routing model.
+18. **`water_salt_1d.py`** — normalized water/nonvolatile-salt mass-balance screen.
 
 All are screening or analytic models. None is a validated CFD replacement or physical garment-performance measurement.
 
@@ -76,7 +78,48 @@ For the deliberately symmetric 35 °C / 50% RH reference:
 - the required wet fraction changes with mixing;
 - **the area-integrated body heat flux remains nearly invariant** because the wet and dry patches have identical body and ambient sensible coefficients and internal lateral heat transfer cancels globally.
 
-This is not evidence that heat spreading is generally irrelevant. It establishes a sharper condition: heat spreading changes total cooling only when there is spatial heterogeneity in evaporation, ambient exposure, body coupling, shielding, sink placement, or other boundary conditions. That is the regime represented by the separate 2-D heat-spreader model.
+This establishes a sharper condition: heat spreading changes total cooling only when there is spatial heterogeneity in evaporation, ambient exposure, body coupling, shielding, sink placement, or other boundary conditions.
+
+### Asymmetric wet/dry spreader result
+
+`asymmetric_wet_dry_spreader.py` deliberately gives the dry region a lower ambient sensible coefficient than the wet evaporator. Under that asymmetry, heat spreading routes heat from the dry/body-coupled region into the active wet evaporator and increases total modeled body heat removal.
+
+The nonlinear solve now uses bounded least squares plus an equation-residual acceptance test and supports continuation in `g_mix`. This change was made after a dense sweep exposed nonphysical branch jumps from the earlier unconstrained root formulation.
+
+For the representative `h_dry=5 W/(m² K)` screen, the approximate `g_mix` needed to reach 90% of the high-mixing asymptotic gain is about 117, 192, 285, 330 and 258 W/(m² K) at 30, 50, 75, 100 and 150 g/h feed respectively.
+
+The corresponding asymptotic high-mixing gains over 0.195 m² are finite: roughly 3.0, 4.5, 5.7, 6.0 and 3.5 W. Infinite conductivity is therefore not the objective.
+
+### Material / geometry mapping of `g_mix`
+
+For an ideal periodic alternating wet/dry stripe topology,
+
+\[
+g_{sheet}\approx \Gamma\frac{k_{\parallel}tc}{P^2},\qquad \Gamma=4.
+\]
+
+This is a low-order geometry mapping, not a validated textile correlation.
+
+The main result is the quadratic pitch penalty: required `k*t` grows as `P²`. For a representative 100 g/h / 90%-gain target (`g_mix≈330 W/(m² K)`):
+
+- abstract `k=100 W/(m K)`, `rho=1600 kg/m³`, full coverage: about 83 µm / 40 g over 0.30 m² at `P=10 mm`, but about 330 µm / 159 g at `P=20 mm`;
+- abstract `k=300 W/(m K)`, `rho=1800 kg/m³`: about 28 µm / 15 g at `P=10 mm`, about 110 µm / 59 g at `P=20 mm`.
+
+Under the simple linear coverage assumption, reducing conductive coverage and increasing thickness to preserve `g_sheet` leaves mass unchanged. A sparse network is not automatically lighter unless it changes path topology, material choice, inactive area, or another non-linear factor.
+
+The corresponding simple mass figure of merit is `k/rho`.
+
+### Thermal-contact burden
+
+A two-contact screen gives
+
+\[
+\frac{1}{g_{eff}}=\frac{1}{g_{sheet}}+\frac{2}{h_c}.
+\]
+
+Thus even an infinitely conductive sheet has `g_eff < h_c/2`. For the representative `g_target≈330 W/(m² K)` case, the absolute minimum each-side contact conductance is about 660 W/(m² K). If the sheet-only conductance is only twice the target, each contact must be about 1320 W/(m² K) in this lumped model.
+
+This is a validation burden, not a measured textile contact coefficient.
 
 ### Heat/mass coupling audit
 
@@ -117,6 +160,8 @@ python -m pytest -q
 python simulations/open_valley_thermal_1d.py
 python simulations/open_valley_feed_limited.py
 python simulations/wet_dry_two_node.py
+python simulations/asymmetric_wet_dry_spreader.py
+python simulations/spreader_material_mapping.py
 python simulations/open_valley_heat_mass_coupling_audit.py
 python simulations/passive_environment_boundary.py
 python simulations/supply_limit_audit.py
@@ -135,7 +180,9 @@ Do not use any one of these as proof of garment cooling:
 - evaporation mass flux;
 - fully-wet transfer capacity;
 - model wet fraction `beta`;
-- internal heat-spreader conductance in a spatially symmetric model.
+- internal heat-spreader conductance in a spatially symmetric model;
+- a high sheet `k` without routing pitch/contact constraints;
+- a `g_mix` mapping that ignores topology/contact resistance.
 
 Integrated interpretation requires:
 
@@ -146,14 +193,15 @@ Integrated interpretation requires:
 5. ambient sensible heat pickup / latent heat-source partition;
 6. explicit artificial-skin temperature;
 7. spatial boundary-condition heterogeneity when claiming a heat-spreader benefit;
-8. an identified physical mechanism for any claimed heat/vapor selectivity.
+8. an identified physical mechanism for any claimed heat/vapor selectivity;
+9. explicit heat-spreader routing length, `k*t`, topology and thermal-contact burden.
 
 ## Current next model tasks
 
-1. distributed wet/dry field with unequal local body/ambient boundary conditions;
+1. distributed wet/dry field with unequal local body/ambient boundary conditions and direct material `k`, thickness and contact terms;
 2. geometry-resolved 2-D/3-D external natural-convection/cross-flow;
 3. use that flow field to constrain heat/mass transfer and re-test low-order coupling assumptions;
 4. re-test lumped-model multi-equilibrium behavior against improved external-flow physics;
 5. sensitivity to Nu/Sh, compression, opening losses, radiation and weak external drift.
 
-See `docs/current-results.md`, `docs/open-valley-thermal-model.md`, `docs/feed-limited-open-valley.md`, `docs/passive-environment-boundary.md`, `docs/measurement-uncertainty-budget.md`, and the E3c/E4a/E4/E6 experiment protocols.
+See `docs/current-results.md`, `docs/spreader-material-mapping.md`, `docs/open-valley-thermal-model.md`, `docs/feed-limited-open-valley.md`, `docs/passive-environment-boundary.md`, `docs/measurement-uncertainty-budget.md`, and the E3c/E4a/E4/E6 experiment protocols.
