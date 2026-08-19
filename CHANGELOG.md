@@ -1,63 +1,71 @@
 # Changelog
 
-All notable research-record changes will be documented here.
+All notable research-record changes are documented here.
 
 ## Unreleased
 
 ### Added
 
-- integrated project README and citation metadata;
-- technical disclosure with primary and optional embodiments;
-- research roadmap and staged experiment plan;
-- prior-art map with close adjacent literature explicitly acknowledged;
-- governing equations and variable/unit definitions;
-- passive exterior rib screening model;
-- explicit multi-equilibrium detection and conservative/optimistic branch reporting;
-- periodic 2-D E3 rib vapor-diffusion model with grid-convergence checks;
-- hierarchical microstructure + macro air-renewal embodiment and E3b experiment protocol;
-- split sensible-heat / vapor-transfer model using independent `M_h` and `M_m` multipliers;
-- regression test proving the split model reduces to the older coupled model when `M_h = M_m`;
-- deterministic model-form sensitivity sweep over RH, `U_body`, radiation, `M_h`, and `M_m`;
-- model-form uncertainty framework distinguishing screening-grid fractions from probabilities;
-- prescribed-state moist-air vertical-corridor buoyancy screen with neutral-density analysis;
-- **self-consistent 1-D rectangular-corridor model** solving signed buoyancy/friction velocity, wet-wall temperature, channel T/RH, evaporation, and body-side heat flux for an end-renewed covered-duct limit;
-- self-consistent corridor regression tests covering rectangular-duct resistance, low-Pe behavior, humidity-driven flow reversal, hot-ambient inward heat, and segment-length effects;
-- vapor-driving-force-retention output `Phi(NTU_m)` so axial Péclet number is not mistaken for proof of useful renewal;
-- E3c open-valley versus covered-corridor physical validation protocol;
-- self-consistent corridor outputs in the reproducible reference package and GitHub Actions workflow;
-- experiment, data, and figure conventions;
-- embodiment matrix and design-history record;
-- consolidated numerical-results summary;
-- reference equilibrium branch CSV;
-- reproducible reference-output generator with CSV/PNG/metadata/SHA-256 artifacts;
-- repository audit checklist with P0/P1/P2/P3 queues.
+- integrated README, citation metadata, architecture, embodiment matrix, design history, roadmap, experiment plan, prior-art notes, and repository audit;
+- nonlinear passive heat/mass model with explicit multi-equilibrium reporting;
+- split sensible/vapor transfer model (`M_h`, `M_m`) and deterministic sensitivity grid;
+- periodic 2-D E3 rib vapor-diffusion model and grid-convergence checks;
+- prescribed-state thermo-solutal corridor buoyancy model;
+- self-consistent covered/end-renewed 1-D corridor T/RH/flow/evaporation model;
+- local open-valley renewal target and T/RH measurement inversion using `R` and `F`;
+- distributed open-valley vapor model with axial diffusion/advection and distributed lateral renewal;
+- exchange-length calculation and centimeter-scale segmentation audit;
+- absolute series vapor-conductance metric `k_eff = k_w k_a/(k_w+k_a)`;
+- coupled open-valley thermal/vapor model solving valley T, vapor density, wet-surface T, evaporation and body-side heat flow;
+- wet-wall energy-closure regression test;
+- explicit liquid-supply capacity audit separating fully-wet transfer capacity from available feed without inventing a dryout temperature field;
+- E3b hierarchical air-renewal and E3c open-vs-covered physical protocols;
+- E18–E21 open-valley / segmented / island / covered-channel implementation variants;
+- 2-D anisotropic heat-spreader and normalized nonvolatile water/salt models;
+- regression tests and GitHub Actions CI;
+- reproducible CSV/PNG/metadata/SHA-256 output package.
 
 ### Corrected
 
-- clarified that sweat salts are nonvolatile under garment operating conditions;
-- removed any interpretation that salt is removed by evaporation;
-- corrected earlier screening practice that silently selected the most-cooling stable equilibrium when multiple stable roots coexist;
-- downgraded earlier single-value `M` cooling thresholds from design conclusions to exploratory model artifacts pending validation;
-- corrected the assumption that a vapor-transfer enhancement must produce the same multiplier in sensible convective heat transfer;
-- clarified that E3 outputs are vapor mass-transfer multipliers, not cooling wattages or measured effective-area factors;
-- clarified that deterministic sensitivity-grid fractions are not reliability estimates or statistical confidence levels;
-- corrected the design intuition that a vertical wet corridor must generate upward chimney flow: evaporative cooling and humidification can oppose each other, so the buoyancy direction can reverse or become near-neutral;
-- corrected a second corridor intuition: **nonzero velocity or large axial `Pe_m` does not prove useful air renewal** if the channel also has high mass-transfer NTU and approaches saturation;
-- separated the covered/end-renewed duct limit from the laterally open exterior-valley hypothesis so the former is not generalized to the latter.
+- salt is nonvolatile under garment operating conditions; water evaporates, salt does not;
+- earlier most-cooling-root selection is no longer silently used when multiple stable equilibria exist;
+- earlier single-value `M` cooling thresholds are historical screening artifacts, not validated design criteria;
+- vapor-transfer enhancement is not automatically assigned to sensible heat transfer;
+- geometric exterior area is not treated as accessible evaporative area;
+- vertical wet corridors are not assumed to produce upward chimney flow;
+- nonzero corridor velocity and axial Péclet number are not treated as proof of useful vapor renewal;
+- covered/end-renewed corridor results are not generalized directly to laterally open garment valleys;
+- 20–50 mm interruption is no longer assumed to provide adequate air renewal when the interior lateral exchange remains weak;
+- high local vapor-driving-force retention `F` is no longer treated as proof of high evaporation capacity; `k_eff`/evaporation/heater power must also be considered;
+- positive evaporation is no longer treated as proof of positive wearer cooling: hot ambient sensible heat can make body-side heat flow negative;
+- transfer-capacity evaporation above the available liquid feed is explicitly classified as supply-limited and the fully-wet thermal state is not reused as a feed-limited prediction.
 
 ### Current research direction
 
-The exterior architecture has shifted from a single-scale dense rib field and from long covered “chimney” channels toward a hierarchical, laterally open structure combining:
+The preferred exterior has narrowed to a hierarchical, continuously/largely laterally open architecture:
 
-- wet micro-ribs / 3D-knit features for local area;
-- open valleys and cross-openings for ambient access;
-- short/segmented wet paths;
-- discontinuous evaporator fields;
-- bidirectional flow tolerance;
-- hot-ambient shielding/routing where sensible heat pickup becomes adverse.
+- wet micro-ribs / 3D-knit / short-fin texture for local area;
+- open valleys, cross-openings and ambient-connected gaps;
+- discontinuous evaporator islands;
+- millimeter-scale interruptions only as an extreme mechanism test rather than a required apparel dimension;
+- routed/anisotropic heat spreading toward wet fields;
+- hot-ambient shielding or thermal routing that limits harmful sensible heat pickup.
 
-The next major numerical task is distributed lateral ambient exchange plus low-Pe axial diffusion/advection-diffusion for an **open exterior valley**. The next major physical discriminator is E3c: covered/end-renewed duct versus laterally open and segmented valleys under equal water input and matched wet area.
+The current numerical objective is no longer just air renewal. It is simultaneous optimization/validation of:
+
+1. vapor-renewal quality (`F`);
+2. absolute evaporation transfer (`k_eff` / mass flux);
+3. body-side heat removal;
+4. available water supply;
+5. sensible heat pickup from ambient air.
+
+Next model-strengthening tasks are a physically constrained heat/mass coupling baseline, an explicit wetting/dryout treatment for supply-limited cases, and geometry-resolved external natural-convection/cross-flow.
+
+## Verification
+
+- `model-tests` #231 passed at `7f015b8e1b0278f29b545f41d24674b5a394ee79`, covering the coupled open-valley thermal model and preceding stack.
+- Later supply-audit and documentation commits require a newer passing CI before being recorded as the next verified integration point.
 
 ## Release policy
 
-Stable releases should be tagged, archived without overwriting earlier releases, and accompanied by a frozen technical disclosure, reproducible code/data, release notes, and checksums where practical.
+Stable releases should be tagged and archived without overwriting earlier public records. A stable release should include the frozen technical disclosure, source, reference data, metadata, SHA-256 manifest, version/citation metadata, and release notes.
