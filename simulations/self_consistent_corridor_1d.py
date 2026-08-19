@@ -11,29 +11,29 @@ Replace the prescribed channel temperature/RH state used in
 - wet-wall temperature;
 - evaporation and body-side heat flow.
 
-The model treats a straight rectangular open duct with ambient air at either
-end.  For a trial speed, heat and vapor exchange approach a wet-wall state
-exponentially along the duct.  The wet-wall temperature is solved from a local
-mean energy balance.  The resulting mean moist-air density determines a new
-buoyancy-driven velocity through laminar rectangular-duct friction.  Signed
+The model treats a straight rectangular duct with ambient renewal primarily at
+its ends. For a trial speed, heat and vapor exchange approach a wet-wall state
+exponentially along the duct. The wet-wall temperature is solved from a mean
+energy balance. The resulting mean moist-air density determines a new
+buoyancy-driven velocity through laminar rectangular-duct friction. Signed
 velocity roots are then found self-consistently.
 
-This remains a SCREENING model, not CFD.  Important omissions include axial
-molecular diffusion, entrance/exit mixing, turbulence, garment curvature,
-walking/wind forcing, spatially varying wall wetness, exact rectangular-duct
-Nusselt/Sherwood boundary-condition dependence, radiation inside the channel,
-and coupling to a full 2-D/3-D heat spreader.
+This remains a SCREENING model, not CFD. Important omissions include axial
+molecular diffusion, distributed lateral ambient exchange, entrance/exit
+mixing, turbulence, garment curvature, walking/wind forcing, spatially varying
+wall wetness, exact rectangular-duct Nusselt/Sherwood boundary-condition
+dependence, radiation inside the channel, and coupling to a full 2-D/3-D heat
+spreader.
 
-The model explicitly reports a mass Péclet number based on corridor length.
-When Pe << 1, the assumed axial-advection formulation is not a reliable
-replacement for diffusion and the velocity result should be treated only as a
-buoyancy tendency.  Project screening labels use:
+The model reports both axial mass Péclet number and a mean vapor-driving-force
+retention factor. A large Pe alone does not establish useful renewal if the
+channel also has a very large mass-transfer NTU and approaches saturation.
 
-    Pe < 1      diffusion-dominated
-    1 <= Pe < 10  mixed / weak advection
-    Pe >= 10    advection-relevant
+Project Pe labels are heuristics, not external standards:
 
-These labels are project heuristics, not external standards.
+    Pe < 1          diffusion-dominated
+    1 <= Pe < 10   mixed / weak advection
+    Pe >= 10       advection-relevant
 """
 
 from __future__ import annotations
@@ -80,6 +80,7 @@ class CorridorSolution:
     Pe_mass_length: float
     NTU_heat: float
     NTU_mass: float
+    vapor_driving_force_retention: float
     body_heat_flux_W_m2_wet: float
     evaporation_flux_kg_m2_s_wet: float
     hydraulic_diameter_mm: float
@@ -114,11 +115,7 @@ def relative_humidity_from_vapor_density(temp_c: float, rho_v: float) -> float:
 
 
 def rectangular_poiseuille_number(width_m: float, depth_m: float) -> float:
-    """Darcy Poiseuille number f_D*Re for a rectangular duct.
-
-    Uses the standard polynomial in aspect ratio alpha=min/max.  It tends to
-    96 for parallel plates and about 56.9 for a square duct.
-    """
+    """Darcy Poiseuille number f_D*Re for a rectangular duct."""
     if width_m <= 0.0 or depth_m <= 0.0:
         raise ValueError("duct dimensions must be positive")
     alpha = min(width_m, depth_m) / max(width_m, depth_m)
@@ -176,11 +173,8 @@ def _state_for_speed(
     depth = depth_mm * 1e-3
     length = length_mm * 1e-3
     area = width * depth
-    wetted_flow_perimeter = 2.0 * (width + depth)
-    hydraulic_diameter = 4.0 * area / wetted_flow_perimeter
-
-    # The default garment-like screen wets the corridor floor only.  Sidewalls
-    # can be enabled as a sensitivity case.
+    flow_perimeter = 2.0 * (width + depth)
+    hydraulic_diameter = 4.0 * area / flow_perimeter
     wet_perimeter = width + 2.0 * depth if wet_sidewalls else width
 
     h_c = NU_SCREEN * K_AIR / hydraulic_diameter
@@ -200,24 +194,31 @@ def _state_for_speed(
         mean_air_c = surface_c + (ambient_c - surface_c) * phi_h
         mean_rho_v = rho_v_surface - (rho_v_surface - rho_v_in) * phi_m
         evaporation_flux = max(k_m * (rho_v_surface - mean_rho_v), 0.0)
-
-        # Positive terms supply latent heat at the wet wall.
         body_to_wall = u_body_W_m2K * (T_SKIN - surface_c)
         air_to_wall = h_c * (mean_air_c - surface_c)
         return body_to_wall + air_to_wall - L_V * evaporation_flux
 
-    grid = np.linspace(10.0, 45.0, 281)
-    vals = np.array([wall_balance(t) for t in grid])
+    low, high = 10.0, 45.0
+    f_low = wall_balance(low)
+    f_high = wall_balance(high)
     roots: list[float] = []
-    for idx in np.where(vals[:-1] * vals[1:] <= 0.0)[0]:
-        try:
-            roots.append(brentq(wall_balance, grid[idx], grid[idx + 1], maxiter=100))
-        except ValueError:
-            continue
+    if f_low == 0.0:
+        roots = [low]
+    elif f_high == 0.0:
+        roots = [high]
+    elif f_low * f_high < 0.0:
+        roots = [brentq(wall_balance, low, high, maxiter=100)]
+    else:
+        grid = np.linspace(low, high, 81)
+        vals = np.array([wall_balance(t) for t in grid])
+        for idx in np.where(vals[:-1] * vals[1:] <= 0.0)[0]:
+            try:
+                roots.append(brentq(wall_balance, grid[idx], grid[idx + 1], maxiter=100))
+            except ValueError:
+                continue
     if not roots:
         raise RuntimeError("wet-wall temperature root not found")
 
-    # Conservative warm-wall root if more than one algebraic root appears.
     surface_c = max(roots)
     rho_v_surface = saturated_vapor_density(surface_c)
     mean_air_c = surface_c + (ambient_c - surface_c) * phi_h
@@ -245,6 +246,7 @@ def _state_for_speed(
         "Pe_mass_length": speed_m_s * length / D_V,
         "NTU_heat": ntu_heat,
         "NTU_mass": ntu_mass,
+        "vapor_driving_force_retention": phi_m,
         "body_heat_flux_W_m2_wet": u_body_W_m2K * (T_SKIN - surface_c),
         "evaporation_flux_kg_m2_s_wet": evaporation_flux,
         "hydraulic_diameter_mm": hydraulic_diameter * 1e3,
@@ -264,21 +266,9 @@ def solve_corridor(
     vertical_projection: float = 1.0,
     velocity_scan_max_m_s: float = 0.10,
 ) -> list[CorridorSolution]:
-    """Return all signed self-consistent buoyancy/friction roots.
-
-    ``vertical_projection`` is the cosine-like projection of the corridor's
-    positive axis onto upward gravity-opposed vertical direction:
-
-    - +1: positive axis upward;
-    - 0: horizontal, no axial buoyancy head in this model;
-    - -1: positive axis downward.
-
-    The thermodynamic exchange depends on speed magnitude.  Signed velocity is
-    then determined by the moist-air density difference and orientation.
-    """
+    """Return all signed self-consistent buoyancy/friction roots."""
     if not -1.0 <= vertical_projection <= 1.0:
         raise ValueError("vertical_projection must be between -1 and 1")
-
     if abs(vertical_projection) < 1e-12:
         return []
 
@@ -301,7 +291,7 @@ def solve_corridor(
         predicted = state["velocity_coefficient"] * pressure_gradient
         return float(velocity - predicted)
 
-    magnitudes = np.logspace(-7, np.log10(velocity_scan_max_m_s), 420)
+    magnitudes = np.logspace(-7, np.log10(velocity_scan_max_m_s), 140)
     scan = np.concatenate((-magnitudes[::-1], magnitudes))
     vals = np.array([residual(v) for v in scan])
     roots: list[float] = []
@@ -347,6 +337,7 @@ def solve_corridor(
                 Pe_mass_length=float(state["Pe_mass_length"]),
                 NTU_heat=float(state["NTU_heat"]),
                 NTU_mass=float(state["NTU_mass"]),
+                vapor_driving_force_retention=float(state["vapor_driving_force_retention"]),
                 body_heat_flux_W_m2_wet=float(state["body_heat_flux_W_m2_wet"]),
                 evaporation_flux_kg_m2_s_wet=float(state["evaporation_flux_kg_m2_s_wet"]),
                 hydraulic_diameter_mm=float(state["hydraulic_diameter_mm"]),
@@ -358,7 +349,7 @@ def solve_corridor(
 
 
 def run_screen() -> pd.DataFrame:
-    """Generate the current deterministic self-consistent corridor screen."""
+    """Generate the deterministic self-consistent corridor screen."""
     rows: list[dict[str, float | str | bool | int]] = []
     environments = (
         (35.0, 0.50),
@@ -409,6 +400,8 @@ if __name__ == "__main__":
                 "velocity_m_s",
                 "transport_regime",
                 "Pe_mass_length",
+                "NTU_mass",
+                "vapor_driving_force_retention",
                 "surface_temp_C",
                 "mean_air_RH",
                 "body_heat_flux_W_m2_wet",
