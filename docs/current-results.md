@@ -1,7 +1,7 @@
 # Current Numerical Results
 
 Status: **SIMULATION / SCREENING ONLY — NO PHYSICAL GARMENT PERFORMANCE DATA YET**  
-Compiled: 2026-08-19
+Compiled: 2026-08-20
 
 This document consolidates principal quantitative results from earlier exploratory models. Values are approximate and are retained as a research record. Stable-release results must be regenerated from repository code.
 
@@ -144,10 +144,11 @@ Before a stable versioned release, regenerate and archive:
 2. split `M_h` / `M_m` sensitivity tables;
 3. rib geometry/accessibility design space and E3 boundary-layer tables;
 4. prescribed-state and self-consistent corridor-flow screens;
-5. anisotropic heat-spreader orientation comparison;
-6. hot-ambient dry-side shielding comparison;
-7. uncertainty/sensitivity bounds;
-8. reference CSVs with code commit SHA and parameter metadata.
+5. open-valley local renewal targets and distributed axial/lateral transport tables;
+6. anisotropic heat-spreader orientation comparison;
+7. hot-ambient dry-side shielding comparison;
+8. uncertainty/sensitivity bounds;
+9. reference CSVs with code commit SHA and parameter metadata.
 
 The primary physical experiments must determine which low-order branch/boundary-layer/corridor behavior corresponds to real textile operation.
 
@@ -233,8 +234,6 @@ At 35 °C / 70% RH and `U_body=100 W/(m² K)`:
 | 6 × 3 mm | +0.594 mm/s | 2.12 | ~99.99% | +0.40 W/m² |
 | 10 × 5 mm | +1.60 mm/s | 5.70 | ~99.92% | +1.81 W/m² |
 
-These channels have nonzero flow but the internal air approaches saturation. The small/medium cases are diffusion-dominated or mixed according to axial `Pe_m`.
-
 ### 15.2 Humidity and hot-ambient reversal
 
 For 10 × 5 × 100 mm:
@@ -246,9 +245,9 @@ For 10 × 5 × 100 mm:
 | 35 °C / 85% RH | -1.01 mm/s | 3.59 | ~99.97% | +0.42 W/m² |
 | 40 °C / 70% RH | -14.94 mm/s | 53.4 | ~99.0% | **-1.67 W/m²** |
 
-The 40 °C result is important: greater passive flow magnitude does not imply useful body cooling. Hot-air sensible input can offset or reverse local body-side heat removal.
+Greater passive flow magnitude does not imply useful body cooling. Hot-air sensible input can offset or reverse local body-side heat removal.
 
-### 15.3 Segment-length effect
+### 15.3 Segment-length effect in the covered-duct limit
 
 For a 10 × 5 mm corridor at 35 °C / 70% RH:
 
@@ -258,19 +257,124 @@ For a 10 × 5 mm corridor at 35 °C / 70% RH:
 | 100 mm | +1.60 mm/s | 5.70 | 99.92% | +1.81 W/m² |
 | 200 mm | +1.63 mm/s | 11.65 | 99.96% | +0.92 W/m² |
 
-This demonstrates why axial Péclet number cannot be used alone as a renewal metric. The 200 mm case has `Pe_m > 10` but a smaller useful vapor driving force because its air is more equilibrated with the wet wall.
+This demonstrates why axial Péclet number cannot be used alone as a renewal metric.
 
-### 15.4 Current design consequence
+### 15.4 Design consequence after the distributed-valley update
 
-The current preferred macro exterior is **not** a long covered chimney. It is a falsifiable hypothesis consisting of:
+The covered-channel screen motivated shorter/open paths, but the later distributed model further corrects this: **20–50 mm segmentation is still too coarse** if local lateral ambient exchange remains weak.
 
-- laterally open valleys;
-- short/segmented wet paths;
-- cross-openings;
-- discontinuous evaporator islands;
-- bidirectional flow tolerance;
-- hot-ambient thermal shielding/routing.
+The primary hypothesis is now continuous lateral ambient exposure, with 1–3 mm interruption/island scales retained only as an extreme physical test of end-access effects.
 
-The next physical discriminator is E3c: `experiments/e3c_open_vs_covered_corridors.md`.
+## 16. Local open-valley renewal target
 
-The next numerical model should add distributed lateral ambient exchange and axial diffusion so that an open exterior valley, rather than a covered duct, is represented directly.
+The analytic open-valley model defines
+
+\[
+R=G_a/G_w,
+\qquad
+F=\frac{R}{1+R}.
+\]
+
+Mechanism targets are:
+
+| retained driving force `F` | required `R` |
+|---:|---:|
+| 0.50 | 1 |
+| 0.80 | 4 |
+| 0.90 | 9 |
+| 0.95 | 19 |
+
+Measured local T/RH and wet-surface temperature can be converted to normalized vapor loading `theta`, then `F=1-theta`. Exact high `R` values are secondary because the inverse problem becomes ill-conditioned as valley air approaches ambient conditions.
+
+## 17. Distributed open-valley axial/lateral vapor model
+
+`simulations/open_valley_distributed_1d.py` solves
+
+\[
+D_v A\frac{d^2\theta}{dz^2}
+-uA\frac{d\theta}{dz}
++G'_w(1-\theta)-G'_a\theta=0
+\]
+
+with ambient vapor loading at both axial ends.
+
+The current geometry screen uses:
+
+\[
+k_w=ShD_v/D_h,
+\qquad
+k_a=D_v/\delta_{open},
+\]
+
+where `delta_open` is an **effective lateral exchange thickness**, not a literal garment opening height.
+
+### 17.1 Exchange length and segmentation
+
+For a representative 6 × 3 mm valley and tested `delta_open` from 0.25 to 2 mm:
+
+\[
+\ell_{exchange}=\sqrt{\frac{D_vA}{G'_w+G'_a}}
+\approx0.7\text{–}1.1\;mm.
+\]
+
+Selected center-retention values with zero prescribed axial flow:
+
+| `delta_open` | segment | center `F` |
+|---:|---:|---:|
+| 0.25 mm | 1 mm | 0.935 |
+| 0.25 mm | 20 mm | 0.680 |
+| 0.50 mm | 1 mm | 0.931 |
+| 0.50 mm | 2 mm | 0.797 |
+| 0.50 mm | 20 mm | 0.515 |
+| 1.00 mm | 1 mm | 0.929 |
+| 1.00 mm | 20 mm | 0.347 |
+
+Thus centimeter-scale segmentation is not sufficient in this screen; end-opening effects are localized to a few exchange lengths.
+
+### 17.2 Axial-flow sensitivity
+
+For 6 × 3 × 50 mm, `delta_open=0.5 mm`:
+
+| prescribed axial velocity | center `F` |
+|---:|---:|
+| 0 mm/s | 0.515 |
+| 5 mm/s | 0.515 |
+| 100 mm/s | 0.515 |
+| 500 mm/s | 0.595 |
+| 1000 mm/s | 0.711 |
+
+The few-mm/s passive flow scale found in the covered-corridor screen therefore cannot substitute for distributed lateral access in this model.
+
+### 17.3 Diffusion-only lateral-exchange target
+
+For the same 6 × 3 mm mapping, a long-valley center target of `F≈0.8` corresponds to `R≈4` and effective `delta_open≈0.13 mm`; `F≈0.9` corresponds to `R≈9` and `delta_open≈0.058 mm`.
+
+These are **not product dimensions**. They state how stringent the effective ambient-side resistance must be under the assumed wet-wall transfer coefficient.
+
+## 18. Metric correction — high `F` is not high evaporation capacity
+
+For the local long-valley series resistance:
+
+\[
+k_{eff}=\frac{k_wk_a}{k_w+k_a}=k_wF.
+\]
+
+In the current 6 mm-wide, `delta_open=0.1 mm` screen:
+
+| valley depth | `F` | `k_eff` |
+|---:|---:|---:|
+| 0.5 mm | 0.550 | 0.126 m/s |
+| 1.0 mm | 0.695 | 0.0855 m/s |
+| 2.0 mm | 0.799 | 0.0562 m/s |
+| 3.0 mm | 0.841 | 0.0444 m/s |
+| 5.0 mm | 0.879 | 0.0340 m/s |
+| 8.0 mm | 0.901 | 0.0277 m/s |
+
+The deeper cases have higher retained vapor driving force but lower modeled absolute series conductance because wet-wall transfer is weaker.
+
+Therefore every future design comparison must pair:
+
+1. **renewal quality** — `F` / local vapor loading;
+2. **absolute useful transfer** — evaporation mass flux, inferred `k_eff`, and ultimately body-side heater-power difference.
+
+The next numerical step is to couple the distributed open-valley vapor model to sensible heat and wet-wall energy balance without assuming `M_h=M_m`.
