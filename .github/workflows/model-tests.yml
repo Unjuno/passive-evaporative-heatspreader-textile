@@ -20,5 +20,7 @@ jobs:
         run: python -m pip install -r requirements-dev.txt
       - name: Run tests
         run: python -m pytest -q
-      - name: Run reference screen
+      - name: Run passive rib reference screen
         run: python simulations/passive_rib_screen.py > /tmp/reference-screen.txt
+      - name: Run 2D heat-spreader orientation demo
+        run: python simulations/heat_spreader_2d.py > /tmp/heat-spreader-demo.txt
