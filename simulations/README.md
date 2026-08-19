@@ -1,190 +1,134 @@
 # Simulations
 
-## Executable models
+## Executable model hierarchy
 
-### `passive_rib_screen.py`
+### 1. `passive_rib_screen.py`
 
-Consolidated low-order passive exterior heat/mass-transfer model. It compares a structured evaporative textile against a flat wet reference at equal liquid-water input and explicitly reports multiple stable surface-temperature equilibria when detected.
+Historical low-order exterior heat/mass model. It uses one multiplier `M` for both sensible and vapor transfer and exposes multiple stable equilibria when present. Retained as a reference/special case.
 
-This legacy/consolidated screen uses one exterior multiplier `M` for both sensible convection and vapor transfer. It remains useful as a historical/reference special case.
+### 2. `split_heat_mass_screen.py`
 
-### `split_heat_mass_screen.py`
+Lumped thermal model with separate:
 
-Refined low-order thermal model with independent external multipliers:
+- `M_h` — sensible convective transfer;
+- `M_m` — vapor mass transfer;
+- radiation.
 
-- `M_h` for sensible convective heat transfer;
-- `M_m` for water-vapor mass transfer.
+`M_h=M_m=M` reproduces the historical coupled model as a regression-tested special case.
 
-Radiation is parameterized separately. Setting `M_h = M_m = M` reproduces the older coupled formulation and is regression-tested.
+### 3. `split_transfer_sensitivity.py`
 
-### `split_transfer_sensitivity.py`
+Deterministic model-form sensitivity over RH, body coupling, radiation, `M_h`, and `M_m`. Grid fractions are not probabilities or confidence intervals.
 
-Deterministic sensitivity grid over RH, body-to-evaporator coupling, radiative exchange, `M_h`, and `M_m`. Reported fractions are deterministic grid fractions, **not probabilities or confidence intervals**.
+### 4. `rib_diffusion_screen.py`
 
-### `rib_diffusion_screen.py`
+Periodic 2-D steady vapor diffusion around wet ribs under an idealized refreshed-air plane. It isolates boundary-layer sharing. Pure diffusion; not CFD.
 
-Periodic 2-D steady vapor-diffusion model for wet exterior ribs under an idealized refreshed-air plane. It isolates boundary-layer sharing and reports a whole-area vapor mass-transfer multiplier.
+### 5. `corridor_buoyancy_screen.py`
 
-This is pure diffusion, not CFD. The prescribed air-renewal boundary is the dominant model-form assumption.
+Prescribed-state moist-air buoyancy / laminar corridor screen. Tests flow sign and scaling; channel T/RH are inputs.
 
-### `corridor_buoyancy_screen.py`
+### 6. `self_consistent_corridor_1d.py`
 
-Low-order moist-air buoyancy screen for vertical macro corridors. It balances hydrostatic density head against laminar slot friction. Channel temperature and RH are prescribed inputs, so this model is a sign/scaling precursor rather than a self-consistent channel solution.
+Covered/end-renewed rectangular-corridor limit. Couples signed buoyancy/friction velocity, wet-wall temperature, channel T/RH, evaporation, and body-side heat flow.
 
-### `self_consistent_corridor_1d.py`
+Main audit result: nonzero flow or high axial Péclet number does not guarantee vapor renewal; long wet covered channels can remain nearly saturated.
 
-Low-order self-consistent rectangular-corridor model. It solves together:
+### 7. `open_valley_exchange_target.py`
 
-- signed buoyancy/friction velocity;
-- wet-wall temperature;
-- mean/outlet channel temperature and RH;
-- evaporation flux;
-- body-side wet-wall heat flux.
+Local analytic open-valley target and measurement inversion:
 
-The geometry is a **covered/end-renewed limiting case**. It does not include distributed lateral ambient exchange, so it must not be generalized directly to an open exterior valley.
+\[
+R=G_a/G_w,
+\qquad F=R/(1+R).
+\]
 
-The model reports both axial mass Péclet number and vapor-driving-force retention. A large axial Péclet number does not imply useful renewal if the air nearly equilibrates with the wet wall.
+`F` is the preferred local renewal-quality metric; exact high `R` is secondary because the inverse measurement becomes ill-conditioned.
 
-### `open_valley_exchange_target.py`
+### 8. `open_valley_distributed_1d.py`
 
-Local analytic target and measurement-inversion model for a laterally open valley.
+Distributed vapor model with axial molecular diffusion, optional axial advection, wet-surface vapor input, and distributed lateral ambient renewal.
 
-It defines:
+Key corrections:
 
-- `R = G_a/G_w`, lateral ambient-renewal conductance divided by wet-surface vapor conductance;
-- `F = R/(1+R)`, retained wet-wall vapor driving-force fraction.
+- representative exchange length is roughly 0.7–1.1 mm for the 6×3 mm screened valley;
+- 20–50 mm interruption does not rescue a weakly laterally renewed interior;
+- few-mm/s axial flow is insufficient to rescue a 50 mm valley center in the current screen;
+- `F` must be paired with absolute series conductance
+  `k_eff = k_w k_a/(k_w+k_a)`.
 
-It does not predict `R` from geometry. Its role is to state a falsifiable renewal target and to identify `F/R` from measured T/RH where the inverse problem is well-conditioned.
+### 9. `open_valley_thermal_1d.py`
 
-### `open_valley_distributed_1d.py`
+Coupled open-valley thermal/vapor screen. Solves iteratively for:
 
-Distributed one-dimensional vapor model for an open valley. It includes:
+- valley-air dry-bulb temperature;
+- valley water-vapor density;
+- wet-surface temperature;
+- evaporation mass flux;
+- body-to-wet-surface heat flux;
+- ambient-air sensible heat supplied to the wet surface.
 
-- axial molecular diffusion;
-- optional signed axial advection;
-- distributed wet-surface vapor input;
-- distributed lateral exchange with ambient;
-- ambient vapor loading at both ends.
+Lateral heat and vapor exchange are parameterized separately through effective `delta_heat` and `delta_vapor`. Equality is a Lewis-like screening baseline, not a validated law for the textile.
 
-The current geometry mapping uses an effective lateral diffusion thickness `delta_open`, which is a **model parameter**, not a literal garment dimension.
+Important findings:
 
-Key audit findings:
+- stronger vapor renewal increases body-side cooling in the primary 35 °C / 70% RH screen;
+- positive evaporation can coexist with **negative body-side heat flux** at 40 °C / 70% RH;
+- the solver is currently a transfer-capacity model without an explicit liquid-feed cap, so dry/high-renewal cases must be labeled supply-limited when predicted capacity exceeds available feed.
 
-- for the screened 6 × 3 mm valley, the exchange length is roughly 0.7–1.1 mm across the tested lateral-exchange range;
-- therefore 20–50 mm interruptions are too coarse to materially alter the long-valley center state when lateral exchange is weak;
-- 1–3 mm end-connected segments can materially improve retained vapor driving force;
-- few-mm/s axial flow does not rescue a 50 mm weakly renewed valley center;
-- `F` cannot be optimized alone.
+Regression tests enforce wet-wall energy closure:
 
-The module also reports
+`q_body + q_air = L_v * m_evap`.
 
-`k_eff = k_w * k_a / (k_w + k_a) = k_w * F`
+### 10. `heat_spreader_2d.py`
 
-because high `F` can be produced by lowering the wet-wall transfer coefficient, which may reduce absolute evaporation capacity.
+Steady 2-D finite-volume lateral heat-routing model. Evaporation is represented only by a prescribed sink. Used for topology/orientation studies.
 
-### `heat_spreader_2d.py`
+### 11. `water_salt_1d.py`
 
-Steady 2D finite-volume model that isolates lateral heat routing in an isotropic or anisotropic flexible spreader. Evaporation is represented by a prescribed effective sink; this model does **not** predict evaporation mass transfer.
+Normalized water/salt mass-balance screen. Salt is nonvolatile; water can evaporate while salt remains in liquid/solid phases.
 
-### `water_salt_1d.py`
-
-Normalized one-dimensional water/salt mass-balance screen. Salt is nonvolatile: water can evaporate, while salt remains in liquid/solid phases.
-
-## Install
-
-```bash
-python -m pip install -r requirements.txt
-```
-
-## Run current model demos
-
-```bash
-python simulations/passive_rib_screen.py
-python simulations/split_heat_mass_screen.py
-python simulations/split_transfer_sensitivity.py
-python simulations/rib_diffusion_screen.py
-python simulations/corridor_buoyancy_screen.py
-python simulations/self_consistent_corridor_1d.py
-python simulations/open_valley_exchange_target.py
-python simulations/open_valley_distributed_1d.py
-python simulations/heat_spreader_2d.py
-python simulations/water_salt_1d.py
-```
-
-## Test
+## Install and run
 
 ```bash
 python -m pip install -r requirements-dev.txt
 python -m pytest -q
+python simulations/open_valley_distributed_1d.py
+python simulations/open_valley_thermal_1d.py
+python simulations/generate_reference_outputs.py --output-root generated-reference
 ```
 
-## Important: multiple stable equilibria
+## Audit rules for model interpretation
 
-The nonlinear surface energy/mass balance can contain more than one stable equilibrium under the frozen screening assumptions.
+Do not use any one of the following as proof of garment cooling:
 
-The models therefore expose all stable roots or use an explicit warm/conservative branch-selection policy. Do not publish a single cooling threshold without stating the root-selection policy and number of stable roots.
+- geometric exterior area;
+- a single lumped `M` threshold;
+- upward corridor velocity;
+- axial Péclet number;
+- local `F` alone;
+- evaporation mass flux alone.
 
-## Split-transfer interpretation
+Integrated interpretation requires at minimum:
 
-The recommended low-order external balance is conceptually:
+1. local vapor renewal (`F` / T/RH field);
+2. absolute evaporation transfer (`k_eff` or mass flux);
+3. body-side heat flow / heater power;
+4. available liquid supply and runoff;
+5. hot-ambient sensible heat pickup.
 
-`body heat + M_h * sensible convection + radiation - latent evaporation(M_m) = 0`
+## Current next model tasks
 
-A larger `M_h` can increase inward sensible heat pickup in hot ambient air while a larger `M_m` can improve evaporation. The two mechanisms must not be collapsed into one score.
+1. explicit feed-limited coupled open-valley solution;
+2. physically constrain heat/mass coupling with Lewis/Chilton-Colburn-style treatment instead of arbitrary independent exchange distances;
+3. geometry-resolved 2-D/3-D external natural-convection/cross-flow treatment;
+4. re-test lumped-model multi-equilibrium behavior against the improved external-flow physics.
 
-## Open-valley interpretation
+See:
 
-The current air-renewal hierarchy is:
-
-1. local conductance requirement/measurement inversion (`open_valley_exchange_target.py`);
-2. distributed 1-D axial diffusion/advection plus lateral renewal (`open_valley_distributed_1d.py`);
-3. future thermal/vapor coupling and 2-D/3-D external-flow treatment.
-
-The distributed model corrects two earlier design shortcuts:
-
-- centimeter-scale segmentation is not automatically enough;
-- high local driving-force retention `F` is not automatically high evaporation capacity.
-
-Every laterally open design should therefore be evaluated with both:
-
-- renewal quality (`F`, local vapor loading);
-- absolute transfer or cooling (`k_eff`, evaporation mass flux, and ultimately heater-power difference).
-
-## 2D heat-spreader interpretation
-
-The 2D model solves a steady equation of the form:
-
-`div(t K_parallel grad(T)) + g_body (T_skin - T) - g_sink(x,y)(T - T_sink) = 0`
-
-with no-flux outer boundaries.
-
-For the included demonstration geometry, the cooling sink is a vertical band on the right side. Regression tests require the high-conductivity axis directed toward that band to route more body-side heat than the same anisotropy rotated by 90 degrees.
-
-## Modeling hierarchy
-
-Keep models separate rather than hiding assumptions inside one opaque solver:
-
-1. coupled exterior lumped model — historical/reference `M` formulation and multi-root audit;
-2. split exterior lumped model — separate `M_h`, `M_m`, radiation, liquid-supply limit, and multi-root behavior;
-3. periodic vapor-diffusion model — rib geometry/boundary-layer sharing and candidate constraints on `M_m`;
-4. prescribed-state corridor buoyancy screen — thermo-solutal flow sign/scaling;
-5. self-consistent end-renewed corridor model — coupled T/RH/flow limit for covered channels;
-6. local open-valley renewal target — measurable conductance-ratio requirement;
-7. distributed open-valley vapor model — axial diffusion/advection plus distributed lateral renewal;
-8. 2D heat-spreader model — lateral conduction and patchy cooling sinks;
-9. water/salt model — liquid water, phase change, nonvolatile salt transport;
-10. next coupled open-valley thermal model / CFD — relate lateral vapor renewal to sensible heat transfer and body-side cooling without assuming `M_h=M_m`.
-
-Each higher-fidelity model should be compared against lower-order models and physical measurements rather than silently replacing them.
-
-See also:
-
-- `docs/split-transfer-model.md`
-- `docs/model-form-uncertainty.md`
-- `docs/e3-boundary-layer-screen.md`
-- `docs/corridor-buoyancy-screen.md`
-- `docs/self-consistent-corridor-model.md`
+- `docs/current-results.md`
 - `docs/open-valley-renewal-target.md`
 - `docs/open-valley-distributed-model.md`
 - `docs/open-valley-metric-audit.md`
+- `docs/open-valley-thermal-model.md`
 - `experiments/e3c_open_vs_covered_corridors.md`
