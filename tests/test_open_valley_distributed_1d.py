@@ -39,6 +39,32 @@ def test_small_axial_flow_has_little_effect_on_long_valley_center():
     assert slow.center_retention_F == pytest.approx(still.center_retention_F, abs=0.002)
 
 
+def test_high_retention_cannot_be_used_as_only_optimization_metric():
+    shallow = solve_open_valley(6.0, 0.5, 50.0, 0.0, 0.1, nx=801)
+    deep = solve_open_valley(6.0, 8.0, 50.0, 0.0, 0.1, nx=801)
+
+    # In this screening mapping the deeper valley weakens wet-wall transfer,
+    # so F rises while the actual series vapor conductance falls.
+    assert deep.local_long_valley_retention_F > shallow.local_long_valley_retention_F
+    assert (
+        deep.effective_series_vapor_conductance_m_s
+        < shallow.effective_series_vapor_conductance_m_s
+    )
+
+
+def test_series_conductance_identity():
+    result = solve_open_valley(6.0, 3.0, 50.0, 0.0, 0.5, nx=401)
+    expected = (
+        result.wet_surface_transfer_coefficient_m_s
+        * result.lateral_renewal_coefficient_m_s
+        / (
+            result.wet_surface_transfer_coefficient_m_s
+            + result.lateral_renewal_coefficient_m_s
+        )
+    )
+    assert result.effective_series_vapor_conductance_m_s == pytest.approx(expected)
+
+
 def test_grid_convergence_for_center_retention():
     coarse = solve_open_valley(6.0, 3.0, 50.0, 1.0, 0.5, nx=101)
     fine = solve_open_valley(6.0, 3.0, 50.0, 1.0, 0.5, nx=801)
