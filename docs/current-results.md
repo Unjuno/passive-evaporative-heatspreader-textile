@@ -3,21 +3,17 @@
 Status: **SIMULATION / SCREENING ONLY — NO PHYSICAL GARMENT PERFORMANCE DATA YET**  
 Compiled: 2026-08-19
 
-This document consolidates the principal quantitative results from earlier exploratory model versions so they are not lost across disconnected files. Values are approximate outputs from simplified models and should be re-generated from consolidated repository code before a stable release.
+This document consolidates principal quantitative results from earlier exploratory models. Values are approximate and are retained as a research record. Stable-release results must be regenerated from repository code.
 
 ## 1. Water/latent-heat scale
 
-Using a representative latent heat of vaporization near `2.4–2.42 MJ/kg`:
-
-- 50 W of latent heat corresponds to roughly 74–75 g/h of water evaporation.
+Using a representative latent heat of vaporization near `2.4–2.42 MJ/kg`, 50 W of latent heat corresponds to roughly 74–75 g/h of water evaporation.
 
 Important: latent heat at the evaporating exterior is not necessarily equal to heat removed from the wearer; ambient convection/radiation can supply part of the evaporation energy.
 
 ## 2. Whole-body lateral heat spreading under patchy evaporation
 
 A prior 2D screening model used spatially nonuniform evaporation over approximately 25% of the modeled area.
-
-Representative outputs:
 
 | In-plane conductivity (W/mK) | Body-side cooling (W) | Spatial temperature SD (°C) |
 |---:|---:|---:|
@@ -32,17 +28,17 @@ Interpretation: lateral heat spreading produced the largest benefit when evapora
 
 An abstract 0.30 m² screen found that continuous high-conductivity sheets can become too heavy for clothing.
 
-One screened family produced approximately:
+Representative exploratory outputs included:
 
 - baseline: ~10.3 W body-side cooling;
 - maximum screened: ~21.4 W;
-- a carbon-like case around `k = 150 W/mK`, thickness `0.8 mm`, mass ~432 g: ~20.5 W.
+- carbon-like case around `k = 150 W/mK`, thickness `0.8 mm`, mass ~432 g: ~20.5 W.
 
-This motivated thinner, anisotropic, patterned, and discontinuous heat-spreader architectures rather than simply maximizing bulk conductivity.
+This motivated thin, anisotropic, patterned, and discontinuous heat-spreader architectures.
 
 ## 4. Thin anisotropic heat-spreader screening
 
-For a representative anisotropic case with `kx = 200 W/mK`, `ky = 15 W/mK` in a geometry where the high-conductivity direction was aligned toward evaporative bands:
+Representative aligned anisotropic case: `kx = 200 W/mK`, `ky = 15 W/mK`.
 
 | Thickness (mm) | Approx. mass (g) | Body-side cooling (W) |
 |---:|---:|---:|
@@ -65,7 +61,7 @@ Interpretation: orientation can matter strongly when wet/evaporative regions are
 
 A prior screen near 40 °C ambient showed approximately +9 W body-side advantage for shielding dry exterior regions versus leaving them exposed in the top screened designs.
 
-Interpretation: a dry high-conductivity exterior can become a parasitic inward heat collector when ambient temperature exceeds skin/garment temperature. High in-plane conductivity should not automatically imply high through-thickness exposure to ambient heat.
+Interpretation: a dry high-conductivity exterior can become a parasitic inward heat collector when ambient temperature exceeds skin/garment temperature.
 
 ## 6. Stretchable serpentine heat paths
 
@@ -79,18 +75,27 @@ A geometric serpentine screen estimated retained single-path thermal conductance
 | 20% | ~83% |
 | 30% | ~77% |
 
-This is a geometric/electrical-thermal path-length screen, not a fatigue measurement.
+This is a path-length/geometric screen, not a fatigue measurement.
 
-## 7. Passive exterior exchange target
+## 7. Exterior exchange model and equilibrium-branch audit
 
-The current low-order model describes exterior performance through an effective exchange multiplier `M` relative to a flat wet textile.
+The current low-order passive model describes exterior performance with an effective exchange multiplier `M` relative to a flat wet textile.
 
-For the current `35 °C / 70% RH / 150 g/h / 0.30 m²` screening case, a later v1.4 model indicated approximately:
+Earlier v1.3/v1.4 exploratory summaries reported single threshold values such as `M ~ 2.5–3.5` for a modeled +10 W advantage at 35 °C / 70% RH. **Those threshold values are no longer accepted as robust design criteria.**
 
-- `M ~ 3.5` for a +10 W modeled advantage over the flat fast-dry baseline;
-- `M ~ 3.9` for a +20 W modeled advantage.
+Repository audit found that the nonlinear heat/mass balance can contain multiple stable surface-temperature equilibria. Earlier code selected the stable root with the greatest body-side cooling, which can produce an optimistic jump.
 
-These values depend on assumed body-to-evaporator thermal coupling and the natural-convection model and should not be treated as measured thresholds.
+Under the current frozen screening parameters at `35 °C / 70% RH / 150 g/h`:
+
+- the flat control (`M=1`, `U=60 W/(m²K)`) has a modeled body-side cooling near 4.84 W;
+- around `M=3.5`, the advanced `U=100 W/(m²K)` case can exhibit **two stable branches**;
+- one branch gives only about +7.9 W over the flat control;
+- the colder branch gives roughly +14.7 W over the flat control;
+- the warm stable branch persists in the present low-order model until roughly `M ~ 9.77`, after which the model jumps to the colder branch.
+
+These values are a numerical-model audit result, not a physical prediction of hysteresis in a garment. They show that a single `M` threshold is not defensible until the natural-convection model and branch-selection physics are validated.
+
+The repository model now reports all stable roots and defaults to a warmer/conservative branch when a single value is required.
 
 ## 8. Preview-like exterior rib geometry
 
@@ -100,47 +105,46 @@ For a visual concept interpreted approximately as:
 - rib height `h = 2.0 mm`;
 - pitch `p = 1.5 mm`;
 
-local geometric multiplier:
-
 `G_panel ~ 3.67`.
 
-With the current model, even `alpha = 1.0` only gives whole-garment `M ~ 2.2`, which was insufficient for the +10 W target at 35 °C / 70% RH.
+For `alpha = 0.55`, the geometric mapping gives `M ~ 1.66`; for `alpha = 1.0`, `M ~ 2.2`.
 
-This negative result led to denser but still low-profile candidate textures.
+These are geometric/exchange mappings only. Because of the equilibrium-branch issue above, they should not currently be converted into a single claimed cooling gain without reporting branch behavior.
 
-## 9. Current exterior candidate region
+## 9. Exterior candidate region remains an experimental hypothesis
 
-Aesthetic/performance screening currently prioritizes approximately:
+Aesthetic/performance exploration currently prioritizes roughly:
 
 - structured-panel coverage: 55–70%;
 - rib height: 2–3 mm;
 - rib pitch: 0.8–1.0 mm;
 - rounded/flexible textile-like ribs;
-- whole-garment or large-area heat spreading retained.
+- large-area heat spreading retained.
 
-The critical unresolved variable is the effective accessibility `alpha`. Tight pitch increases geometric area, but may reduce `alpha` because adjacent wet structures share a humid boundary layer.
+This is **not yet an optimized design**. Tight pitch increases geometric area but may reduce effective accessibility because neighboring wet structures share a humid boundary layer.
 
 ## 10. Salt mass-balance correction
 
 No current result assumes salt evaporation.
 
-For reference, a previous conservative NaCl-equivalent mass balance at 150 g/h water throughput for 8 h gave total retained salt on the order of:
+A previous conservative NaCl-equivalent mass balance at 150 g/h water throughput for 8 h gave retained-salt scales of approximately:
 
-- ~1.4 g at 20 mmol/L NaCl-equivalent;
+- ~1.4 g at 20 mmol/L;
 - ~2.8 g at 40 mmol/L;
 - ~4.2 g at 60 mmol/L;
 - ~5.6 g at 80 mmol/L.
 
-These numbers only illustrate mass scale. Actual sweat contains multiple ions and organics, and ordinary garments also retain nonvolatile sweat residues. Dedicated salt-management hardware should only be added if comparative testing shows abnormal degradation relative to normal textile controls.
+These values only illustrate mass scale. Ordinary garments also retain nonvolatile sweat residues. Dedicated salt-management hardware should be justified only by comparative degradation data.
 
-## 11. What must be re-run before stable release
+## 11. Stable-release re-run requirements
 
-Before a versioned stable release, the repository should regenerate at least:
+Before a stable versioned release, regenerate and archive:
 
-1. the passive `M` threshold table;
-2. the rib geometry/accessibility design space;
-3. the anisotropic heat-spreader orientation comparison;
-4. the hot-ambient dry-side shielding comparison;
-5. uncertainty/sensitivity bounds for all of the above.
+1. full stable-equilibrium branch maps versus `M`, RH, water input, and `U`;
+2. rib geometry/accessibility design space with branch count;
+3. anisotropic heat-spreader orientation comparison;
+4. hot-ambient dry-side shielding comparison;
+5. uncertainty/sensitivity bounds;
+6. reference CSVs with code commit SHA and parameter metadata.
 
-The re-generated outputs should include code commit SHA and parameter metadata.
+The primary physical experiment should determine which, if any, low-order equilibrium behavior corresponds to real textile operation.
