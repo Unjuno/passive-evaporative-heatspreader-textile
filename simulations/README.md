@@ -15,31 +15,44 @@ Refined low-order thermal model with independent external multipliers:
 - `M_h` for sensible convective heat transfer;
 - `M_m` for water-vapor mass transfer.
 
-Radiation is parameterized separately. Setting `M_h = M_m = M` reproduces the older coupled-multiplier formulation at the same conditions; a regression test enforces that equivalence.
-
-Use this model when connecting E3 vapor-transfer results to the thermal balance. **E3 constrains `M_m`, not `M_h`.**
+Radiation is parameterized separately. Setting `M_h = M_m = M` reproduces the older coupled formulation and is regression-tested.
 
 ### `split_transfer_sensitivity.py`
 
-Deterministic sensitivity grid over RH, body-to-evaporator coupling, radiative exchange, `M_h`, and `M_m`.
-
-The reported fractions are fractions of a predeclared screening grid. They are **not probabilities, reliability estimates, or confidence intervals**.
+Deterministic sensitivity grid over RH, body-to-evaporator coupling, radiative exchange, `M_h`, and `M_m`. Reported fractions are deterministic grid fractions, **not probabilities or confidence intervals**.
 
 ### `rib_diffusion_screen.py`
 
 Periodic 2-D steady vapor-diffusion model for wet exterior ribs under an idealized refreshed-air plane. It isolates boundary-layer sharing and reports a whole-area vapor mass-transfer multiplier.
 
-This is pure diffusion, not CFD. The air-renewal boundary is currently the dominant model-form assumption.
+This is pure diffusion, not CFD. The prescribed air-renewal boundary is the dominant model-form assumption.
 
 ### `corridor_buoyancy_screen.py`
 
-Low-order moist-air buoyancy screen for vertical macro air-renewal corridors. It balances hydrostatic density head against laminar parallel-plate slot friction and reports signed flow tendency, Reynolds number, vapor Peclet number, and a neutral-density humidity curve.
+Low-order moist-air buoyancy screen for vertical macro corridors. It balances hydrostatic density head against laminar slot friction. Channel temperature and RH are prescribed inputs, so this model is a sign/scaling precursor rather than a self-consistent channel solution.
 
-The channel temperature and RH are prescribed inputs; they are **not solved self-consistently**. This model is intended to test whether evaporative cooling and humidification can reinforce or oppose each other and can reverse the expected chimney-flow direction.
+### `self_consistent_corridor_1d.py`
+
+Low-order self-consistent rectangular-corridor model. It solves together:
+
+- signed buoyancy/friction velocity;
+- wet-wall temperature;
+- mean/outlet channel temperature and RH;
+- evaporation flux;
+- body-side wet-wall heat flux.
+
+The geometry is a **covered/end-renewed limiting case**. It does not include distributed lateral ambient exchange, so it must not be generalized directly to an open exterior valley.
+
+The model reports both:
+
+- axial mass Péclet number `Pe_m = |u| L / D_v`;
+- mean vapor-driving-force retention `Phi(NTU_m) = (1-exp(-NTU_m))/NTU_m`.
+
+This distinction is important: a long channel can have `Pe_m > 10` while retaining almost none of the inlet vapor driving force because the air has nearly equilibrated with the wet wall.
 
 ### `heat_spreader_2d.py`
 
-Steady 2D finite-volume model that isolates lateral heat routing in an isotropic or anisotropic flexible spreader. Evaporation is represented only by a prescribed effective sink; this model does **not** predict evaporation mass transfer. Its purpose is to test whether heat-spreader topology and orientation can move heat from a larger body area toward spatially localized cooling zones.
+Steady 2D finite-volume model that isolates lateral heat routing in an isotropic or anisotropic flexible spreader. Evaporation is represented by a prescribed effective sink; this model does **not** predict evaporation mass transfer.
 
 ### `water_salt_1d.py`
 
@@ -59,6 +72,7 @@ python simulations/split_heat_mass_screen.py
 python simulations/split_transfer_sensitivity.py
 python simulations/rib_diffusion_screen.py
 python simulations/corridor_buoyancy_screen.py
+python simulations/self_consistent_corridor_1d.py
 python simulations/heat_spreader_2d.py
 python simulations/water_salt_1d.py
 ```
@@ -78,23 +92,23 @@ The models therefore expose all stable roots or use an explicit warm/conservativ
 
 ## Split-transfer interpretation
 
-The recommended low-order external balance is now conceptually:
+The recommended low-order external balance is conceptually:
 
 `body heat + M_h * sensible convection + radiation - latent evaporation(M_m) = 0`
 
 This matters when ambient air is hotter than the wet exterior. A larger `M_h` can increase inward sensible heat pickup, while a larger `M_m` can increase evaporation capacity if vapor-pressure driving force remains positive.
 
-The two multipliers may still be physically coupled by buoyancy and boundary-layer flow; independence is an uncertainty tool, not a claim that the mechanisms are unrelated.
+The two multipliers may still be physically coupled by flow; independence is an uncertainty tool, not a claim that the mechanisms are unrelated.
 
-## Corridor-buoyancy interpretation
+## Corridor interpretation
 
-A vertical macro corridor does not automatically create a beneficial upward chimney flow. Evaporation tends to cool the air, increasing density, while humidification lowers density at fixed temperature. Under hot/humid conditions the two effects can oppose each other strongly.
+The corridor models now form a hierarchy:
 
-The current screen therefore evaluates the sign of
+1. **Prescribed-state buoyancy screen** — asks whether a given T/RH channel state tends upward or downward.
+2. **Self-consistent end-renewed 1-D corridor** — solves velocity, wall T, and channel T/RH together for a covered rectangular-duct limit.
+3. **Next model: laterally open valley** — must add distributed lateral ambient exchange and low-Pe axial diffusion/advection-diffusion.
 
-`rho_ambient - rho_channel`
-
-before assigning an idealized upward/downward slot-flow tendency. The next step is to solve channel temperature and humidity along the flow direction rather than prescribe them.
+The self-consistent screen indicates that natural buoyancy in shallow end-renewed channels can be too weak to prevent near-saturation at 35 °C / 70% RH. It also shows that stronger downward flow in hot ambient air can coincide with inward sensible heat flow. Therefore the current garment direction favors laterally open valleys, short/segmented paths, cross-openings, and discontinuous evaporator fields rather than long covered chimneys.
 
 ## 2D heat-spreader interpretation
 
@@ -104,21 +118,20 @@ The 2D model solves a steady equation of the form:
 
 with no-flux outer boundaries.
 
-For the included demonstration geometry, the cooling sink is a vertical band on the right side. The regression tests therefore require the high-conductivity axis directed toward that band to route more body-side heat than the same anisotropy rotated by 90 degrees.
-
-This is a topology/heat-routing result, not a prediction of wet-surface temperature or garment cooling power.
+For the included demonstration geometry, the cooling sink is a vertical band on the right side. Regression tests require the high-conductivity axis directed toward that band to route more body-side heat than the same anisotropy rotated by 90 degrees.
 
 ## Modeling hierarchy
 
 Keep models separate rather than hiding assumptions inside one opaque solver:
 
-1. **Coupled exterior lumped model** — historical/reference `M` formulation and multi-root audit.
-2. **Split exterior lumped model** — separate `M_h`, `M_m`, radiation, liquid-supply limit, and multi-root behavior.
-3. **Periodic vapor-diffusion model** — geometric rib/boundary-layer sharing and candidate constraints on `M_m`.
-4. **Moist-air corridor buoyancy screen** — sign/scaling of macro-channel air-renewal tendency with prescribed channel state.
-5. **2D heat-spreader model** — lateral conduction and spatially patchy cooling sinks.
-6. **Water/salt transport model** — liquid water, water vapor phase change, nonvolatile salt advection/precipitation.
-7. **Future coupled corridor model / CFD** — solve channel heat + vapor conservation and flow together, replacing the prescribed E3 renewal plane and prescribed corridor state.
+1. coupled exterior lumped model — historical/reference `M` formulation and multi-root audit;
+2. split exterior lumped model — separate `M_h`, `M_m`, radiation, liquid-supply limit, and multi-root behavior;
+3. periodic vapor-diffusion model — rib geometry/boundary-layer sharing and candidate constraints on `M_m`;
+4. prescribed-state corridor buoyancy screen — thermo-solutal flow sign/scaling;
+5. self-consistent end-renewed corridor model — coupled T/RH/flow limit for covered channels;
+6. 2D heat-spreader model — lateral conduction and patchy cooling sinks;
+7. water/salt model — liquid water, phase change, nonvolatile salt transport;
+8. future open-valley advection-diffusion/CFD — distributed lateral exchange, entrance/opening effects, and physical coupling of `M_h`/`M_m`.
 
 Each higher-fidelity model should be compared against lower-order models and physical measurements rather than silently replacing them.
 
@@ -128,3 +141,5 @@ See also:
 - `docs/model-form-uncertainty.md`
 - `docs/e3-boundary-layer-screen.md`
 - `docs/corridor-buoyancy-screen.md`
+- `docs/self-consistent-corridor-model.md`
+- `experiments/e3c_open_vs_covered_corridors.md`
