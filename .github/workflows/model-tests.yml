@@ -22,6 +22,8 @@ jobs:
         run: python -m pytest -q
       - name: Run passive rib reference screen
         run: python simulations/passive_rib_screen.py > /tmp/reference-screen.txt
+      - name: Run split sensible-heat and vapor-transfer screen
+        run: python simulations/split_heat_mass_screen.py > /tmp/split-transfer-screen.txt
       - name: Run E3 periodic rib diffusion screen
         run: python simulations/rib_diffusion_screen.py > /tmp/e3-diffusion-screen.txt
       - name: Run 2D heat-spreader orientation demo
