@@ -1,19 +1,5 @@
 """Generate reproducible reference tables and figures from repository models.
 
-Usage:
-    python simulations/generate_reference_outputs.py --output-root /tmp/reference-output
-
-The generator writes:
-- CSV tables for passive equilibrium branches, split sensible/vapor transfer,
-  deterministic model-form sensitivity, prescribed-state corridor buoyancy,
-  self-consistent 1-D corridor transport, analytic open-valley renewal targets,
-  distributed open-valley vapor transport, coupled open-valley thermal/vapor
-  screening, 2D heat-spreader orientation, normalized water/salt screening,
-  and the E3 periodic rib-diffusion screen;
-- PNG figures derived directly from selected tables;
-- metadata.json including the git commit when available;
-- sha256.txt covering generated artifacts.
-
 All generated performance quantities are SIMULATION or analytic screening
 outputs unless explicitly labeled otherwise.
 """
@@ -48,28 +34,26 @@ from simulations.rib_diffusion_screen import run_screen as run_diffusion_screen
 from simulations.self_consistent_corridor_1d import run_screen as run_self_consistent_corridor_screen
 from simulations.split_heat_mass_screen import run_split_screen
 from simulations.split_transfer_sensitivity import run_sensitivity, summarize
+from simulations.supply_limit_audit import run_screen as run_supply_limit_audit
 from simulations.water_salt_1d import run_parameter_screen
 
 
 def git_commit() -> str:
     try:
         return subprocess.check_output(
-            ["git", "rev-parse", "HEAD"],
-            text=True,
-            stderr=subprocess.DEVNULL,
+            ["git", "rev-parse", "HEAD"], text=True, stderr=subprocess.DEVNULL
         ).strip()
     except Exception:
         return "unknown"
 
 
 def generate_passive_branch_table() -> pd.DataFrame:
-    rows: list[dict[str, float | int | str]] = []
+    rows = []
     for rh in (0.50, 0.70, 0.85):
         control_roots = stable_equilibria(35.0, rh, 150.0, 1.0, U_FLAT)
         if not control_roots:
             raise RuntimeError(f"no flat-control root at RH={rh}")
         control = max(control_roots, key=lambda r: r.surface_temp_C)
-
         for m_eff in np.linspace(1.0, 10.0, 91):
             roots = stable_equilibria(35.0, rh, 150.0, float(m_eff), 100.0)
             for root_index, root in enumerate(roots):
@@ -93,9 +77,8 @@ def generate_passive_branch_table() -> pd.DataFrame:
 
 
 def generate_heat_spreader_table() -> pd.DataFrame:
-    rows = []
-    for name, result in orientation_demo().items():
-        rows.append(
+    return pd.DataFrame(
+        [
             {
                 "model": "heat_spreader_2d",
                 "case": name,
@@ -104,8 +87,9 @@ def generate_heat_spreader_table() -> pd.DataFrame:
                 "temperature_min_C": result.temperature_min_C,
                 "temperature_max_C": result.temperature_max_C,
             }
-        )
-    return pd.DataFrame(rows)
+            for name, result in orientation_demo().items()
+        ]
+    )
 
 
 def plot_passive_branches(df: pd.DataFrame, out_path: Path) -> None:
@@ -137,9 +121,8 @@ def plot_heat_spreader(df: pd.DataFrame, out_path: Path) -> None:
 
 def plot_salt_threshold(out_path: Path) -> None:
     c0 = np.linspace(0.01, 1.0, 200)
-    threshold = 1.0 - c0
     plt.figure(figsize=(6.8, 4.6))
-    plt.plot(c0, threshold)
+    plt.plot(c0, 1.0 - c0)
     plt.xlabel("Normalized inlet concentration C_in / C_sat (-)")
     plt.ylabel("Internal water-loss fraction at saturation onset (-)")
     plt.title("SIMULATION / NORMALIZED MASS BALANCE: leak threshold = 1 - C/Csat")
@@ -176,8 +159,7 @@ def write_sha256(root: Path) -> None:
     for path in sorted(root.rglob("*")):
         if not path.is_file() or path.name == "sha256.txt":
             continue
-        digest = hashlib.sha256(path.read_bytes()).hexdigest()
-        lines.append(f"{digest}  {path.relative_to(root).as_posix()}")
+        lines.append(f"{hashlib.sha256(path.read_bytes()).hexdigest()}  {path.relative_to(root).as_posix()}")
     (root / "sha256.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
@@ -202,23 +184,29 @@ def main() -> None:
     open_valley_targets = open_valley_target_table()
     open_valley_distributed = run_open_valley_distributed_screen()
     open_valley_thermal = run_open_valley_thermal_screen()
+    supply_limit = run_supply_limit_audit()
     spreader = generate_heat_spreader_table()
     salt = run_parameter_screen()
     diffusion = run_diffusion_screen()
 
-    passive.to_csv(data_dir / "passive_equilibrium_branches.csv", index=False)
-    split.to_csv(data_dir / "split_heat_mass_screen.csv", index=False)
-    sensitivity.to_csv(data_dir / "split_transfer_sensitivity.csv", index=False)
-    sensitivity_summary.to_csv(data_dir / "split_transfer_sensitivity_summary.csv", index=False)
-    corridor.to_csv(data_dir / "corridor_buoyancy_screen.csv", index=False)
-    corridor_neutral.to_csv(data_dir / "corridor_neutral_density_curve.csv", index=False)
-    corridor_self_consistent.to_csv(data_dir / "self_consistent_corridor_1d.csv", index=False)
-    open_valley_targets.to_csv(data_dir / "open_valley_renewal_targets.csv", index=False)
-    open_valley_distributed.to_csv(data_dir / "open_valley_distributed_1d.csv", index=False)
-    open_valley_thermal.to_csv(data_dir / "open_valley_thermal_1d.csv", index=False)
-    spreader.to_csv(data_dir / "heat_spreader_orientation.csv", index=False)
-    salt.to_csv(data_dir / "water_salt_parameter_screen.csv", index=False)
-    diffusion.to_csv(data_dir / "rib_diffusion_boundary_layer.csv", index=False)
+    outputs = {
+        "passive_equilibrium_branches.csv": passive,
+        "split_heat_mass_screen.csv": split,
+        "split_transfer_sensitivity.csv": sensitivity,
+        "split_transfer_sensitivity_summary.csv": sensitivity_summary,
+        "corridor_buoyancy_screen.csv": corridor,
+        "corridor_neutral_density_curve.csv": corridor_neutral,
+        "self_consistent_corridor_1d.csv": corridor_self_consistent,
+        "open_valley_renewal_targets.csv": open_valley_targets,
+        "open_valley_distributed_1d.csv": open_valley_distributed,
+        "open_valley_thermal_1d.csv": open_valley_thermal,
+        "supply_limit_audit.csv": supply_limit,
+        "heat_spreader_orientation.csv": spreader,
+        "water_salt_parameter_screen.csv": salt,
+        "rib_diffusion_boundary_layer.csv": diffusion,
+    }
+    for name, table in outputs.items():
+        table.to_csv(data_dir / name, index=False)
 
     plot_passive_branches(passive, fig_dir / "passive_equilibrium_branches.png")
     plot_heat_spreader(spreader, fig_dir / "heat_spreader_orientation.png")
@@ -229,22 +217,14 @@ def main() -> None:
         "classification": "SIMULATION/ANALYTIC_SCREENING",
         "git_commit": git_commit(),
         "generator": "simulations/generate_reference_outputs.py",
-        "primary_environment": {
-            "ambient_C": 35.0,
-            "water_g_h": 150.0,
-            "RH_percent": [50.0, 70.0, 85.0],
-        },
         "warnings": [
-            "The passive heat/mass model may contain multiple stable roots; tables include all detected stable roots.",
-            "The split-transfer model treats sensible heat and vapor-transfer multipliers independently; E3 constrains only the vapor side.",
-            "Sensitivity-grid fractions are deterministic grid fractions, not probabilities or confidence levels.",
-            "The prescribed-state corridor-buoyancy model is not CFD and does not solve channel temperature/RH.",
-            "The self-consistent corridor model is a covered/end-renewed limiting case; lateral ambient exchange and axial diffusion are omitted.",
-            "The open-valley renewal-target model is a local conductance-ratio requirement/identification equation; it does not predict the geometry-specific lateral exchange coefficient.",
-            "The distributed open-valley model includes axial diffusion/advection and distributed lateral renewal, but maps lateral renewal through an effective diffusion thickness rather than CFD-resolved external flow.",
-            "The coupled open-valley thermal model keeps lateral heat and vapor exchange separately parameterized and currently has no liquid-feed cap; drier/high-renewal cases may therefore be supply-limited.",
-            "The rib-diffusion model is a 2-D pure-diffusion screen with an idealized air-renewal boundary and is not CFD or a measured alpha value.",
-            "Figures and tables must not be interpreted as measured garment performance.",
+            "Physical garment performance has not been measured.",
+            "The passive lumped model may contain multiple stable roots.",
+            "Heat and vapor transfer are not assumed to share one multiplier.",
+            "Open-valley lateral exchange is parameterized through effective exchange distances, not CFD-resolved geometry.",
+            "The coupled open-valley thermal solver is a fully-wet transfer-capacity model; supply_limit_audit.csv marks cases whose capacity exceeds available feed.",
+            "Supply-limited cases do not have a solved dryout/wet-fraction temperature field; capacity-model body heat flux must not be reused as a feed-limited prediction.",
+            "Salt vapor flux is zero in the garment-temperature models.",
         ],
     }
     (root / "metadata.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
