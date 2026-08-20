@@ -9,18 +9,21 @@ on:
       - "simulations/protected_support_skeleton.py"
       - "simulations/terminal_route_coddesign.py"
       - "simulations/pressure_weighted_liquid_routes.py"
+      - "simulations/environment_exposure_control.py"
       - "tests/test_spatial_pressure_layout.py"
       - "tests/test_protected_air_channel_tradeoff.py"
       - "tests/test_load_schedule_policy.py"
       - "tests/test_protected_support_skeleton.py"
       - "tests/test_terminal_route_coddesign.py"
       - "tests/test_pressure_weighted_liquid_routes.py"
+      - "tests/test_environment_exposure_control.py"
       - "data/spatial_pressure_primary_24x24.csv"
       - "data/protected_air_channel_primary_24x24.csv"
       - "data/load_schedule_policy_primary_24x24.csv"
       - "data/protected_support_frontier_primary_24x24.csv"
       - "data/terminal_route_coddesign_reference.csv"
       - "data/pressure_weighted_liquid_route_reference.csv"
+      - "data/environment_exposure_reference.csv"
       - ".github/workflows/pressure-tests.yml"
   workflow_dispatch:
 
@@ -45,3 +48,4 @@ jobs:
           tests/test_protected_support_skeleton.py
           tests/test_terminal_route_coddesign.py
           tests/test_pressure_weighted_liquid_routes.py
+          tests/test_environment_exposure_control.py
