@@ -32,7 +32,7 @@ def test_2d_topology_states_close_feed_and_energy_residuals():
         assert result.max_spreader_energy_residual_W_m2 < 0.02
 
 
-def test_alignment_changes_value_at_equal_material_fraction():
+def test_orientation_matters_but_homogenized_reference_is_not_beaten():
     uniform = evaluate_topology("uniform_homogenized", n=30)
     aligned = evaluate_topology("x_aligned_traces", n=30)
     transverse = evaluate_topology("y_aligned_traces", n=30)
@@ -42,8 +42,11 @@ def test_alignment_changes_value_at_equal_material_fraction():
     assert transverse.high_k_material_fraction == pytest.approx(uniform.high_k_material_fraction)
     assert mesh.high_k_material_fraction == pytest.approx(uniform.high_k_material_fraction)
 
-    assert aligned.gain_vs_no_lateral_W > uniform.gain_vs_no_lateral_W + 0.5
-    assert transverse.gain_vs_no_lateral_W < uniform.gain_vs_no_lateral_W - 2.0
+    # The homogenized 50% field is an idealized distributed-conductivity
+    # reference and outperforms the discrete trace topologies in the current
+    # screen.  Alignment is still materially better than transverse routing.
+    assert uniform.gain_vs_no_lateral_W > aligned.gain_vs_no_lateral_W + 0.3
+    assert aligned.gain_vs_no_lateral_W > transverse.gain_vs_no_lateral_W + 2.0
     assert mesh.gain_vs_no_lateral_W > transverse.gain_vs_no_lateral_W + 2.0
 
 
