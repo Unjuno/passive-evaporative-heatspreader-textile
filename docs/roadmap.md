@@ -1,233 +1,124 @@
-# Research Roadmap
+# Release-preparation roadmap
 
 Date: 2026-08-20
 
-## Objective
+## Project mode
 
-Develop and publicly document a reproducible passive cooling garment architecture based on local sweat collection, short two-scale liquid transport, exterior evaporation, pressure-aware heat routing and explicit hot/humid failure boundaries.
+The project has moved from exploratory computational research to **research freeze / release preparation**.
 
-**Current project mode: virtual/computational prototype only. No physical specimen currently exists.**
+The present public technical record is considered sufficiently developed to stop adding models for completeness alone. The remaining required work is repository consistency, authoritative source verification, exact-commit reproducibility, versioning, and archival publication.
 
-The immediate objective is to make the architecture sufficiently concrete that a third party could reproduce the calculations and later build/test representative embodiments. Physical protocols are retained as implementation specifications, not completed experiments.
+No physical garment or bench specimen exists. Future physical validation remains optional and must not be described as completed work.
 
-## Gate 0 — scope and architecture
+## Gate A — technical architecture
 
-Status: **substantially complete**
+Status: **COMPLETE FOR CURRENT COMPUTATIONAL DISCLOSURE**
 
-- [x] fanless/passive baseline;
-- [x] core versus optional components separated;
-- [x] layer/architecture vocabulary;
-- [x] apparel-like exterior design families;
-- [x] nonvolatile-salt correction;
-- [x] virtual-prototype status separated from future physical validation.
+- [x] fanless/passive baseline defined;
+- [x] core and optional components separated;
+- [x] heat, liquid, vapor, pressure/load, and hot-ambient subsystems coupled conceptually;
+- [x] multiple concrete embodiments documented;
+- [x] nonvolatile-salt correction retained;
+- [x] failure modes and negative/corrected results retained.
 
-## Gate 1 — prior-art map
+Current retained family:
 
-Status: **in progress**
+> directional local sweat collection -> short distributed two-scale capillary routing -> pressure/ambient-aware exterior wet terminals -> ambient-connected microtexture/open valleys -> short routed heat spreading with limited redundancy -> contact/load management -> dry-side hot-ambient protection.
 
-- [x] directional liquid transport;
-- [x] evaporative textiles;
-- [x] humidity-responsive ventilation;
-- [x] heat-conductive/cooling textiles;
-- [x] fan/sorbent garment families at working-note level;
-- [x] 3D-knit/pile/fin adjacent structures;
-- [x] close integrated heat-conductive + sweat-transport work acknowledged;
-- [ ] authoritative patent-office family/claim mapping;
-- [ ] final source-by-source difference table.
+## Gate B — reproducible model stack
 
-## Gate 2 — reproducible model stack
+Status: **COMPLETE FOR CURRENT RELEASE CANDIDATE**
 
-Status: **advanced low-order stack with direct geometry/material and branched-liquid bridges**
+The branch contains 43 indexed executable screening/sensitivity/audit/virtual-prototype models plus a reference-output generator.
 
-Completed:
+The stack covers:
 
-- [x] nonlinear heat/mass balances and multi-root audit;
-- [x] separate sensible/vapor transfer;
-- [x] periodic rib diffusion and corridor buoyancy screens;
-- [x] open-valley ambient-renewal target and distributed 1-D model;
-- [x] feed-limited/partial-wetness state;
-- [x] latent heat-source partition;
-- [x] hot/humid signed body-heat-flow boundary;
-- [x] symmetric/asymmetric heat-spreader screens;
-- [x] direct `k*t` distributed 1-D heat routing;
-- [x] explicit 2-D heat-network topology;
-- [x] material/mass/contact mapping;
-- [x] compression/contact/ambient-path regime screen;
-- [x] spatial pressure maps;
-- [x] capillary transport, lift/radius optimum and blockage/radius-collapse screens;
-- [x] explicit dense branched liquid resistor network;
-- [x] sparse two-scale trunk/collector network with phase robustness;
-- [x] nonvolatile water/salt mass balance;
-- [x] regression tests, CI and reference CSVs.
+- exterior heat/vapor physics;
+- feed-limited states and environmental sign boundaries;
+- direct-material and 2-D heat routing;
+- topology/failure/pressure/contact screens;
+- synthetic garment load maps;
+- protected vapor-gap alternatives;
+- capillary architecture, collapse, dense branched flow, and sparse two-scale networks;
+- nonvolatile-solute balance;
+- transient terminal buffering;
+- virtual garment mass/thickness.
 
-Still open:
+The pre-cleanup integration head `529fc573...` passed all five defined workflows (`model-tests`, `topology-tests`, `pressure-tests`, `liquid-tests`, `garment-tests`). The final cleanup head must be checked again before release.
 
-1. geometry-resolved 3-D exterior natural convection/cross-flow;
-2. joint thermal/liquid/material network optimization at garment scale;
-3. local wall-film salt deposition and progressive radius loss;
-4. measured or independently validated constitutive laws if hardware is ever built.
+## Gate C — canonical documentation
 
-## Gate 3 — explicit virtual prototypes
+Status: **IN FINAL CONSOLIDATION**
 
-Status: **advanced; VP-E terminal geometry not frozen**
+Canonical documents:
 
-VP-A through VP-D remain mechanism anchors for routing pitch, mass/contact burden and hot-ambient shielding.
+- `technical-disclosure.md` — disclosed architecture and embodiments;
+- `current-results.md` — detailed numerical findings and limitations;
+- `architecture.md` — system structure;
+- `embodiment-matrix.md` — concrete implementation combinations;
+- `research-freeze.md` — frozen core, optional backlog, and change-control rule;
+- `../AUDIT.md` — release-readiness audit;
+- `release-checklist.md` — exact release checklist.
 
-### VP-E — current integrated design family
+The root README and documentation index are now navigation/summary documents rather than competing technical summaries.
 
-VP-E combines:
+## Gate D — prior-art/publication integrity
 
-- directed heat routing with limited cross-link redundancy (`lambda`-like heat-route blend near 0.125);
-- distributed local liquid cells rather than a garment-scale central wick;
-- two-scale liquid architecture: fine collector paths + larger trunks;
-- pressure-aware exterior terminals;
-- fixed passive terminal placement rather than active switching as baseline;
-- dry-side shielding in hot ambient conditions;
-- explicit nonvolatile-salt handling;
-- mass/thickness BOM screen.
+Status: **OPEN**
 
-An earlier route proxy suggested promoting a mildly regularized pressure-aware terminal layout. The explicit branched-flow model corrected that interpretation: with short dense 50–200 µm-class trunks, absolute hydraulic pressure loss is far below capillary drive. Therefore **the final VP-E terminal rule remains open**.
+Required before stable release notes rely on patent/publication metadata:
 
-Current terminal choices are:
+- [ ] verify literature bibliographic identifiers used in the prior-art notes;
+- [ ] verify patent publication/family identifiers and earliest dates from authoritative patent-office records;
+- [ ] ensure close integrated heat-conduction + sweat-transport work is acknowledged accurately;
+- [ ] avoid legal conclusions of novelty, patentability, invalidity, or freedom to operate.
 
-- pure thermal pressure-aware layout as the thermal reference;
-- mildly regularized pressure-aware layout as a route/material/seam Pareto alternative;
-- final choice deferred until sparse-network and material burden are optimized jointly.
+This gate is a source-verification task, not a reason to resume open-ended thermal/fluid modeling.
 
-Gate-3 completion criterion:
+## Gate E — exact release commit
 
-- [x] at least three explicit virtual prototypes;
-- [x] integrated VP-E heat/liquid/terminal architecture family;
-- [x] screening mass/thickness budget;
-- [x] hot/humid state maps at low-order resolution;
-- [ ] freeze one reproducible VP-E terminal/liquid-network input manifest for release.
+Status: **OPEN**
 
-## Gate 4 — virtual robustness / apparel constraints
+- [ ] finish documentation synchronization;
+- [ ] confirm all five workflows pass on the exact candidate commit;
+- [ ] regenerate release reference outputs from that commit;
+- [ ] record commit SHA in release metadata;
+- [ ] generate/freeze SHA-256 manifest for bundled release artifacts;
+- [ ] update `CITATION.cff` version/date;
+- [ ] finalize changelog and release notes.
 
-Status: **advanced**
+## Gate F — versioned public release
 
-Completed screens:
+Status: **OPEN**
 
-- [x] compression vs terminal contact / ambient access;
-- [x] bending/serpentine stretch burden;
-- [x] local heat-route fracture;
-- [x] contact degradation;
-- [x] changing wet-terminal maps;
-- [x] synthetic backpack/strap/seat pressure maps;
-- [x] protected under-load vapor-gap floor;
-- [x] support-footprint penalty;
-- [x] pressure-linked liquid-channel radius-collapse sensitivity;
-- [x] localized and distributed damage comparisons;
-- [x] virtual garment BOM range screen;
-- [x] terminal route-length Pareto screen;
-- [x] explicit dense branched liquid flow;
-- [x] sparse trunk pitch / collector-radius / phase robustness.
+- [ ] merge/freeze the selected commit into the release branch/default branch as appropriate;
+- [ ] create a versioned GitHub tag/release;
+- [ ] keep earlier public commits/history accessible rather than overwriting them;
+- [ ] optionally create a persistent archival copy/DOI linked to the exact tag/commit.
 
-Sparse-network reference under localized sweat source and sampled trunk-grid phases:
+## Optional future research — not release blockers
 
-| collector radius | largest tested 200 µm trunk pitch passing SF=3 at all sampled phases |
-|---:|---:|
-| 20 µm | ~15 mm |
-| 25 µm | ~20 mm |
-| 30 µm | ~30 mm |
-| 35–50 µm | >=60 mm |
+The following remain technically interesting but are deferred to a later version unless they reveal a contradiction in the frozen record:
 
-Remaining:
+- geometry-resolved 3-D exterior natural convection/cross-flow;
+- garment-scale curvature and seam placement;
+- time-varying sweat-source migration;
+- explicit spacer/gap deformation under load;
+- measured local wall-film precipitation/dissolution and fouling kinetics;
+- physical prototype construction and controlled bench validation;
+- human-subject work, subject to appropriate ethics/safety processes if ever pursued.
 
-- [ ] garment curvature and seam placement;
-- [ ] regional full-garment load map instead of one repeating tile;
-- [ ] time-dependent wet-source migration;
-- [ ] optimize network material density / wall mass in addition to liquid pressure;
-- [ ] resolved protected-gap geometry instead of an effective air-access factor.
+## Change-control policy
 
-## Gate 5 — future physical validation specification
+After research freeze, every new branch change should be classified as:
 
-Status: **protocols prepared; not active because no specimen exists**
+1. **correction** — fixes an error;
+2. **clarification** — improves wording/traceability without expanding architecture;
+3. **release metadata** — CI, hashes, citation, version, archive information;
+4. **new research** — normally deferred to a later version.
 
-If a specimen is eventually built, planned order remains:
+The default action for category 4 is **defer**, not expand the current release candidate.
 
-1. E1 — flat fast-dry baseline vs integrated architecture;
-2. E2 — layer ablation;
-3. E3/E3b — microstructure pitch and ambient-access hierarchy;
-4. E3c — covered vs continuously open vs segmented/island exterior;
-5. E4a — feed-limit / partial-wetness transition;
-6. E4 — humidity mapping with water-balance classification;
-7. E5 — heat-route orientation/material/contact validation;
-8. E6 — hot-ambient sensible-heat penalty and shielding;
-9. pressure validation — loaded terminal air-access/contact mapping;
-10. hydraulic validation — collector/trunk pressure drop, lattice pitch and collapse.
+## Stop condition
 
-Minimum future measurement package:
-
-- signed heat flux or calibrated heater/cooler power;
-- actual liquid feed and >=95% water-balance target;
-- wet-surface temperature;
-- ambient/local T/RH;
-- local/far-field flow where resolvable;
-- compressed geometry and terminal gap;
-- actual wet area;
-- heat-route/contact properties;
-- liquid pressure drop / trunk geometry;
-- salt concentration/deposition where relevant.
-
-## Gate 6 — stable public release
-
-Status: **public development repository active; stable v1.0 not frozen**
-
-Before stable v1.0:
-
-- [ ] authoritative patent-office verification;
-- [ ] freeze technical disclosure and VP-E input manifest at one exact commit;
-- [ ] regenerate all reference outputs at that commit;
-- [ ] obtain successful current-head model/topology/pressure/liquid/garment workflows;
-- [ ] freeze SHA-256 manifest;
-- [ ] update `CITATION.cff`, version/date, changelog and release notes;
-- [ ] create GitHub tag/release;
-- [ ] archive exact release in a persistent public DOI repository;
-- [ ] preserve earlier public records without overwrite.
-
-## Current research priorities
-
-### P0 — joint sparse-network design
-
-The distance-only liquid proxy has been superseded for pressure-feasibility questions by explicit branched-flow models. The next optimization variables are now:
-
-- collector hydraulic radius;
-- large-trunk pitch;
-- trunk-grid phase / route placement;
-- localized source distribution;
-- network wall/material mass;
-- terminal thermal performance.
-
-The target is a Pareto front in **cooling performance vs liquid pressure margin vs network material burden**.
-
-### P1 — exterior vapor-gap geometry
-
-Replace the effective protected-air-access floor with gap height, width, support spacing, orientation and deformation.
-
-### P2 — salt / local-film failure
-
-Keep salt vapor flux at zero and model water evaporation, dissolved-salt advection, local concentration, precipitation/dissolution and hydraulic-radius loss separately.
-
-### P3 — garment regionalization
-
-Map backpack straps, back panels, waistbands, seams and seat contact onto a garment-scale regional model, then assign pressure-aware terminals and local liquid cells.
-
-### P4 — release consistency
-
-Keep README, simulation index, audit, current-results, workflow counts, references and PR description synchronized before freezing a stable release.
-
-## Stop / redesign conditions
-
-A virtual architecture should be downgraded if it:
-
-- improves evaporation but not signed body-side cooling;
-- depends on unavailable water supply;
-- requires long central liquid lift when local routing is feasible;
-- requires a collector radius / trunk pitch combination that loses capillary safety margin under plausible phase placement;
-- requires vapor-gap preservation incompatible with expected compression;
-- depends on heat/vapor selectivity without a physical mechanism;
-- maps required heat routing or liquid routing to impractical mass/thickness burden;
-- assumes sparse conductive or liquid-network coverage automatically saves mass;
-- assumes salt evaporates;
-- loses ambient paths or liquid radius under expected load without redundancy/protection.
+The current project can stop after a stable version is frozen and the exact public record is identifiable by commit/tag (and optionally archive identifier). Further modeling is not required for closure of this computational research phase.
