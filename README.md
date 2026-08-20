@@ -2,7 +2,7 @@
 
 Public computational research on a fanless cooling-textile architecture that combines directional sweat transport, distributed capillary delivery, routed heat spreading, pressure-aware evaporative terminals, and ambient-connected exterior evaporation.
 
-> **Project state:** v1.0.0 research freeze / stable computational technical record. This repository contains simulation, analytic screening, virtual-prototype, regression, and future validation materials. **No physical garment or bench specimen exists, and no measured garment-performance claim is made.**
+> **Project state:** `v1.0.0` is the stable computational technical record. The tagged release is bound to commit `e544f64630119c88425b49cc3e5a00e06d15ad84`. This repository contains simulation, analytic screening, virtual-prototype, regression, and future-validation materials. **No physical garment or bench specimen exists, and no measured garment-performance claim is made.**
 
 ## Current architecture
 
@@ -104,11 +104,12 @@ Start with:
 - [`docs/embodiment-matrix.md`](docs/embodiment-matrix.md) — concrete implementation variants;
 - [`docs/research-freeze.md`](docs/research-freeze.md) — research-freeze and change-control policy;
 - [`docs/release-notes-v1.0.0.md`](docs/release-notes-v1.0.0.md) — stable release scope and evidence boundary;
+- [`docs/release-verification-v1.0.0.md`](docs/release-verification-v1.0.0.md) — post-release integrity record;
 - [`docs/README.md`](docs/README.md) — full documentation index;
 - [`simulations/README.md`](simulations/README.md) — indexed executable model stack;
-- [`AUDIT.md`](AUDIT.md) — release-readiness and verification audit.
+- [`AUDIT.md`](AUDIT.md) — release/readiness and verification audit.
 
-The repository contains **45 indexed executable screening/sensitivity/audit/virtual-prototype models**, plus one reference-output generator, regression tests, committed reference CSVs, five domain/test CI workflows, and the `publish-v1` release-validation/publication workflow.
+The repository contains **45 indexed executable screening/sensitivity/audit/virtual-prototype models**, plus one reference-output generator, regression tests, committed reference CSVs, and five domain/test CI workflows.
 
 ## Reproducibility
 
@@ -117,7 +118,7 @@ python -m pip install -r requirements-dev.txt
 python -m pytest -q
 ```
 
-Reference CSVs in `data/` distinguish model outputs and analytic identities. `model-tests` preserves an exact-head generated reference package as an Actions artifact containing `metadata.json` and `sha256.txt`. The `publish-v1` workflow independently regenerates the package from the exact stable `main` commit before creating the v1.0.0 GitHub Release.
+`model-tests` can generate commit-traced reference artifacts from the current source tree. The archived `v1.0.0` verifier checks out the immutable release tag, reruns the full regression suite, executes the indexed branched-network script directly, regenerates the release reference package from outside the checkout directory, verifies the recorded Git commit, and produces a fresh verification ZIP plus SHA-256 file.
 
 ## Interpretation rules
 
@@ -135,9 +136,11 @@ Do not treat any one of the following as proof of real-garment performance:
 
 ## Research freeze / release state
 
-The exploratory modeling phase is considered sufficient for v1.0.0. Additional 3-D CFD, garment-scale curvature, measured fouling kinetics, and physical prototypes are **optional later-version research**, not blockers for this computational disclosure.
+The exploratory modeling phase is complete for `v1.0.0`. Additional 3-D CFD, garment-scale curvature, measured fouling kinetics, and physical prototypes are **optional later-version research**, not blockers for this computational disclosure.
 
-The v1.0.0 patent map is intentionally conservative: public-index technical/bibliographic findings are retained, while patent family, legal-status, and claim-scope facts are not labeled authoritatively office-verified unless such verification is explicitly recorded. No legal novelty or freedom-to-operate conclusion is asserted.
+The `v1.0.0` patent map is intentionally conservative: public-index technical/bibliographic findings are retained, while patent family, legal-status, and claim-scope facts are not labeled authoritatively office-verified unless such verification is explicitly recorded. No legal novelty or freedom-to-operate conclusion is asserted.
+
+The stable tag is immutable project history. Post-release maintenance on `main` does not alter the contents of `v1.0.0`.
 
 ## License
 
@@ -145,4 +148,4 @@ Apache License 2.0. See [`LICENSE`](LICENSE).
 
 ## Citation
 
-See [`CITATION.cff`](CITATION.cff). Version `v1.0.0` is the stable computational technical-record identifier; the release workflow binds it to the exact verified `main` commit and publishes the reference ZIP plus SHA-256 file.
+See [`CITATION.cff`](CITATION.cff). Cite `v1.0.0` or the exact commit used. Stable `v1.0.0` resolves to `e544f64630119c88425b49cc3e5a00e06d15ad84`.
