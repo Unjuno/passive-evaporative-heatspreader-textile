@@ -2,18 +2,27 @@
 
 Status: virtual/computational screening only. No physical garment or bench specimen exists and no measured cooling claim is made.
 
-## Purpose
+## Correction status
 
-The pressure-aware thermal screen favors moving wet evaporator terminals away from compressed regions because compression closes ambient vapor-renewal paths. That creates a second design burden: moving terminals away from the pressure field can lengthen liquid collection routes.
+This document originally promoted a mildly regularized terminal layout as the current VP-E anchor because it reduced the relative route proxy
 
-This screen therefore treats terminal placement as a two-objective problem:
+\[
+J_h=d_{95}\hat r^{-4}
+\]
 
-1. maximize body-side heat removal in the low-order pressure/evaporation model;
-2. minimize a first-order hydraulic route burden.
+by ~16.8% while retaining ~98.2% of the thermal optimum.
 
-The result is not a full fluid-network solution. It is a design-selection layer on top of the converged terminal regularization sweep.
+A later explicit branched liquid-resistor network shows that this interpretation was too strong for the current short 50–200 µm-class distributed-trunk architecture. At tile-scaled flow, predicted pressure losses are orders of magnitude below available collector capillary drive. The regularized layout therefore remains a geometric/manufacturing Pareto alternative, but it is **not preferred over the pure thermal pressure-aware layout solely on hydraulic-pressure grounds**.
 
-## Hydraulic proxy
+See `docs/branched-liquid-resistor-network.md` for the correcting model.
+
+## Purpose of the original proxy
+
+The pressure-aware thermal screen favors moving wet evaporator terminals away from compressed regions because compression closes ambient vapor-renewal paths. That can lengthen geometric liquid collection routes.
+
+The proxy screen asked whether a small thermal sacrifice could shorten those routes before a full fluid-network model existed.
+
+## Relative hydraulic proxy
 
 For a laminar circular-equivalent channel, Poiseuille scaling gives
 
@@ -21,107 +30,133 @@ For a laminar circular-equivalent channel, Poiseuille scaling gives
 \Delta p_f \propto \frac{L\dot V}{r^4}.
 \]
 
-The co-design screen therefore defines
+The proxy was therefore
 
 \[
 J_h = d_{95}\,\hat r^{-4},
 \]
 
-where `d95` is the 95th-percentile geometric distance to the nearest wet terminal and `r_hat` is the retained equivalent radius of a mechanically protected liquid trunk. The current reference uses `r_hat = 0.90`.
-
-This proxy is intentionally conservative and simple. It does **not** replace the explicit capillary-network, radius-collapse, or pressure-weighted-route models elsewhere in the repository.
+where `d95` is the 95th-percentile geometric distance to the nearest wet terminal and `r_hat` is a retained equivalent-radius ratio. The reference used `r_hat=0.90`.
 
 ## Variable table
 
 | Symbol | Meaning | SI unit | Definition / assumption | Type |
 |---|---|---:|---|---|
 | `d95` | 95th-percentile source-to-terminal distance | m | geometric terminal-distance statistic | model output |
-| `r_hat` | retained channel radius ratio | 1 | compressed radius / nominal radius, `0 < r_hat <= 1` | design assumption |
-| `J_h` | hydraulic route burden proxy | m-equivalent | `d95 r_hat^-4` | derived metric |
-| `q_b` | body-side heat flux | W/m² | output of the pressure-aware thermal model | model output |
+| `r_hat` | retained channel radius ratio | 1 | compressed radius / nominal radius | design assumption |
+| `J_h` | relative route burden proxy | m-equivalent | `d95 r_hat^-4` | derived metric |
+| `q_b` | body-side heat flux | W/m² | pressure-aware thermal-model output | model output |
 | `beta` | four-island regularization weight | 1 | terminal-placement score weight | design variable |
 | `w_r` | heat-route overlap weight | 1 | terminal-placement score weight | design variable |
 
 Dimensional check:
 
 \[
-[J_h] = [d_{95}] [\hat r]^{-4} = \mathrm{m}.
+[J_h]=[d_{95}][\hat r]^{-4}=\mathrm m.
 \]
 
-The numerical value is an equivalent path-burden metric, not a physical pressure drop unless channel geometry, flow and viscosity are supplied.
+`J_h` is not a pressure drop because it omits flow splitting, absolute channel conductance and network connectivity.
 
-## 24 x 24 reference result
+## 24 x 24 proxy result
 
-The pure thermal optimum in the current backpack-plus-straps pressure map is:
+Pure thermal optimum:
 
-- `beta = 0.0`;
+- `beta=0`;
 - route weight `0.20`;
 - body-side heat flux `112.84 W/m²`;
-- liquid-route `d95 = 20.16 mm`;
-- protected-trunk hydraulic proxy `30.72 mm-equivalent`.
+- liquid `d95=20.16 mm`;
+- proxy `30.72 mm-equivalent`.
 
-If terminal placement is constrained to retain at least 98% of the thermal optimum and then chosen to minimize hydraulic burden, the selected co-design anchor is:
+Mildly regularized candidate:
 
-- `beta = 0.125`;
+- `beta=0.125`;
 - route weight `0.35`;
 - body-side heat flux `110.83 W/m²`;
 - thermal retention `98.21%`;
-- liquid-route `d95 = 16.77 mm`;
-- hydraulic proxy `25.56 mm-equivalent`;
-- hydraulic-proxy reduction versus the pure thermal optimum: `16.79%`.
+- liquid `d95=16.77 mm`;
+- proxy `25.56 mm-equivalent`;
+- relative proxy reduction `16.79%`.
 
-Therefore the current VP-E terminal-placement anchor is **not** the pure pressure-avoidance optimum. A small amount of distributed four-island regularization is retained because it materially shortens liquid routes at a small thermal penalty.
+This remains a valid **geometric Pareto result**.
 
-## Interpretation
+## Explicit-network correction
 
-The result supports a distributed-cell architecture:
+The later 24 x 24 branched-flow model uses:
 
-> local sweat collection -> short protected liquid trunk -> pressure-aware wet terminal -> open evaporative microtexture.
+- 60 mm tile;
+- tile-scaled flow equivalent to 150 g/h over 0.30 m²;
+- 200 µm nominal liquid trunks;
+- 50 µm collector radius;
+- 15 mm lift;
+- pressure-linked radius retention down to 0.70.
 
-It does not support long centralized liquid transport across the garment. Separate capillary screens already show that vertical rise and long path length can dominate passive liquid-transport area.
+Under the strongest screened collapse map, maximum predicted liquid-network pressure drops are only approximately:
+
+- pure thermal pressure-aware layout: `0.526 Pa`;
+- regularized layout: `0.470 Pa`;
+- four-island layout: `0.205 Pa`.
+
+Available collector capillary drive is about `2278 Pa`. The one-network safety-factor-3 radius boundary is only ~26–32 µm depending on terminal layout.
+
+Therefore, for the current 50–200 µm-class short distributed trunks, route-length differences are **not first-order capillary-head constraints** in the dense-network embodiment.
+
+## Current design interpretation
+
+The terminal decision is now:
+
+- use the pure thermal pressure-aware layout as the current thermal reference when local trunks are hydraulically generous;
+- retain the regularized layout as a candidate when sparse routing, seam placement, material volume, source localization or manufacturing makes route length expensive;
+- do not freeze either as a final garment-wide layout until network sparsity and regional garment geometry are included.
 
 ## H / T / D / C / U
 
-### H — falsifiable hypothesis
+### H
 
-For a fixed pressure field and equal wet-terminal area, a mildly regularized pressure-aware layout can reduce hydraulic route burden by at least 10% while retaining at least 98% of the body-side heat flux of the pure thermal optimum.
+A pressure-aware layout can be regularized to shorten geometric source-to-terminal routes with little thermal loss.
 
-### T — minimum validation
+### T
 
-- synthetic backpack-plus-straps pressure field;
-- equal wet-terminal area;
-- equal heat-route material fraction;
-- converged pressure/thermal solver;
-- regularization sweep over terminal-template and route-overlap weights;
-- hydraulic burden evaluated with the same radius-retention assumption for every candidate.
+Equal wet area, equal heat-route fraction, converged pressure/thermal model, common geometric route metric.
 
-### D — decision rule
+### D
 
-PASS if a candidate simultaneously satisfies:
+The geometric claim passes: the regularized candidate retains >98% of thermal output and shortens `d95` by >10%.
 
-- `q_b >= 0.98 q_b,max`;
-- `J_h <= 0.90 J_h,thermal-best`.
+The stronger hydraulic-pressure claim is **not supported** for the current dense 50–200 µm distributed-trunk network because absolute pressure losses are negligible relative to capillary drive.
 
-The 24 x 24 reference passes this rule.
+### C
 
-### C — failure modes / alternatives
+The regularized layout could become hydraulically relevant if:
 
-- nearest-terminal distance may not equal the actual routed liquid path;
-- protected trunks may not maintain the assumed radius floor;
-- pressure fields and sweat-source fields are time-varying;
-- manufacturing may force terminal shapes different from the score-field masks;
-- a hierarchy of micro-collectors and larger trunks may change the optimum.
+- effective radius is much smaller;
+- network edges are sparse;
+- flow sources are strongly localized;
+- lift is larger;
+- trunks collapse or block completely;
+- junction losses dominate.
 
-### U — uncertainty
+### U
 
-The largest uncertainties are model form, pressure-to-radius coupling, terminal contact, and the effective ambient mass-transfer coefficient. The hydraulic proxy is not assigned a statistical uncertainty because it is a deterministic screening index; the dominant uncertainty is structural/model-form uncertainty rather than numerical convergence.
+Dominant uncertainty is network topology/material density and effective hydraulic radius. The proxy itself has low numerical uncertainty but high model-form uncertainty.
 
 ## Salt conservation
 
-This co-design model moves salt only with the liquid phase. Salt vapor flux is zero. Water may evaporate at the exterior terminal; nonvolatile dissolved salts remain in the liquid and can concentrate or precipitate. No salt evaporation mechanism is assumed.
+Salt moves only with liquid and does not evaporate:
+
+\[
+J_{salt,vapor}=0.
+\]
 
 ## Reproducibility
+
+Relative proxy:
 
 - `simulations/pressure_liquid_codesign.py`
 - `tests/test_pressure_liquid_codesign.py`
 - `data/pressure_liquid_codesign_reference.csv`
+
+Correcting absolute-flow network:
+
+- `simulations/branched_liquid_resistor_network.py`
+- `tests/test_branched_liquid_resistor_network.py`
+- `data/branched_liquid_resistor_reference.csv`
