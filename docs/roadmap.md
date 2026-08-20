@@ -6,7 +6,7 @@ Date: 2026-08-20
 
 The project has moved from exploratory computational research to **research freeze / release preparation**.
 
-The present public technical record is considered sufficiently developed to stop adding models for completeness alone. The remaining required work is repository consistency, authoritative source verification, exact-commit reproducibility, versioning, and archival publication.
+The present public technical record is considered sufficiently developed to stop adding models for completeness alone. The remaining required work is repository consistency, exact-commit reproducibility, versioning, and archival publication. Patent/publication facts are kept at the confidence level actually verified.
 
 No physical garment or bench specimen exists. Future physical validation remains optional and must not be described as completed work.
 
@@ -29,7 +29,7 @@ Current retained family:
 
 Status: **COMPLETE FOR CURRENT RELEASE CANDIDATE**
 
-The branch contains 43 indexed executable screening/sensitivity/audit/virtual-prototype models plus a reference-output generator.
+The branch contains **45 indexed executable screening/sensitivity/audit/virtual-prototype models** plus a reference-output generator. The count has been reconciled against the actual `simulations/` directory, including the later-added collector-fouling and transient-terminal-buffer screens.
 
 The stack covers:
 
@@ -39,16 +39,16 @@ The stack covers:
 - topology/failure/pressure/contact screens;
 - synthetic garment load maps;
 - protected vapor-gap alternatives;
-- capillary architecture, collapse, dense branched flow, and sparse two-scale networks;
+- capillary architecture, collapse, dense branched flow, sparse two-scale networks, and imposed fouling/radius loss;
 - nonvolatile-solute balance;
-- transient terminal buffering;
+- transient terminal water buffering;
 - virtual garment mass/thickness.
 
-The pre-cleanup integration head `529fc573...` passed all five defined workflows (`model-tests`, `topology-tests`, `pressure-tests`, `liquid-tests`, `garment-tests`). The final cleanup head must be checked again before release.
+A documentation-cleanup checkpoint head `14fa2ab6...` passed all five defined workflows. A later release-reproducibility commit adds exact-head reference-package artifact upload, so the final head is being checked again.
 
 ## Gate C — canonical documentation
 
-Status: **COMPLETE SUBJECT TO FINAL PROOFREADING**
+Status: **COMPLETE SUBJECT TO FINAL EXACT-HEAD CHECK**
 
 Canonical documents:
 
@@ -64,27 +64,32 @@ The root README and documentation index are navigation/summary documents rather 
 
 ## Gate D — prior-art/publication integrity
 
-Status: **OPEN**
+Status: **SCOPED / PARTIALLY VERIFIED**
 
-Required before stable release notes rely on patent/publication metadata:
+Completed:
 
-- [ ] verify literature bibliographic identifiers used in the prior-art notes;
-- [ ] verify patent publication/family identifiers and earliest dates from authoritative patent-office records;
-- [ ] ensure close integrated heat-conduction + sweat-transport work is acknowledged accurately;
-- [ ] avoid legal conclusions of novelty, patentability, invalidity, or freedom to operate.
+- [x] close literature is acknowledged, including integrated heat-conduction + sweat-transport work;
+- [x] patent working notes distinguish public-index bibliographic/technical cross-checks from authoritative patent-office/family/claim verification;
+- [x] claim-scope caveats are recorded where specification embodiments could otherwise be mistaken for independent-claim limitations;
+- [x] no legal conclusion of novelty, patentability, invalidity, or freedom to operate is asserted.
 
-This gate is a source-verification task, not a reason to resume open-ended thermal/fluid modeling.
+Before a stable release labels any patent-family/claim fact as authoritative:
+
+- [ ] verify only those exact facts from authoritative patent-office records;
+- [ ] otherwise retain them explicitly as public-index working-map information.
+
+This gate is a source-integrity task, not a reason to resume open-ended thermal/fluid modeling.
 
 ## Gate E — exact release commit
 
-Status: **OPEN**
+Status: **IN FINAL CI / ARTIFACT CHECK**
 
 - [x] finish main documentation synchronization;
-- [ ] final cross-document proofreading pass;
+- [x] reconcile actual executable model count;
+- [x] add Actions artifact preservation for the generated reference package;
 - [ ] confirm all five workflows pass on the exact candidate commit;
-- [ ] regenerate release reference outputs from that commit;
-- [ ] record commit SHA in release metadata;
-- [ ] generate/freeze SHA-256 manifest for bundled release artifacts;
+- [ ] confirm the exact-head reference artifact exists and contains generated data, figures, `metadata.json`, and `sha256.txt`;
+- [ ] record the selected release commit SHA in release metadata;
 - [ ] update `CITATION.cff` version/date;
 - [ ] finalize release notes.
 
@@ -115,7 +120,7 @@ After research freeze, every new branch change should be classified as:
 
 1. **correction** — fixes an error;
 2. **clarification** — improves wording/traceability without expanding architecture;
-3. **release metadata** — CI, hashes, citation, version, archive information;
+3. **release metadata/reproducibility** — CI, artifacts, hashes, citation, version, archive information;
 4. **new research** — normally deferred to a later version.
 
 The default action for category 4 is **defer**, not expand the current release candidate.
