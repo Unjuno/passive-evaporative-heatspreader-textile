@@ -60,8 +60,17 @@ jobs:
         run: python simulations/heat_spreader_2d.py > /tmp/heat-spreader-demo.txt
       - name: Run normalized water-salt screen
         run: python simulations/water_salt_1d.py > /tmp/water-salt-screen.txt
+      - name: Checkout exact source head for release artifact
+        if: github.event_name == 'pull_request'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
       - name: Generate reproducible reference package
         run: |
+          expected_sha="${{ github.event.pull_request.head.sha || github.sha }}"
+          actual_sha="$(git rev-parse HEAD)"
+          test "$actual_sha" = "$expected_sha"
           python simulations/generate_reference_outputs.py --output-root /tmp/reference-output
           test -s /tmp/reference-output/data/passive_equilibrium_branches.csv
           test -s /tmp/reference-output/data/split_heat_mass_screen.csv
@@ -94,10 +103,11 @@ jobs:
           test -s /tmp/reference-output/figures/passive_environment_boundary.png
           test -s /tmp/reference-output/metadata.json
           test -s /tmp/reference-output/sha256.txt
+          grep -q "\"git_commit\": \"$expected_sha\"" /tmp/reference-output/metadata.json
       - name: Upload reproducible reference package
         uses: actions/upload-artifact@v4
         with:
-          name: reference-output-${{ github.sha }}
+          name: reference-output-${{ github.event.pull_request.head.sha || github.sha }}
           path: /tmp/reference-output
           if-no-files-found: error
           retention-days: 90
