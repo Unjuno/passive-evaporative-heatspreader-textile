@@ -1,0 +1,10 @@
+collapse_severity,trunk_protection_policy,layout,p95_path_cost_mm_equivalent
+0.5,unprotected,four_islands,25.647
+0.5,unprotected,pressure_focused,48.985
+0.5,unprotected,regularized,47.313
+0.5,protected_radius_floor_0p90,four_islands,19.052
+0.5,protected_radius_floor_0p90,pressure_focused,33.490
+0.5,protected_radius_floor_0p90,regularized,30.483
+0.5,fully_protected,four_islands,15.000
+0.5,fully_protected,pressure_focused,22.500
+0.5,fully_protected,regularized,20.000
