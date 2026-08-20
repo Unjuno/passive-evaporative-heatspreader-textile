@@ -7,17 +7,7 @@ Release-candidate branch: `agent/initial-research-disclosure`
 
 The repository is **technically mature enough to stop exploratory modeling and publish v1.0.0 as a computational/public technical record**.
 
-It contains:
-
-- an integrated technical disclosure;
-- an explicit embodiment matrix;
-- a canonical current-results record;
-- **45 indexed executable screening/sensitivity/audit/virtual-prototype models** plus one reference-output generator;
-- regression tests and five dedicated PR CI workflows;
-- prior-art/patent technical notes with explicit confidence boundaries;
-- future physical-validation protocols;
-- a research-freeze/change-control policy;
-- v1.0.0 citation metadata, release notes, and an automated exact-commit release workflow.
+It contains an integrated technical disclosure, embodiment matrix, canonical current-results record, **45 indexed executable screening/sensitivity/audit/virtual-prototype models** plus one reference-output generator, regression tests, five domain/test PR CI workflows, a release-validation/publication workflow, prior-art notes with explicit confidence boundaries, future physical-validation protocols, and a research-freeze/change-control policy.
 
 The project remains a **virtual/computational prototype only**. No physical garment or bench specimen exists and no measured garment-performance claim is made.
 
@@ -50,38 +40,47 @@ The primary embodiment is passive/fanless. Fan, sorbent, adaptive, detachable, a
 
 ## Corrections intentionally preserved
 
-The repository explicitly retains these corrections:
-
-- an earlier claim that aligned sparse high-`k` traces exceeded an equal-material homogenized field was withdrawn;
-- passive corridor flow was initially treated too simply; thermo-solutal buoyancy can reverse or neutralize it;
-- sensible and vapor transfer were separated after the earlier common-multiplier simplification;
-- the terminal-route `d95*r^-4` proxy was initially given too much hydraulic significance; explicit branched networks supersede that interpretation;
-- water and nonvolatile-solute balances were separated so `J_salt,vapor = 0`.
+- An earlier claim that aligned sparse high-`k` traces exceeded an equal-material homogenized field was withdrawn.
+- Passive corridor flow was initially treated too simply; thermo-solutal buoyancy can reverse or neutralize it.
+- Sensible and vapor transfer were separated after the earlier common-multiplier simplification.
+- The terminal-route `d95*r^-4` proxy was initially given too much hydraulic significance; explicit branched networks supersede that interpretation.
+- Water and nonvolatile-solute balances were separated so `J_salt,vapor = 0`.
 
 ## Release-integrity corrections
 
 Two automated-review P2 findings were fixed and promoted into regression coverage:
 
-1. `simulations/branched_liquid_resistor_network.py` now inserts the repository root before `simulations.*` imports, and `liquid-tests` directly executes the indexed script.
+1. `simulations/branched_liquid_resistor_network.py` inserts the repository root before `simulations.*` imports, and `liquid-tests` directly executes the indexed script.
 2. `simulations/generate_reference_outputs.py` resolves Git metadata with `cwd=REPO_ROOT`, and `model-tests` invokes the generator from outside the checkout working directory.
 
-The PR workflow also distinguishes merge-candidate testing from exact-source-head artifact provenance: before generating the reference artifact, `model-tests` checks out the exact PR head and verifies `git rev-parse HEAD == expected head == metadata.json git_commit`.
+`model-tests` also distinguishes merge-candidate testing from exact-source-head artifact provenance: before generating the reference artifact, it checks out the exact PR head and verifies `git rev-parse HEAD == expected head == metadata.json git_commit`.
 
-## Verified pre-publication checkpoint
+Both review conversations have been resolved after the fixes passed CI.
 
-Head `a4bba3fc93c5197ced42f30d836237afae6ac699` passed all five PR workflows after the P2 fixes:
+## Verified v1.0.0 pre-publication checkpoint
+
+The code/release-workflow-bearing head
+
+`568d637f09f039366465544099d8a28d803391c8`
+
+passed all six PR workflows:
 
 | workflow | run | result |
 |---|---:|---|
-| `model-tests` | #778 | PASS |
-| `topology-tests` | #334 | PASS |
-| `pressure-tests` | #140 | PASS |
-| `liquid-tests` | #119 | PASS |
-| `garment-tests` | #74 | PASS |
+| `model-tests` | #796 | PASS |
+| `topology-tests` | #352 | PASS |
+| `pressure-tests` | #149 | PASS |
+| `liquid-tests` | #128 | PASS |
+| `garment-tests` | #83 | PASS |
+| `publish-v1` validation | #2 | PASS |
 
-Its exact-head artifact was `reference-output-a4bba3fc93c5197ced42f30d836237afae6ac699`, artifact id `9408966551`, GitHub ZIP digest `sha256:17e98cca6aff31994283dda33ad3a489a1a935e5cc623beef6cd1bd624ef1d50`. Independent inspection found 33 files and zero mismatches across the 32 entries in the package-level `sha256.txt` manifest.
+Its exact-head reference artifact is:
 
-The final metadata/publication-workflow head must pass again before merge.
+- name: `reference-output-568d637f09f039366465544099d8a28d803391c8`;
+- artifact id: `9409854675`;
+- GitHub ZIP digest: `sha256:9830c9b16c6c4a4b2a7b195e7243b341bb3bec3d4c070dcaefdf97dd6828031f`.
+
+This audit/checklist synchronization changes documentation only. GitHub PR CI is rerun on the resulting final branch head before merge; the PR check state is the authoritative final pre-merge status.
 
 ## Patent/prior-art confidence boundary
 
@@ -92,31 +91,33 @@ The stable-release decision is conservative:
 - exact family/legal status is not required for the technical conclusions retained in this release;
 - no novelty, patentability, invalidity, infringement, or freedom-to-operate conclusion is asserted.
 
-This resolves the publication blocker without turning incomplete office-record access into a false verification claim.
+Public official deep links were identified where available, but several office interfaces were not reliably machine-readable from the release-preparation environment. The repository therefore records the lower confidence level rather than converting incomplete access into a false verification claim.
 
 ## v1.0.0 publication mechanism
 
 - `CITATION.cff` specifies version `1.0.0` and release date `2026-08-20`.
 - `docs/release-notes-v1.0.0.md` is the release-note source.
-- `.github/workflows/publish-v1.yml` runs on the first relevant `main` push, verifies the exact merge commit, runs the full regression suite, directly executes the indexed branched-network script, regenerates the reference package from outside the checkout, checks the recorded commit SHA, builds a ZIP and SHA-256 file, and creates GitHub release/tag `v1.0.0` if it does not already exist.
-- Existing `v1.0.0` releases are left unchanged on later `main` pushes.
+- `.github/workflows/publish-v1.yml` is PR-validated without write permission.
+- On a push to `main`, its publication job uses `contents: write`, verifies the exact merge commit, reruns the full regression suite, directly executes the indexed branched-network script, regenerates the reference package from outside the checkout, checks the recorded commit SHA, builds a ZIP and SHA-256 file, and creates GitHub release/tag `v1.0.0` if it does not already exist.
+- An existing `v1.0.0` release is left unchanged on later `main` pushes.
 
 ## Public-record readiness
 
 | item | status |
 |---|---|
-| Public repository | PASS |
+| Public GitHub repository | PASS |
 | Apache-2.0 license | PASS |
 | Integrated disclosure / embodiment matrix | PASS |
 | Canonical results / correction history | PASS |
 | 45-model executable index | PASS |
 | Regression/CI structure | PASS |
 | Exact-head artifact provenance | PASS |
-| Release notes / citation metadata | PASS |
+| P2 review fixes / thread resolution | PASS |
+| v1.0.0 release notes / citation metadata | PASS |
 | Patent confidence policy | PASS |
+| `publish-v1` PR validation | PASS |
 | Physical measurements | NOT AVAILABLE; not claimed |
-| Final metadata-head CI | PENDING before merge |
-| `v1.0.0` tag/release | AUTOMATED on verified merge to `main` |
+| Merge + `v1.0.0` GitHub Release | POST-MERGE OPERATION; automated and verified after merge |
 | Persistent DOI/archive | OPTIONAL; no connected archive integration available in this workspace |
 
 ## Stop rule
