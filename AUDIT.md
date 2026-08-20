@@ -73,7 +73,7 @@ All five defined pull-request workflows completed successfully on that head:
 | `liquid-tests` | #91 | PASS |
 | `garment-tests` | #46 | PASS |
 
-The release-candidate documentation cleanup creates later commits, so the **final release commit must be checked again** before tagging. No model source was changed in the initial cleanup batch.
+The release-candidate documentation cleanup creates later commits, so the **final release commit must be checked again** before tagging. The cleanup phase is documentation/metadata oriented and does not intentionally expand the 43-model stack.
 
 ## Public-record readiness
 
@@ -83,7 +83,7 @@ The release-candidate documentation cleanup creates later commits, so the **fina
 | Apache-2.0 | PASS | License present. |
 | Integrated technical disclosure | PASS | `docs/technical-disclosure.md`. |
 | Concrete embodiment matrix | PASS | `docs/embodiment-matrix.md`. |
-| Canonical numerical summary | PASS / consolidation | `docs/current-results.md`; no longer a reason to extend research. |
+| Canonical numerical summary | PASS | `docs/current-results.md`. |
 | Documentation index | PASS | `docs/README.md`. |
 | Research-freeze policy | PASS | `docs/research-freeze.md`. |
 | 43-model executable stack | PASS | Indexed in `simulations/README.md`. |
@@ -116,9 +116,12 @@ If these are pursued later, they should normally enter a later version rather th
 - [x] replace placeholder documentation index;
 - [x] establish research-freeze/change-control policy;
 - [x] simplify root README around canonical conclusions and release state;
-- [x] record successful five-workflow integration on the 43-model head;
-- [ ] synchronize roadmap, release checklist, changelog, citation metadata, and PR body with the freeze decision;
-- [ ] confirm all five workflows on the final documentation-cleanup head.
+- [x] consolidate `docs/current-results.md` as the canonical numerical summary;
+- [x] freeze `simulations/README.md` at 43 indexed models;
+- [x] synchronize roadmap, release checklist, changelog, and citation metadata with the freeze decision;
+- [x] record successful five-workflow integration on the pre-cleanup 43-model head;
+- [ ] confirm all five workflows on the final documentation-cleanup head;
+- [ ] final cross-document proofreading pass.
 
 ### P1 — publication integrity
 
