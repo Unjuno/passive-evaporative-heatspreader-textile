@@ -4,8 +4,11 @@ on:
   pull_request:
     paths:
       - "simulations/spatial_pressure_layout.py"
+      - "simulations/protected_air_channel_tradeoff.py"
       - "tests/test_spatial_pressure_layout.py"
+      - "tests/test_protected_air_channel_tradeoff.py"
       - "data/spatial_pressure_primary_24x24.csv"
+      - "data/protected_air_channel_primary_24x24.csv"
       - ".github/workflows/pressure-tests.yml"
   workflow_dispatch:
 
@@ -22,4 +25,4 @@ jobs:
       - name: Run pressure-layout regression tests
         env:
           PYTHONPATH: .
-        run: pytest -q tests/test_spatial_pressure_layout.py
+        run: pytest -q tests/test_spatial_pressure_layout.py tests/test_protected_air_channel_tradeoff.py
