@@ -107,7 +107,7 @@ Start with:
 - [`simulations/README.md`](simulations/README.md) — indexed executable model stack;
 - [`AUDIT.md`](AUDIT.md) — release-readiness and verification audit.
 
-The branch contains **43 indexed executable screening/sensitivity/audit/virtual-prototype models**, plus a reference-output generator, regression tests, committed reference CSVs, and five dedicated CI workflows.
+The branch contains **45 indexed executable screening/sensitivity/audit/virtual-prototype models**, plus a reference-output generator, regression tests, committed reference CSVs, and five dedicated CI workflows.
 
 ## Reproducibility
 
@@ -116,7 +116,7 @@ python -m pip install -r requirements-dev.txt
 python -m pytest -q
 ```
 
-Reference CSVs in `data/` distinguish model outputs and analytic identities. The stable release process should regenerate release artifacts and hashes from one exact commit.
+Reference CSVs in `data/` distinguish model outputs and analytic identities. The release-candidate `model-tests` workflow also preserves its generated reference package as an Actions artifact containing `metadata.json` and `sha256.txt`.
 
 ## Interpretation rules
 
@@ -136,7 +136,7 @@ Do not treat any one of the following as proof of real-garment performance:
 
 The exploratory modeling phase is considered sufficient for the present public technical record. Additional 3-D CFD, garment-scale curvature, measured fouling kinetics, and physical prototypes are **optional future research**, not blockers for consolidating this computational disclosure.
 
-Remaining stable-release work is repository/publication work: synchronize canonical documents, verify CI on the exact release commit, verify patent/publication identifiers used in prior-art notes, regenerate hashes/reference artifacts, update citation/version metadata, create a versioned tag/release, and optionally archive the exact release persistently.
+Remaining stable-release work is repository/publication work: verify the final exact-head CI and reference artifact, verify any patent/publication facts the stable release chooses to label authoritative, update citation/version metadata, create a versioned tag/release, and optionally archive the exact release persistently.
 
 ## License
 
