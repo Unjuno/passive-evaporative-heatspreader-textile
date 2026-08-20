@@ -5,7 +5,7 @@ Branch: `agent/initial-research-disclosure`
 
 ## Overall assessment
 
-The branch now contains a coherent technical disclosure, explicit implementation variants, **34 executable screening/sensitivity/audit/virtual-prototype modules**, regression tests, reference CSVs, multiple CI workflows, prior-art working notes, and future physical-validation specifications.
+The branch now contains a coherent technical disclosure, explicit implementation variants, **41 executable screening/sensitivity/audit/virtual-prototype modules**, regression tests, reference CSVs, multiple CI workflows, prior-art working notes, and future physical-validation specifications.
 
 It remains a **virtual/computational prototype only**. No physical garment or bench specimen exists and no measured garment-performance claim is made.
 
@@ -43,17 +43,15 @@ The design has moved away from garment-scale centralized liquid lift, long cover
 
 ## B. Executable model / audit stack
 
-See `simulations/README.md` for the indexed list. Current count: **34**.
+See `simulations/README.md` for the indexed list. Current count: **41** executable models, plus `generate_reference_outputs.py` as a reproducibility generator.
 
 Major groups include:
 
 - exterior heat/vapor physics;
 - heat routing / virtual prototypes;
-- spatial load / apparel architecture;
+- spatial load / terminal / environment architecture;
 - liquid transport / nonvolatile solute;
 - integrated pressure/terminal/liquid co-design.
-
-`generate_reference_outputs.py` remains a reproducibility generator rather than a physical model.
 
 ## C. Reproducibility / verification
 
@@ -68,7 +66,7 @@ Major groups include:
 | Load-schedule reference | PASS/SCREEN | Quasisteady 24 x 24 scenario summary committed. |
 | Capillary reference tables | PASS/SCREEN | Central/local, radius-cap and salt-leakage references committed. |
 | Pressure/liquid co-design reference | PASS/SCREEN | 24 x 24 anchor comparison committed. |
-| Current full-head CI | CHECK | Do not call the current 34-module head verified until current workflow runs complete successfully. |
+| Current full-head CI | CHECK | Do not call the current 41-model head verified until current workflow runs complete successfully. |
 
 ## D. Major findings retained
 
@@ -188,7 +186,7 @@ The nominal pressure-relocation BOM screen gives roughly 169 g dry / 181 g opera
 | Public GitHub repository | PASS |
 | Apache-2.0 | PASS |
 | Integrated technical disclosure | PASS / development |
-| 34-module executable screening stack | PASS / development |
+| 41-model executable screening stack | PASS / development |
 | Regression tests / dedicated workflows | PASS / development |
 | Explicit pressure/load architecture | PASS / development |
 | Explicit liquid-routing architecture | PASS / development |
@@ -205,14 +203,14 @@ The nominal pressure-relocation BOM screen gives roughly 169 g dry / 181 g opera
 
 ### P0 — repository consistency
 
-- [x] update root README to prior 33-module architecture;
 - [x] add pressure/load reference CSVs and dedicated CI;
 - [x] add liquid-routing/salt reference CSVs and dedicated CI;
 - [x] add pressure/liquid co-design module, regression test and reference CSV;
-- [ ] update simulation index / README count from 33 to 34;
+- [x] synchronize simulation index to 41 executable models;
+- [ ] update root README and PR summary to the 41-model state;
 - [ ] obtain successful current-head runs for model/topology/pressure/liquid workflows;
 - [ ] consolidate newest co-design conclusion into `docs/current-results.md`;
-- [ ] update changelog and PR module count/verification section after CI success.
+- [ ] update changelog after CI success.
 
 ### P1 — model strengthening
 
@@ -222,7 +220,7 @@ The nominal pressure-relocation BOM screen gives roughly 169 g dry / 181 g opera
 - [ ] map protected gap height/width/support spacing to vapor exchange instead of an effective air-access floor;
 - [ ] model local wall-film evaporation/deposition and progressive hydraulic-radius loss;
 - [ ] geometry-resolved exterior natural convection/cross-flow;
-- [ ] complete hot/humid environmental map with independent wet/dry exposure controls at converged full reference resolution.
+- [ ] rerun independent wet/dry exposure hot/humid control at full converged reference resolution.
 
 ### P2 — virtual garment completion
 
