@@ -18,12 +18,15 @@ jobs:
           cache: pip
       - name: Install dependencies
         run: python -m pip install -r requirements-dev.txt
-      - name: Run 2D topology regressions
+      - name: Run 2D topology and apparel regressions
         run: >-
           python -m pytest -q
           tests/test_spreader_topology_2d.py
           tests/test_heat_network_topology_2d.py
+          tests/test_heat_network_apparel_robustness.py
       - name: Run equal-material 2D topology screen
         run: python simulations/spreader_topology_2d.py > /tmp/spreader-topology-2d.txt
       - name: Run heat-network topology screen
         run: python simulations/heat_network_topology_2d.py > /tmp/heat-network-topology-2d.txt
+      - name: Run heat-network apparel robustness screen
+        run: python simulations/heat_network_apparel_robustness.py > /tmp/heat-network-apparel-robustness.txt
