@@ -4,23 +4,22 @@ Date: 2026-08-20
 
 ## Objective
 
-Develop and publicly document a reproducible passive cooling garment architecture based on heat routing, liquid transport, exterior evaporation, and ambient-air access.
+Develop and publicly document a reproducible passive cooling garment architecture based on local sweat collection, short liquid transport, exterior evaporation, pressure-aware heat routing and explicit hot/humid failure boundaries.
 
 **Current project mode: virtual/computational prototype only. No physical specimen currently exists.**
 
-The immediate objective is therefore to make the design sufficiently concrete that a third party could reproduce the calculations and build/test representative embodiments later. Future physical protocols are retained as implementation specifications, not as active experiments.
+The immediate objective is to make the architecture sufficiently concrete that a third party could reproduce the calculations and later build/test representative embodiments. Physical protocols are retained as implementation specifications, not completed experiments.
 
 ## Gate 0 — scope and architecture
 
 Status: **substantially complete**
 
-- [x] primary architecture is fanless/passive;
+- [x] fanless/passive baseline;
 - [x] core versus optional components separated;
-- [x] numbered architecture/layer vocabulary;
+- [x] layer/architecture vocabulary;
 - [x] apparel-like exterior design families;
 - [x] nonvolatile-salt correction;
-- [x] hierarchical/open-valley/island/covered comparison embodiments explicit;
-- [x] virtual-prototype status explicitly separated from future physical validation.
+- [x] virtual-prototype status separated from future physical validation.
 
 ## Gate 1 — prior-art map
 
@@ -36,110 +35,97 @@ Status: **in progress**
 - [ ] authoritative patent-office family/claim mapping;
 - [ ] final source-by-source difference table.
 
-## Gate 2 — reproducible screening / virtual-prototype model stack
+## Gate 2 — reproducible model stack
 
-Status: **advanced low-order stack; direct material/contact mapping added; distributed geometry-resolved physics still open**
+Status: **advanced low-order stack with direct geometry/material bridges**
 
 Completed:
 
-- [x] nonlinear lumped heat/mass balance and multi-root audit;
-- [x] separate sensible/vapor transfer (`M_h`, `M_m`);
-- [x] deterministic model-form sensitivity;
-- [x] periodic E3 rib vapor diffusion;
-- [x] prescribed thermo-solutal corridor buoyancy;
-- [x] self-consistent covered/end-renewed corridor T/RH/flow;
-- [x] local open-valley `R/F` target and measurement inversion;
-- [x] distributed open-valley axial diffusion/advection + lateral vapor renewal;
-- [x] exchange-length / centimeter-segmentation audit;
-- [x] `F` versus absolute `k_eff` audit;
-- [x] coupled open-valley wet-wall / air heat / vapor model;
-- [x] conservative liquid-supply capacity classification;
-- [x] explicit homogenized partial-wetness/feed-limited solution;
-- [x] latent heat-source partition between body and ambient air;
-- [x] Lewis / Chilton–Colburn-style ordinary heat/mass coupling comparison;
-- [x] analytic hot/humid body-heat-flow sign boundary;
-- [x] symmetric and asymmetric wet/dry heat-spreader mechanism screens;
-- [x] bounded continuation solver for asymmetric `g_mix` sweeps;
-- [x] mapping from `g_mix` to `k*t/pitch²`, thickness, mass, simple bending strain and contact burden;
-- [x] anisotropic 2-D heat spreading;
-- [x] nonvolatile water/salt transport;
-- [x] regression tests, CI, reproducible CSV/PNG/metadata/SHA generation.
+- [x] nonlinear heat/mass balances and multi-root audit;
+- [x] separate sensible/vapor transfer;
+- [x] periodic rib diffusion and corridor buoyancy screens;
+- [x] open-valley ambient-renewal target and distributed 1-D model;
+- [x] feed-limited/partial-wetness state;
+- [x] latent heat-source partition;
+- [x] hot/humid signed body-heat-flow boundary;
+- [x] symmetric/asymmetric heat-spreader screens;
+- [x] direct `k*t` distributed 1-D heat routing;
+- [x] explicit 2-D heat-network topology;
+- [x] material/mass/contact mapping;
+- [x] compression/contact/ambient-path regime screen;
+- [x] spatial pressure maps;
+- [x] capillary transport, lift/radius optimum and blockage/radius-collapse screens;
+- [x] nonvolatile water/salt mass balance;
+- [x] regression tests, CI and reference CSVs.
 
-Next strengthening tasks:
+Still open:
 
-1. resolve wet and dry patches in a distributed 1-D/2-D field with direct `k`, thickness, anisotropy, contact conductance and patch pitch;
-2. sweep topology/path factor rather than fixing the ideal periodic-stripe `Gamma=4` mapping;
-3. predict lateral external exchange from geometry-resolved 2-D/3-D natural convection/cross-flow;
-4. use the improved geometry-resolved flow to constrain heat/vapor transfer rather than only comparing low-order analogies;
-5. re-test lumped-model multi-equilibrium behavior against improved external-flow physics;
-6. sensitivity to Nu/Sh, compression, contact degradation, openings, external drift, radiative properties, and garment curvature.
+1. geometry-resolved 3-D exterior natural convection/cross-flow;
+2. branched liquid-network solve coupled directly to terminal placement;
+3. local wall-film salt deposition and progressive radius loss;
+4. measured or independently validated constitutive laws if hardware is ever built.
 
-## Gate 3 — explicit virtual prototype specifications
+## Gate 3 — explicit virtual prototypes
 
-Status: **now the primary active gate**
+Status: **advanced**
 
-Create several complete computational embodiments rather than one abstract concept.
+VP-A through VP-D remain mechanism anchors for routing pitch, mass/contact burden and hot-ambient shielding.
 
-Each virtual prototype must specify:
+### VP-E — current integrated design anchor
 
-- projected active area;
-- wet/dry field topology and routing pitch;
-- micro-rib / 3D-knit / fin geometry;
-- lateral ambient-access geometry;
-- water-feed regime and wetness model;
-- heat-spreader `k_parallel`, thickness, density, coverage, anisotropy and topology factor;
-- wet/dry thermal-contact conductance;
-- dry-side ambient sensible coefficient / shielding assumption;
-- total added mass and approximate thickness budget;
-- all model assumptions and failure conditions.
+VP-E combines:
 
-Initial target families:
+- directed heat routing with limited cross-link redundancy (`lambda`-like heat-route blend near 0.125);
+- distributed local liquid cells rather than a garment-scale central wick;
+- pressure-aware exterior terminals;
+- fixed passive terminal placement rather than active switching as baseline;
+- dry-side shielding in hot ambient conditions;
+- explicit nonvolatile-salt handling;
+- mass/thickness BOM screen.
 
-### VP-A — short-pitch lightweight spreader
+The terminal-placement rule is now a **thermal/liquid co-design**, not a pure thermal optimum.
 
-- wet/dry thermal routing pitch: 10 mm class;
-- continuously laterally open evaporative valleys/islands;
-- high `k/rho` spreader class;
-- explicit contact-conductance requirement;
-- intended to minimize mass while retaining most modeled spreader gain.
+At the converged 24 x 24 backpack+straps reference:
 
-### VP-B — moderate-pitch manufacturability screen
+- thermal-only optimum: `beta=0`, route weight `0.20`, `q_body≈112.84 W/m²`, liquid `d95≈20.16 mm`;
+- co-design anchor: `beta=0.125`, route weight `0.35`, `q_body≈110.83 W/m²`, liquid `d95≈16.77 mm`.
 
-- routing pitch: 20 mm class;
-- compare additional thickness/mass burden against VP-A;
-- test whether simpler panelization is worth the quadratic `P²` penalty.
-
-### VP-C — sparse/routed-network challenge case
-
-- reduced conductive coverage;
-- thickness increased to hold `k*t*c` constant;
-- test whether topology actually changes effective path length enough to beat the ideal mass-invariance result.
-
-### VP-D — hot-ambient protected configuration
-
-- dry-side sensible shielding / selective exposure explicit;
-- heat/vapor pathway asymmetry explicit;
-- tested against the same-path environmental sign boundary.
+The co-design anchor retains ~98.21% of modeled thermal performance while reducing the same protected-trunk hydraulic proxy by ~16.79%.
 
 Gate-3 completion criterion:
 
-- at least 3 virtual prototypes have reproducible input files/tables and are comparable on body-side heat flow, evaporation, water use, mass, thickness, routing/contact burden and hot/humid failure boundary.
+- [x] at least three explicit virtual prototypes;
+- [x] integrated VP-E heat/liquid/terminal architecture;
+- [x] screening mass/thickness budget;
+- [x] hot/humid state maps at low-order resolution;
+- [ ] freeze one reproducible VP-E input manifest for release.
 
 ## Gate 4 — virtual robustness / apparel constraints
 
-Status: **planned**
+Status: **advanced; no longer merely planned**
 
-Before any hardware exists, screen:
+Completed screens:
 
-- compression reducing valley opening and thermal contact;
-- bending strain and fold radius;
-- stretch/serpentine path penalty;
-- contact degradation;
-- wet/dry cycling and changing wet fraction;
-- weak external drift / walking air;
-- garment curvature;
-- mass and visual thickness;
-- topology sensitivity.
+- [x] compression vs terminal contact / ambient access;
+- [x] bending/serpentine stretch burden;
+- [x] local heat-route fracture;
+- [x] contact degradation;
+- [x] changing wet-terminal maps;
+- [x] synthetic backpack/strap/seat pressure maps;
+- [x] protected under-load vapor-gap floor;
+- [x] support-footprint penalty;
+- [x] pressure-linked liquid-channel radius-collapse sensitivity;
+- [x] localized and distributed damage comparisons;
+- [x] virtual garment BOM range screen;
+- [x] pressure-aware heat/liquid terminal co-design.
+
+Remaining:
+
+- [ ] garment curvature and seam placement;
+- [ ] regional full-garment load map instead of one repeating tile;
+- [ ] time-dependent wet-source migration rather than quasisteady snapshots;
+- [ ] explicit branched liquid network with shared trunks and local collectors;
+- [ ] resolved protected-gap geometry instead of an effective air-access factor.
 
 ## Gate 5 — future physical validation specification
 
@@ -147,27 +133,29 @@ Status: **protocols prepared; not active because no specimen exists**
 
 If a specimen is eventually built, planned order remains:
 
-1. **E1** — B0 flat fast-dry vs B4 integrated architecture.
-2. **E2** — B0/B2/B3/B4 ablation.
-3. **E3/E3b** — microstructure pitch and ambient-access hierarchy.
-4. **E3c** — D1 covered vs O1 continuously open vs O2a centimeter-control vs O2b millimeter segments vs O3 islands.
-5. **E4a** — feed-limit / partial-wetness transition at 35 °C / 50% RH.
-6. **E4** — 50/70/85% RH environmental mapping with transfer/supply/runoff classification.
-7. **E5** — heat-spreader orientation/material/contact validation.
-8. **E6** — hot-ambient sensible-heat penalty and shielding.
+1. E1 — flat fast-dry baseline vs integrated architecture;
+2. E2 — layer ablation;
+3. E3/E3b — microstructure pitch and ambient-access hierarchy;
+4. E3c — covered vs continuously open vs segmented/island exterior;
+5. E4a — feed-limit / partial-wetness transition;
+6. E4 — humidity mapping with water-balance classification;
+7. E5 — heat-route orientation/material/contact validation;
+8. E6 — hot-ambient sensible-heat penalty and shielding;
+9. new pressure validation — loaded terminal air-access/contact mapping;
+10. new hydraulic validation — local collector/trunk pressure drop and collapse.
 
 Minimum future measurement package:
 
-- signed heater/cooler power or calibrated signed heat flux;
+- signed heat flux or calibrated heater/cooler power;
 - actual liquid feed and >=95% water-balance target;
 - wet-surface temperature;
-- ambient and local T/RH;
-- far-field and local flow where resolvable;
-- actual wet area and compressed geometry;
-- local renewal `F`;
-- evaporation mass flux / inferred `k_eff` where valid;
-- measured heat-spreader/contact properties;
-- visible or otherwise validated wetness indicator for E4a.
+- ambient/local T/RH;
+- local/far-field flow where resolvable;
+- compressed geometry and terminal gap;
+- actual wet area;
+- heat-route/contact properties;
+- liquid pressure drop / trunk geometry;
+- salt concentration/deposition where relevant.
 
 ## Gate 6 — stable public release
 
@@ -176,86 +164,54 @@ Status: **public development repository active; stable v1.0 not frozen**
 Before stable v1.0:
 
 - [ ] authoritative patent-office verification;
-- [ ] freeze disclosure/embodiments at one exact commit;
-- [ ] freeze at least 3 explicit virtual prototype input specifications;
+- [ ] freeze technical disclosure and VP-E input manifest at one exact commit;
 - [ ] regenerate all reference outputs at that commit;
+- [ ] obtain successful current-head model/topology/pressure/liquid workflows;
 - [ ] freeze SHA-256 manifest;
-- [ ] update `CITATION.cff`, version/date, changelog, release notes;
+- [ ] update `CITATION.cff`, version/date, changelog and release notes;
 - [ ] create GitHub tag/release;
 - [ ] archive exact release in a persistent public DOI repository;
 - [ ] preserve earlier public records without overwrite.
 
 ## Current research priorities
 
-### P0 — concrete virtual prototypes
+### P0 — replace the co-design proxy with an explicit liquid network
 
-Replace abstract mechanism parameters with reproducible geometry/property inputs.
-
-Current most important conversion:
+Current pressure/liquid co-design uses
 
 \[
-g_{sheet}\approx \Gamma\frac{k_{\parallel}tc}{P^2}
+J_h=d_{95}\hat r^{-4}
 \]
 
-plus
+as a first-order common metric. Next step is a graph/network solve where collector, trunk and terminal topology are explicit and pressure-dependent.
 
-\[
-\frac{1}{g_{eff}}=\frac{1}{g_{sheet}}+\frac{2}{h_c}.
-\]
+### P1 — exterior vapor-gap geometry
 
-The next virtual prototypes should therefore prioritize short routing pitch, high `k/rho`, explicit contact and dry-side shielding.
+Replace the effective protected-air-access floor with gap height, width, support spacing, orientation and deformation.
 
-### P1 — passive exterior physics
+### P2 — salt / local-film failure
 
-Current rejected shortcuts:
+Keep salt vapor flux at zero and model water evaporation, dissolved-salt advection, local concentration, precipitation/dissolution and hydraulic-radius loss separately.
 
-- geometric area alone is enough;
-- long wet vertical channels guarantee useful chimney renewal;
-- high axial Péclet number proves renewal;
-- 20–50 mm segmentation is sufficient;
-- high `F` proves high evaporation capacity;
-- positive evaporation proves body cooling;
-- modeled fully-wet transfer capacity above water feed is achievable at fixed feed;
-- stronger external exchange is always better at fixed feed;
-- arbitrary heat/vapor decoupling is physically available without a separate mechanism.
+### P3 — garment regionalization
 
-Current hypothesis:
+Map backpack straps, back panels, waistbands, seams and seat contact onto a garment-scale regional model, then assign pressure-aware terminals and local liquid cells.
 
-> continuously ambient-connected wet microtexture with enough vapor conductance to use available sweat, limited harmful sensible heat pickup, explicit liquid-supply state, and short-range body-to-wet-zone heat routing through a quantified material/contact path.
+### P4 — release consistency
 
-### P2 — heat-routing integration
-
-Current findings:
-
-- symmetric wet/dry boundary conditions produce little or no global heat-spreader gain even if local temperatures equalize;
-- asymmetric wet/dry exposure creates a finite spreader benefit;
-- corrected low-order screens show diminishing returns in the few-hundred-W/(m² K) `g_mix` range;
-- required `k*t` grows as routing pitch squared;
-- sparse coverage alone does not reduce idealized mass when `t*c` controls conductance;
-- contact resistance can dominate a high-conductivity sheet.
-
-### P3 — failure boundaries
-
-Map high humidity, hot ambient air, supply limitation, partial wetness, inward sensible heat, flow reversal, stagnant humidity layers, compression-closing of ambient paths, contact degradation and long routing distances.
-
-### P4 — apparel viability in silico
-
-Weight, thickness, bending strain, routing density, panel dimensions, visual bulk and compatibility with seams/3D-knit patterns.
+Keep README, simulation index, audit, current-results, workflow counts, references and PR description synchronized before freezing a stable release.
 
 ## Stop / redesign conditions
 
 A virtual architecture should be downgraded if it:
 
-- improves vapor renewal but not signed body-side cooling in the integrated model;
-- increases evaporation while net body heat flow becomes adverse;
-- gets high `F` by reducing absolute transfer;
-- depends on unavailable liquid supply;
-- loses body-coupled cooling after feed saturation because ambient sensible heat dominates;
-- requires heat/vapor selectivity far beyond ordinary transport without an identified mechanism;
-- requires `g_mix` that maps to impractical thickness/mass at the chosen routing pitch;
-- requires thermal contact far above the stated integration assumption;
-- assumes sparse conductive coverage automatically reduces mass;
-- depends on a flow direction that reverses;
-- loses ambient paths under expected compression/curvature.
-
-Negative numerical results remain part of the public technical record.
+- improves evaporation but not signed body-side cooling;
+- depends on unavailable water supply;
+- requires long central liquid lift when local routing is feasible;
+- moves terminals so far from liquid sources that hydraulic burden offsets pressure benefit;
+- requires vapor-gap preservation incompatible with expected compression;
+- depends on heat/vapor selectivity without a physical mechanism;
+- maps required heat routing to impractical mass/thickness/contact burden;
+- assumes sparse conductive coverage automatically saves mass;
+- assumes salt evaporates;
+- loses ambient paths or liquid radius under expected load without redundancy/protection.
