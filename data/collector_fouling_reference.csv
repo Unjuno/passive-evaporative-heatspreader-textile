@@ -1,0 +1,4 @@
+collector_radius_um,largest_tested_uniform_deposit_passing_um,first_tested_uniform_deposit_failing_um,initial_worst_margin
+35,3,4,3.953
+40,8,9,5.862
+50,18,19,11.295
