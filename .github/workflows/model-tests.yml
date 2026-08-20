@@ -66,12 +66,13 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
-      - name: Generate reproducible reference package
+      - name: Generate reproducible reference package from outside checkout
         run: |
           expected_sha="${{ github.event.pull_request.head.sha || github.sha }}"
           actual_sha="$(git rev-parse HEAD)"
+          repo_root="$(pwd)"
           test "$actual_sha" = "$expected_sha"
-          python simulations/generate_reference_outputs.py --output-root /tmp/reference-output
+          (cd /tmp && python "$repo_root/simulations/generate_reference_outputs.py" --output-root /tmp/reference-output)
           test -s /tmp/reference-output/data/passive_equilibrium_branches.csv
           test -s /tmp/reference-output/data/split_heat_mass_screen.csv
           test -s /tmp/reference-output/data/split_transfer_sensitivity.csv
