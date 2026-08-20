@@ -11,18 +11,19 @@ This changelog records major changes to the public computational research record
 - Added `docs/research-freeze.md` to distinguish frozen technical content, release blockers, and optional future research.
 - Replaced the placeholder `docs/README.md` with a structured documentation index.
 - Refocused the root README, audit, roadmap, and release checklist on canonical conclusions and exact-release preparation rather than continued model expansion.
+- Reconciled the simulation index against the actual directory: **45 executable models + one reference-output generator**. The previously stated count of 43 omitted the already-added collector-fouling and transient-terminal-buffer models.
+- Added Actions artifact preservation for the exact-head generated reference package (`metadata.json`, `sha256.txt`, generated data and figures).
 
-### Current reproducible stack
+### Reproducibility checkpoints
 
-- 43 indexed executable screening/sensitivity/audit/virtual-prototype models.
-- One reference-output generator.
 - Dedicated `model-tests`, `topology-tests`, `pressure-tests`, `liquid-tests`, and `garment-tests` workflows.
-- Pre-cleanup integration head `529fc573f2a24a0d4d3db8464c3c1409a38b34ec` passed all five workflows:
-  - `model-tests` #722;
-  - `topology-tests` #278;
-  - `pressure-tests` #112;
-  - `liquid-tests` #91;
-  - `garment-tests` #46.
+- Documentation-cleanup checkpoint `14fa2ab6fb289ad8db568ef6425009f84c684855` passed all five workflows:
+  - `model-tests` #752;
+  - `topology-tests` #308;
+  - `pressure-tests` #127;
+  - `liquid-tests` #106;
+  - `garment-tests` #61.
+- The final release-candidate head is re-run after the model-count/artifact corrections.
 
 ### Retained architecture
 
@@ -48,6 +49,8 @@ The current passive design family combines:
 - The earlier claim that aligned sparse high-`k` traces beat an equal-material homogenized field was withdrawn; the retained ordering is `uniform homogenized > x-aligned / mesh >> y-transverse`.
 - The `d95*r^-4` terminal-route proxy is retained as a geometric burden metric only. Explicit dense/sparse branched liquid networks supersede it for hydraulic-pressure conclusions.
 - Salt vapor flux is zero; small upstream water leakage does not by itself prove bulk salt crystallization.
+- Collector fouling/radius-loss screens are failure sensitivities, not measured deposition kinetics or lifetime predictions.
+- Transient terminal-buffer time constants are model inputs, not measured textile response constants.
 
 ### Release-policy change
 
@@ -77,4 +80,4 @@ See `docs/current-results.md`, `simulations/README.md`, `docs/design-history.md`
 
 ## Stable release policy
 
-A stable release should identify one exact public commit/tag, confirm CI on that commit, regenerate reference artifacts and hashes, update citation/version metadata, and preserve earlier public history. A persistent archive/DOI is optional but useful for durable version/date evidence.
+A stable release should identify one exact public commit/tag, confirm CI on that commit, preserve the exact-head generated reference artifact and SHA-256 manifest, update citation/version metadata, and preserve earlier public history. A persistent archive/DOI is optional but useful for durable version/date evidence.
