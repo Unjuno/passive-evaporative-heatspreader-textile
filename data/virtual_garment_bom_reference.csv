@@ -1,0 +1,7 @@
+assumption_set,architecture,dry_mass_g,operating_water_hold_up_g,operating_mass_g,base_textile_mass_g,added_functional_dry_mass_g,dry_zone_peak_stack_mm,wet_terminal_peak_stack_mm
+lean,pressure_relocation,107.22,5.52,112.75,74.75,32.47,1.26,3.11
+lean,protected_under_load,110.33,5.52,115.85,74.75,35.58,1.26,5.61
+nominal,pressure_relocation,168.72,12.42,181.14,108.75,59.97,1.88,4.13
+nominal,protected_under_load,171.82,12.42,184.25,108.75,63.07,1.88,6.63
+conservative,pressure_relocation,272.87,24.15,297.01,166.50,106.37,2.83,5.43
+conservative,protected_under_load,275.97,24.15,300.12,166.50,109.47,2.83,7.93
