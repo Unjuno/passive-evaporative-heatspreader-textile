@@ -48,19 +48,19 @@ The pre-cleanup integration head `529fc573...` passed all five defined workflows
 
 ## Gate C — canonical documentation
 
-Status: **IN FINAL CONSOLIDATION**
+Status: **COMPLETE SUBJECT TO FINAL PROOFREADING**
 
 Canonical documents:
 
 - `technical-disclosure.md` — disclosed architecture and embodiments;
-- `current-results.md` — detailed numerical findings and limitations;
+- `current-results.md` — canonical numerical findings and limitations;
 - `architecture.md` — system structure;
 - `embodiment-matrix.md` — concrete implementation combinations;
 - `research-freeze.md` — frozen core, optional backlog, and change-control rule;
 - `../AUDIT.md` — release-readiness audit;
 - `release-checklist.md` — exact release checklist.
 
-The root README and documentation index are now navigation/summary documents rather than competing technical summaries.
+The root README and documentation index are navigation/summary documents rather than competing technical summaries.
 
 ## Gate D — prior-art/publication integrity
 
@@ -79,13 +79,14 @@ This gate is a source-verification task, not a reason to resume open-ended therm
 
 Status: **OPEN**
 
-- [ ] finish documentation synchronization;
+- [x] finish main documentation synchronization;
+- [ ] final cross-document proofreading pass;
 - [ ] confirm all five workflows pass on the exact candidate commit;
 - [ ] regenerate release reference outputs from that commit;
 - [ ] record commit SHA in release metadata;
 - [ ] generate/freeze SHA-256 manifest for bundled release artifacts;
 - [ ] update `CITATION.cff` version/date;
-- [ ] finalize changelog and release notes.
+- [ ] finalize release notes.
 
 ## Gate F — versioned public release
 
