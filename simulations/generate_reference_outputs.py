@@ -61,7 +61,10 @@ from simulations.wet_dry_two_node import run_screen as run_wet_dry_two_node_scre
 def git_commit() -> str:
     try:
         return subprocess.check_output(
-            ["git", "rev-parse", "HEAD"], text=True, stderr=subprocess.DEVNULL
+            ["git", "rev-parse", "HEAD"],
+            cwd=REPO_ROOT,
+            text=True,
+            stderr=subprocess.DEVNULL,
         ).strip()
     except Exception:
         return "unknown"
