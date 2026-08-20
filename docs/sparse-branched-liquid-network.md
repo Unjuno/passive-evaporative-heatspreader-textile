@@ -81,6 +81,30 @@ Worst sampled margin values show the transition directly:
 
 Bold values are below the safety-factor-3 decision boundary.
 
+## Integrated terminal-layout check
+
+The robust radius/pitch candidates were then applied to three terminal masks while testing uniform, center-hotspot and strap-hotspot liquid sources and the sampled lattice phases.
+
+At the lowest filled-channel-volume candidate that passes safety factor 3 across those source/phase tests, `r_c=35 µm` and `P_t=60 mm`:
+
+| terminal layout | ideal filled-channel volume / 60 mm tile | worst pressure margin | body-side thermal reference |
+|---|---:|---:|---:|
+| pure thermal pressure-aware | ~0.0246 mL | ~3.95 | **112.84 W/m²** |
+| mildly regularized | ~0.0246 mL | ~4.21 | 110.83 W/m² |
+| four islands | ~0.0246 mL | ~6.45 | 84.26 W/m² |
+
+If hydraulic margin is treated as a **hard constraint** (`M>=3`) rather than an objective to maximize without bound, then all three layouts use the same minimum screened network volume and pass. The engineering decision then becomes:
+
+1. satisfy hydraulic safety factor;
+2. minimize liquid-network volume/burden;
+3. among equal-volume passing candidates, maximize body-side thermal performance.
+
+Under that rule the current terminal reference returns to the **pure thermal pressure-aware layout**. The regularized layout remains Pareto-relevant only if extra hydraulic margin, seam geometry, route manufacturing or source-placement uncertainty is assigned additional value.
+
+This is not a claim that `35 µm / 60 mm` is the final garment network. It is the current lowest-volume tested candidate under the stated phase/source set.
+
+Reference: `data/integrated_sparse_terminal_choice_reference.csv`.
+
 ## Interpretation
 
 The explicit network now gives a more useful hierarchy:
@@ -88,6 +112,7 @@ The explicit network now gives a more useful hierarchy:
 1. **Dense 50–200 µm trunks:** pressure loss is negligible relative to capillary drive.
 2. **Sparse 200 µm trunks + 35–50 µm collector mesh:** still generous in the tested 60 mm tile.
 3. **Sparse trunks + 20–30 µm collector mesh:** trunk pitch becomes a binding design variable.
+4. Once a sparse design already clears the required hydraulic margin, further terminal regularization is not automatically worth a thermal penalty.
 
 Therefore the earlier statement that source-to-terminal geometric distance alone should determine the terminal layout is too broad. What matters is the joint combination of:
 
@@ -95,7 +120,9 @@ Therefore the earlier statement that source-to-terminal geometric distance alone
 - large-trunk pitch;
 - trunk-grid phase relative to source and terminal locations;
 - source localization;
-- compression-induced radius loss.
+- compression-induced radius loss;
+- required safety margin;
+- thermal performance and material/volume burden.
 
 ## H / T / D / C / U
 
@@ -105,11 +132,11 @@ For a two-scale liquid network, there is a collector-radius-dependent maximum tr
 
 ### T
 
-Five deterministic lattice offsets are tested at each radius/pitch pair under the same localized source and pressure map.
+Five deterministic lattice offsets are tested at each radius/pitch pair under the same localized source and pressure map. The integrated terminal check also includes uniform and strap-localized source fields.
 
 ### D
 
-PASS for a radius/pitch pair only if **all sampled offsets** have `Delta p_drive / Delta p_max >= 3`.
+PASS for a radius/pitch pair only if **all sampled offsets** have `Delta p_drive / Delta p_max >= 3`. For terminal selection, hydraulic margin is treated as a hard constraint; equal-volume passing candidates are then ranked by thermal performance.
 
 ### C
 
@@ -124,7 +151,8 @@ Major uncertainties:
 - actual sweat-source localization;
 - junction and porous-medium losses;
 - complete channel closure under compression;
-- real network wall/material mass.
+- real network wall/material mass;
+- whether safety factor 3 is adequate for a manufactured garment.
 
 The values are design-screen boundaries, not measured textile permeability limits.
 
@@ -143,3 +171,4 @@ No internal evaporation is introduced by this network model.
 - `simulations/sparse_branched_liquid_network.py`
 - `tests/test_sparse_branched_liquid_network.py`
 - `data/sparse_branched_liquid_reference.csv`
+- `data/integrated_sparse_terminal_choice_reference.csv`
