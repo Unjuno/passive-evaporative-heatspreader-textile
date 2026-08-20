@@ -2,28 +2,27 @@
 
 This changelog records major changes to the public computational research record. Detailed intermediate history remains available in Git history and `docs/design-history.md`.
 
-## Unreleased — release-candidate consolidation (2026-08-20)
+## v1.0.0 — stable computational technical record (2026-08-20)
 
 ### Project-state change
 
 - Declared the exploratory numerical phase sufficiently complete for the present public technical record.
-- Moved the repository into **research-freeze / release-preparation mode**.
+- Moved the repository into **research freeze / stable-release mode**.
 - Added `docs/research-freeze.md` to distinguish frozen technical content, release blockers, and optional future research.
 - Replaced the placeholder `docs/README.md` with a structured documentation index.
 - Refocused the root README, audit, roadmap, and release checklist on canonical conclusions and exact-release preparation rather than continued model expansion.
 - Reconciled the simulation index against the actual directory: **45 executable models + one reference-output generator**. The previously stated count of 43 omitted the already-added collector-fouling and transient-terminal-buffer models.
-- Added Actions artifact preservation for the exact-head generated reference package (`metadata.json`, `sha256.txt`, generated data and figures).
+- Added Actions artifact preservation for exact-head generated reference packages (`metadata.json`, `sha256.txt`, generated data and figures).
+- Added `docs/release-notes-v1.0.0.md` and automated exact-commit publication on the first merge to `main` carrying v1.0.0 metadata.
 
-### Reproducibility checkpoints
+### Reproducibility and release integrity
 
 - Dedicated `model-tests`, `topology-tests`, `pressure-tests`, `liquid-tests`, and `garment-tests` workflows.
-- Documentation-cleanup checkpoint `14fa2ab6fb289ad8db568ef6425009f84c684855` passed all five workflows:
-  - `model-tests` #752;
-  - `topology-tests` #308;
-  - `pressure-tests` #127;
-  - `liquid-tests` #106;
-  - `garment-tests` #61.
-- The final release-candidate head is re-run after the model-count/artifact corrections.
+- Corrected PR-workflow provenance so the release reference package is generated from the exact PR head rather than GitHub's temporary merge ref.
+- Added an explicit direct-execution regression for `simulations/branched_liquid_resistor_network.py`.
+- Corrected `generate_reference_outputs.py` so Git metadata is resolved with the repository root as `cwd`, including when invoked from outside the checkout.
+- Added an outside-checkout generator regression to `model-tests`.
+- Added `publish-v1`, which on the stable `main` commit runs the regression suite, regenerates the reference package from outside the checkout, verifies `metadata.json` against the exact commit SHA, builds a ZIP plus SHA-256 file, and creates GitHub release `v1.0.0` if it does not already exist.
 
 ### Retained architecture
 
@@ -52,9 +51,15 @@ The current passive design family combines:
 - Collector fouling/radius-loss screens are failure sensitivities, not measured deposition kinetics or lifetime predictions.
 - Transient terminal-buffer time constants are model inputs, not measured textile response constants.
 
+### Prior-art confidence policy
+
+- The stable release retains a technical prior-art map and public-index bibliographic cross-checks.
+- v1.0.0 does **not** label patent family, legal-status, or claim-scope facts as authoritatively patent-office verified when that verification was not completed.
+- No legal conclusion of novelty, patentability, invalidity, infringement, or freedom to operate is asserted.
+
 ### Release-policy change
 
-New numerical models are no longer added to the current release candidate merely to explore additional sensitivities. Further technical research should normally enter a later version unless it corrects a contradiction or a release-critical error.
+New numerical models are no longer added to v1.0.0 merely to explore additional sensitivities. Further technical research should normally enter a later version unless it corrects a contradiction or a release-critical error.
 
 ## Development record before research freeze
 
@@ -76,8 +81,4 @@ The repository accumulated the following major model families before freeze:
 - transient terminal water-buffer model;
 - integrated VP-E environmental anchor and virtual garment BOM.
 
-See `docs/current-results.md`, `simulations/README.md`, `docs/design-history.md`, and `AUDIT.md` for the detailed technical record.
-
-## Stable release policy
-
-A stable release should identify one exact public commit/tag, confirm CI on that commit, preserve the exact-head generated reference artifact and SHA-256 manifest, update citation/version metadata, and preserve earlier public history. A persistent archive/DOI is optional but useful for durable version/date evidence.
+See `docs/current-results.md`, `simulations/README.md`, `docs/design-history.md`, `docs/release-notes-v1.0.0.md`, and `AUDIT.md` for the detailed technical record.
