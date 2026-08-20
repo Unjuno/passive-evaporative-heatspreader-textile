@@ -251,19 +251,21 @@ This remains a testable hypothesis. It is not represented as physically validate
 
 ## 19. Verification state
 
-The pre-cleanup 43-model integration head
+The executable stack contains **45 models plus one reference-output generator**. The count has been reconciled against the actual `simulations/` directory; the earlier 43-model wording omitted the already-present collector-fouling and transient-terminal-buffer models.
 
-`529fc573f2a24a0d4d3db8464c3c1409a38b34ec`
+A documentation-cleanup checkpoint
+
+`14fa2ab6fb289ad8db568ef6425009f84c684855`
 
 passed all five defined pull-request workflows:
 
-- `model-tests` #722 — success;
-- `topology-tests` #278 — success;
-- `pressure-tests` #112 — success;
-- `liquid-tests` #91 — success;
-- `garment-tests` #46 — success.
+- `model-tests` #752 — success;
+- `topology-tests` #308 — success;
+- `pressure-tests` #127 — success;
+- `liquid-tests` #106 — success;
+- `garment-tests` #61 — success.
 
-The final documentation-cleanup/release commit must be checked again before tagging.
+The release-candidate workflow now also uploads the generated reference package as an exact-head Actions artifact containing generated data/figures, `metadata.json`, and `sha256.txt`. The final head must pass again after this reproducibility/count correction before tagging.
 
 ## 20. Research freeze
 
@@ -271,12 +273,10 @@ The exploratory numerical phase is considered sufficient for the present computa
 
 Remaining stable-release work is publication/repository work:
 
-1. final cross-document consistency check;
-2. authoritative source/patent identifier verification;
-3. CI confirmation on the exact release commit;
-4. regeneration of release reference artifacts/hashes;
-5. citation/version metadata;
-6. versioned GitHub release/tag;
-7. optional persistent archive/DOI.
+1. confirm final exact-head CI and reference artifact;
+2. preserve patent/publication statements at the confidence level actually verified, with authoritative office verification only where the release labels a fact authoritative;
+3. finalize citation/version metadata and release notes;
+4. create a versioned GitHub release/tag;
+5. optionally create a persistent archive/DOI.
 
 See `research-freeze.md`, `release-checklist.md`, and `../AUDIT.md`.
