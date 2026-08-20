@@ -4,8 +4,11 @@ on:
   pull_request:
     paths:
       - "simulations/capillary_liquid_network.py"
+      - "simulations/capillary_architecture_tradeoff.py"
       - "tests/test_capillary_liquid_network.py"
+      - "tests/test_capillary_architecture_tradeoff.py"
       - "data/capillary_liquid_reference.csv"
+      - "data/capillary_architecture_reference.csv"
       - ".github/workflows/liquid-tests.yml"
   workflow_dispatch:
 
@@ -22,4 +25,7 @@ jobs:
       - name: Run capillary-liquid regression tests
         env:
           PYTHONPATH: .
-        run: pytest -q tests/test_capillary_liquid_network.py
+        run: >-
+          pytest -q
+          tests/test_capillary_liquid_network.py
+          tests/test_capillary_architecture_tradeoff.py
