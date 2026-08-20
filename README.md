@@ -10,8 +10,8 @@ The current fanless hypothesis is:
 
 1. directional sweat collection away from skin;
 2. distributed local collection cells rather than one garment-scale liquid manifold;
-3. short protected micro-wicks feeding larger low-resistance liquid trunks;
-4. nearby wet exterior terminals placed mainly by local pressure / ambient-access requirements, with route regularization treated as an optional geometric tradeoff rather than a proven hydraulic necessity;
+3. a two-scale liquid network: fine collector paths feeding larger low-resistance trunks;
+4. nearby wet exterior terminals placed mainly by local pressure / ambient-access requirements, with route regularization treated as an optional geometric/material tradeoff rather than a proven hydraulic necessity;
 5. low-profile micro-rib / 3D-knit / short-fin evaporative texture with continuously ambient-connected valleys/gaps;
 6. short in-plane high-`k/rho` heat routes connecting dry/compressed regions to active wet terminals;
 7. limited cross-link redundancy for damage tolerance;
@@ -55,7 +55,7 @@ J_h=d_{95}\hat r^{-4}
 
 and found that a regularized terminal pattern reduced that proxy by ~16.8% while retaining ~98.2% of the pure thermal optimum.
 
-That remains a valid **geometric route-length tradeoff**, but an explicit branched liquid-resistor network now shows that the proxy should not be treated as a capillary-feasibility constraint for the current short 50–200 µm-class distributed trunks.
+That remains a valid **geometric route-length tradeoff**, but an explicit branched liquid-resistor network shows that the proxy should not be treated as a capillary-feasibility constraint for the current short 50–200 µm-class distributed trunks.
 
 For a 60 mm tile carrying flow proportional to 150 g/h over 0.30 m², with 200 µm nominal trunks, a 50 µm collector, 15 mm lift and severe pressure-linked radius reduction:
 
@@ -68,6 +68,23 @@ For a 60 mm tile carrying flow proportional to 150 g/h over 0.30 m², with 200 �
 The collector capillary drive is ~2278 Pa. The one-network safety-factor-3 radius boundary occurs only around ~26–32 µm depending on terminal layout.
 
 **Correction:** the regularized layout is no longer promoted over the pure thermal pressure-aware layout solely because of hydraulic pressure drop. It remains an optional candidate when route sparsity, material amount, seams, curvature or source localization make route length costly.
+
+### Sparse two-scale liquid network
+
+The dense grid was then sparsified: periodic 200 µm trunks were embedded in a continuous 20–50 µm collector mesh and the trunk lattice was shifted through several phase offsets under a localized sweat-source field.
+
+Largest tested trunk pitch for which **all sampled phases** retain capillary safety factor >=3:
+
+| collector hydraulic radius | largest robust tested 200 µm trunk pitch |
+|---:|---:|
+| 20 µm | ~15 mm |
+| 25 µm | ~20 mm |
+| 30 µm | ~30 mm |
+| 35 µm | >=60 mm |
+| 40 µm | >=60 mm |
+| 50 µm | >=60 mm |
+
+This is now the more useful liquid-routing boundary: **collector radius × trunk pitch × route phase × sweat-source localization**. A single favorable trunk placement is not accepted as a robust design result.
 
 ### Passive capillary architecture
 
@@ -89,7 +106,7 @@ The current architecture still strongly favors **many short local liquid routes*
 
 A practical two-scale liquid architecture remains:
 
-> local collector wick -> short fine-pore section -> larger transport trunk -> nearby exterior terminal.
+> local collector wick -> fine collector mesh -> larger spaced transport trunks -> nearby exterior terminal.
 
 ### Virtual garment mass
 
@@ -132,25 +149,26 @@ These are model outputs under synthetic normalized pressure fields, not measured
 - `docs/technical-disclosure.md` — integrated disclosure
 - `docs/architecture.md` — functional architecture
 - `docs/embodiment-matrix.md` — implementation combinations
-- `docs/current-results.md` — integrated numerical summary
+- `docs/current-results.md` — integrated numerical summary; newest corrections still being consolidated
 - `docs/spatial-pressure-layout.md` — local load / wet-terminal placement
 - `docs/terminal-route-codesign.md` — pressure avoidance vs terminal-distance tradeoff
 - `docs/pressure-liquid-codesign.md` — relative terminal-route proxy and correction
 - `docs/branched-liquid-resistor-network.md` — explicit distributed-flow hydraulic correction
+- `docs/sparse-branched-liquid-network.md` — collector-radius / trunk-pitch / phase robustness
 - `docs/protected-air-channel-tradeoff.md` — relocation vs protected under-load vapor path
 - `docs/protected-support-skeleton.md` — air-gap preservation vs support-area penalty
 - `docs/capillary-liquid-network.md` — passive liquid-routing burden
 - `docs/capillary-architecture-tradeoff.md` — analytic optimum and central/local comparison
 - `docs/capillary-practical-constraints.md` — radius caps, hierarchy and blockage
 - `docs/virtual-garment-bom.md` — mass/thickness design-range screen
-- `docs/integrated-virtual-prototype-vpe.md` — integrated VP-E anchor
+- `docs/integrated-virtual-prototype-vpe.md` — integrated VP-E family
 - `docs/salt-leakage-budget.md` — corrected nonvolatile-solute bulk balance
 - `docs/roadmap.md` — virtual-prototype-first roadmap
 - `AUDIT.md` — repository audit
 
 ### Executable stack
 
-The branch currently contains **42 executable screening/sensitivity/audit/virtual-prototype models**, plus `generate_reference_outputs.py` as a reproducibility generator. See `simulations/README.md` for the indexed list.
+The branch currently contains **43 executable screening/sensitivity/audit/virtual-prototype models**, plus `generate_reference_outputs.py` as a reproducibility generator. See `simulations/README.md` for the indexed list.
 
 Dedicated workflows cover the broad model stack, topology/apparel models, pressure/load models and liquid-routing models.
 
@@ -177,13 +195,14 @@ Do not treat any of the following alone as proof of garment cooling or hydraulic
 - ideal cylindrical capillary counts as real textile permeability;
 - route-distance or `d95 r^-4` proxies as a full hydraulic network;
 - a fully connected resistor grid as proof that a sparse manufactured liquid network will behave identically;
+- one favorable trunk-grid phase as a robust sparse-network design boundary;
 - virtual BOM values as measured garment mass;
 - bulk salt concentration as proof of local crystallization.
 
 ## Current next tasks
 
-1. sparsify the explicit liquid network and optimize edge/material density jointly with terminal thermal performance;
-2. introduce localized sweat-source maps rather than uniform tile injection;
+1. jointly optimize collector radius, trunk pitch, network material burden and terminal thermal performance;
+2. expand localized and time-varying sweat-source maps;
 3. add explicit channel/spacer collapse and garment curvature under local load;
 4. replace effective protected-air floors with geometry-resolved vapor paths;
 5. model local wall-film salt deposition and progressive hydraulic-radius loss;
