@@ -12,7 +12,7 @@ It contains:
 - an integrated technical disclosure;
 - an explicit embodiment matrix;
 - a canonical current-results record;
-- **43 indexed executable screening/sensitivity/audit/virtual-prototype models** plus the reference-output generator;
+- **45 indexed executable screening/sensitivity/audit/virtual-prototype models** plus the reference-output generator;
 - regression tests and committed reference CSVs;
 - five dedicated GitHub Actions workflows;
 - prior-art/patent working notes;
@@ -46,6 +46,8 @@ The primary embodiment is passive/fanless. Optional fan, sorbent, adaptive, deta
 13. The `d95*r^-4` route proxy is a geometric burden metric, not a substitute for explicit hydraulic-network pressure solves.
 14. Sparse liquid-network feasibility is jointly controlled by collector radius, trunk pitch, route phase/placement, source localization, and collapse assumptions.
 15. Salt vapor flux is zero; small upstream water leakage does not by itself imply bulk crystallization.
+16. Collector fouling is represented only as an imposed hydraulic-radius-loss sensitivity, not as measured deposition kinetics or lifetime.
+17. Transient liquid delivery/storage is represented by a mass-conserving low-order buffer model, not measured textile response constants.
 
 ## Corrections intentionally preserved
 
@@ -59,21 +61,21 @@ The repository must continue to show the following corrections rather than silen
 
 ## Reproducibility and CI
 
-The pre-cleanup 43-model integration head was:
+A documentation-cleanup checkpoint head
 
-`529fc573f2a24a0d4d3db8464c3c1409a38b34ec`
+`14fa2ab6fb289ad8db568ef6425009f84c684855`
 
-All five defined pull-request workflows completed successfully on that head:
+passed all five defined pull-request workflows:
 
 | workflow | run | conclusion |
 |---|---:|---|
-| `model-tests` | #722 | PASS |
-| `topology-tests` | #278 | PASS |
-| `pressure-tests` | #112 | PASS |
-| `liquid-tests` | #91 | PASS |
-| `garment-tests` | #46 | PASS |
+| `model-tests` | #752 | PASS |
+| `topology-tests` | #308 | PASS |
+| `pressure-tests` | #127 | PASS |
+| `liquid-tests` | #106 | PASS |
+| `garment-tests` | #61 | PASS |
 
-The release-candidate documentation cleanup creates later commits, so the **final release commit must be checked again** before tagging. The cleanup phase is documentation/metadata oriented and does not intentionally expand the 43-model stack.
+A subsequent release-reproducibility change adds Actions artifact upload for the generated reference package. Therefore the final release-candidate head must pass again. The artifact is designed to preserve generated data, figures, `metadata.json`, and `sha256.txt` for the exact commit.
 
 ## Public-record readiness
 
@@ -86,14 +88,13 @@ The release-candidate documentation cleanup creates later commits, so the **fina
 | Canonical numerical summary | PASS | `docs/current-results.md`. |
 | Documentation index | PASS | `docs/README.md`. |
 | Research-freeze policy | PASS | `docs/research-freeze.md`. |
-| 43-model executable stack | PASS | Indexed in `simulations/README.md`. |
+| 45-model executable stack | PASS | Indexed in `simulations/README.md`; count reconciled against the actual directory. |
 | Regression/CI structure | PASS | Five dedicated workflows. |
-| Pre-cleanup 43-model CI | PASS | All five workflows successful on `529fc573...`. |
+| Cleanup checkpoint CI | PASS | All five workflows successful on `14fa2ab6...`. |
+| Exact-head reference artifact | IN PROGRESS | Workflow now uploads the generated reference package. |
 | Physical data | NOT AVAILABLE | Not represented as completed. |
-| Authoritative patent-family/claim verification | OPEN | Publication/family identifiers and dates still need authoritative confirmation before stable release notes rely on them. |
-| Exact release commit CI | OPEN | Must be rerun/confirmed after documentation cleanup. |
+| Authoritative patent-family/claim verification | OPEN / SCOPED | Public-index working map is separated from authoritative office verification. |
 | Stable tag/release | OPEN | Not yet created. |
-| Frozen release hash manifest | OPEN | Regenerate at exact release commit. |
 | Persistent archive/DOI | OPTIONAL/OPEN | Useful for durable version/date evidence. |
 
 ## What is no longer a release blocker
@@ -117,17 +118,17 @@ If these are pursued later, they should normally enter a later version rather th
 - [x] establish research-freeze/change-control policy;
 - [x] simplify root README around canonical conclusions and release state;
 - [x] consolidate `docs/current-results.md` as the canonical numerical summary;
-- [x] freeze `simulations/README.md` at 43 indexed models;
-- [x] synchronize roadmap, release checklist, changelog, and citation metadata with the freeze decision;
-- [x] record successful five-workflow integration on the pre-cleanup 43-model head;
-- [ ] confirm all five workflows on the final documentation-cleanup head;
-- [ ] final cross-document proofreading pass.
+- [x] reconcile and freeze `simulations/README.md` at 45 actual executable models;
+- [x] synchronize roadmap, release checklist, changelog, citation metadata, prior-art map, and PR description with the freeze decision;
+- [x] record a successful five-workflow cleanup checkpoint;
+- [x] add exact-head reference-package artifact upload to CI;
+- [ ] confirm all five workflows and artifact creation on the final release-candidate head;
 
 ### P1 — publication integrity
 
-- [ ] verify patent publication/family identifiers and dates from authoritative sources;
+- [ ] decide which patent family/claim facts, if any, will be labeled authoritatively verified in the stable release;
 - [ ] freeze one exact release commit;
-- [ ] regenerate reference artifacts and SHA-256 manifest from that commit;
+- [ ] use the exact-head generated reference artifact / SHA-256 manifest as the release reproducibility package;
 - [ ] finalize `CITATION.cff` version/date and release notes;
 - [ ] create versioned GitHub tag/release;
 - [ ] optionally archive the exact release persistently and record the archive identifier/DOI.
