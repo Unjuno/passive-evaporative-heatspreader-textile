@@ -1,0 +1,3 @@
+candidate,template_weight_beta,route_weight,body_W_m2,liquid_p95_mm,hydraulic_p95_proxy_mm_eq,mean_pressure_wet,thermal_retention_percent,hydraulic_reduction_percent_vs_thermal_best
+thermal_only_best,0.0,0.2,112.84428703705956,20.155644370746373,30.72038465286751,0.124947056051569,100.0,0.0
+codesign_anchor_within_2pct,0.125,0.35,110.82650242199476,16.770509831248425,25.560905092590193,0.1905511705055157,98.21188589334422,16.794970566215607

@@ -1,0 +1,5 @@
+candidate,body_W_m2,liquid_p95_mm,load_weighted_heat_rms_mm
+pressure_focused_beta0_route0p20,112.844,20.156,13.030
+regularized_beta0p125_route0p35,110.827,16.771,10.436
+peripheral_islands,106.389,15.811,9.895
+four_islands,84.264,10.607,6.365

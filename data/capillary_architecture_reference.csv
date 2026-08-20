@@ -1,0 +1,5 @@
+architecture,cells,total_flow_g_h,flow_per_cell_g_h,path_mm,vertical_rise_mm,best_radius_um,channels_per_cell,total_channels,total_cross_section_mm2,total_liquid_inventory_ml
+central,1,150,150,200,100,61.741,4011,4011,48.034,9.607
+4_local,4,150,37.5,50,25,244.563,4,16,3.006,0.150
+8_local,8,150,18.75,30,15,230.900,1,8,1.340,0.040
+12_local,12,150,12.5,25,10,179.411,1,12,1.213,0.030

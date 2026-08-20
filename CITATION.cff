@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use this computational technical record, please cite version v1.0.0 or the exact repository commit used."
+title: "Passive Evaporative Heat-Spreader Textile"
+type: software
+version: 1.0.0
+date-released: 2026-08-20
+authors:
+  - name: "Unjuno"
+repository-code: "https://github.com/Unjuno/passive-evaporative-heatspreader-textile"
+license: Apache-2.0
+keywords:
+  - passive cooling
+  - evaporative cooling
+  - heat spreader
+  - smart textile
+  - capillary transport
+  - moisture management
+  - wearable thermal management
+  - computational research

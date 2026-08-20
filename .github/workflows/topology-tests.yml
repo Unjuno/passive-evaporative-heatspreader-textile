@@ -1,0 +1,38 @@
+name: topology-tests
+
+on:
+  push:
+    branches:
+      - main
+      - 'agent/**'
+  pull_request:
+
+jobs:
+  topology:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install dependencies
+        run: python -m pip install -r requirements-dev.txt
+      - name: Run 2D topology and apparel regressions
+        run: >-
+          python -m pytest -q
+          tests/test_spreader_topology_2d.py
+          tests/test_heat_network_topology_2d.py
+          tests/test_heat_network_apparel_robustness.py
+          tests/test_heat_network_combined_failure.py
+          tests/test_compression_contact_air_access.py
+      - name: Run equal-material 2D topology screen
+        run: python simulations/spreader_topology_2d.py > /tmp/spreader-topology-2d.txt
+      - name: Run heat-network topology screen
+        run: python simulations/heat_network_topology_2d.py > /tmp/heat-network-topology-2d.txt
+      - name: Run heat-network apparel robustness screen
+        run: python simulations/heat_network_apparel_robustness.py > /tmp/heat-network-apparel-robustness.txt
+      - name: Run combined heat-network failure screen
+        run: python simulations/heat_network_combined_failure.py > /tmp/heat-network-combined-failure.txt
+      - name: Run compression contact-air-access screen
+        run: python simulations/compression_contact_air_access.py > /tmp/compression-contact-air-access.txt

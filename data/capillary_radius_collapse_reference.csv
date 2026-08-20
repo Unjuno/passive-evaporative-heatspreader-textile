@@ -1,0 +1,9 @@
+radius_retention,effective_radius_um,required_channels_per_cell,channel_count_multiplier
+1.00,200,7,1.000
+0.90,180,8,1.143
+0.85,170,10,1.429
+0.80,160,11,1.571
+0.75,150,13,1.857
+0.70,140,16,2.286
+0.60,120,23,3.286
+0.50,100,38,5.429

@@ -1,0 +1,55 @@
+run_id: ""
+experiment_id: ""
+sample_id: ""
+specimen_id: ""
+start_time_utc: ""
+end_time_utc: ""
+protocol_git_commit: ""
+operator_or_system: ""
+
+artificial_skin:
+  setpoint_C: 34.0
+  projected_active_area_m2: 0.30
+  control_mode: "bidirectional_or_heater_only_declare_explicitly"
+  heat_flux_sign: "positive = heat leaves artificial skin"
+
+sample:
+  wet_projected_area_m2: null
+  dry_mass_g: null
+  wet_mass_initial_g: null
+  microstructure_height_mm: null
+  microstructure_pitch_mm: null
+  valley_width_mm: null
+  valley_depth_mm: null
+  segment_length_mm: null
+  open_fraction: null
+  orientation_relative_to_gravity: ""
+  heat_spreader_topology: ""
+  heat_spreader_orientation: ""
+  compression_condition: ""
+
+fluid:
+  commanded_feed_g_h: 150.0
+  composition: ""
+  preconditioning: ""
+
+environment:
+  target_temp_C: 35.0
+  target_RH_percent: 70.0
+  intended_far_field_air_speed_m_s: 0.05
+
+files:
+  calibration_csv: "calibration.csv"
+  raw_timeseries_csv: "raw_timeseries.csv"
+  water_balance_csv: "water_balance.csv"
+  derived_csv: "derived.csv"
+
+quality_flags:
+  supply_limited: null
+  visible_dryout: null
+  condensation: null
+  apparatus_fault: null
+  chamber_excursion: null
+  feed_interruption: null
+  excluded_from_primary_aggregate: false
+  exclusion_reason: ""

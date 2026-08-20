@@ -1,0 +1,208 @@
+# Embodiment Matrix
+
+This matrix makes concrete combinations explicit rather than relying only on broad lists of interchangeable elements. It is a technical design-space record, not a legal claim set.
+
+## Common layer vocabulary
+
+- **L1 — skin-side liquid interface:** wicking/directional sweat transport.
+- **L2 — heat-spreader:** continuous, anisotropic, mesh, serpentine, or island-bridge thermal path.
+- **L3 — liquid distribution:** capillary yarn/channel/porous network.
+- **L4 — exterior evaporator:** flat, ribbed, finned, 3D-knit, pile, lamellar, pleated, scale-like, or mixed geometry.
+- **L5 — optional environmental control:** dry-side shield, passive vent, macro air-renewal path, or forced airflow.
+
+## E01 — passive micro-rib baseline
+
+- L1: directional liquid transport textile.
+- L2: thin flexible whole-area in-plane heat spreader.
+- L3: distributed capillary yarn network.
+- L4: rounded parallel micro-ribs over 55–70% of active area.
+- Representative geometry: 2–3 mm rib height, 0.8–1.0 mm pitch.
+- L5: no fan; dry regions may be low-conductivity textile.
+- Intended mode: natural evaporation in still or weak ambient airflow.
+
+## E02 — anisotropic routed heat spreader
+
+- L1: directional transport.
+- L2: anisotropic spreader with the high-conductivity axis directed from torso regions toward evaporative side/back bands.
+- L3: capillary branches parallel or partially parallel to the high-k direction.
+- L4: ribbed or 3D-knit evaporative bands.
+- L5: optional dry-side shielding.
+- Intended mode: improve cooling when sweating/wetting is spatially nonuniform.
+
+## E03 — serpentine stretch garment
+
+- L1: stretch wicking knit.
+- L2: serpentine conductive traces designed to retain thermal conductance during 5–30% extension.
+- L3: stretch-tolerant capillary yarns.
+- L4: short flexible rib/loop evaporators.
+- L5: none required.
+- Intended mode: sleeves, torso side panels, joints, or athletic garments.
+
+## E04 — island-bridge / redundant mesh
+
+- L1: directional textile.
+- L2: thermally conductive islands connected by multiple compliant bridge paths.
+- L3: liquid distribution crosses or surrounds islands.
+- L4: exterior evaporative panels aligned with high-conductance islands.
+- L5: optional insulation over non-wet bridges.
+- Intended mode: damage tolerance, bending, repeated laundering.
+
+## E05 — 3D-knit apparel texture
+
+- L1: hydrophobic-to-hydrophilic or otherwise directional thickness gradient.
+- L2: conductive yarns integrated into the knit ground structure.
+- L3: capillary transport formed by yarn selection and knit topology.
+- L4: 3D-knit relief appearing visually as ordinary technical sportswear texture.
+- L5: none required.
+- Intended mode: low snag risk and aesthetic integration.
+
+## E06 — graded exterior spacing
+
+- L1: directional liquid transport.
+- L2: heat spreader.
+- L3: capillary feed.
+- L4: mixed-height or graded-pitch ribs/fins, with more open spacing near expected humid-plume accumulation regions.
+- L5: none required.
+- Intended mode: reduce shared humid-boundary-layer overlap while retaining area.
+
+## E07 — lamellar / scale exterior
+
+- L1: directional liquid transport.
+- L2: thin heat-spreader sheet or yarn network.
+- L3: capillary feed at lamella roots.
+- L4: short angled lamellae or overlapping scale-like evaporative structures rather than cylindrical hairs.
+- L5: orientation may favor motion-induced airflow.
+- Intended mode: reduce visual bulk and snagging while providing exterior area.
+
+## E08 — dry-side shielded hot-weather architecture
+
+- L1: directional liquid transport.
+- L2: high in-plane, comparatively lower through-thickness thermal path.
+- L3: liquid feed restricted to defined wet panels.
+- L4: exposed wet evaporative ribs/fins.
+- L5: reflective/insulating/low-conductivity cover over dry conductive regions.
+- Intended mode: ambient air hotter than skin, where exposed dry conductor would cause inward heat gain.
+
+## E09 — humidity-responsive exposure
+
+- L1–L4: any passive integrated architecture above.
+- L5: moisture-responsive flap or vent exposes wet evaporative panels and/or increases spacing when local humidity rises.
+- Intended mode: passive adaptation without electrical power.
+
+## E10 — motion/ambient-air assisted
+
+- L1–L4: integrated architecture.
+- L5: external airflow from walking, cycling, wind, vehicle motion, or stationary environmental fans.
+- No onboard fan is required.
+- Intended mode: exploit available airflow without garment electrical power.
+
+## E11 — auxiliary-fan variant
+
+- L1–L4: integrated architecture.
+- L5: one or more onboard fans direct air across or through exterior evaporation zones.
+- Intended mode: upper-bound/active variant when power and noise are acceptable.
+- This is secondary to the primary passive architecture.
+
+## E12 — gas-phase moisture capture coupled to liquid evaporation
+
+- L1: may include directional liquid handling.
+- L2: heat spreader optional or present.
+- L3: liquid pathway connected to a hygroscopic or porous sorbent region after captured water is condensed/desorbed into a transportable phase.
+- L4: exterior evaporator/regeneration region.
+- L5: may use solar/ambient regeneration or airflow.
+- Intended mode: secondary research branch; not required for sweat-driven operation.
+
+## E13 — protected internal capillary / terminal evaporation
+
+- L1: sweat collection.
+- L2: heat spreader.
+- L3: internal liquid channel with comparatively low vapor leakage along its path.
+- L4: high-vapor-conductance terminal exterior pad/rib field.
+- Intended mode: concentrate phase change at accessible terminal regions and reduce upstream concentration/crystallization risk.
+- Salt vapor flux remains zero; salt travels only in liquid/solid phases.
+
+## E14 — washable ordinary-salt-tolerance architecture
+
+- L1–L4: integrated passive architecture.
+- No special salt-management component.
+- Materials and pore sizes are selected for ordinary rinsing/washing and recovery.
+- Intended mode: default if comparative testing shows salt deposition is no worse than normal sports textiles.
+
+## E15 — detachable exterior evaporator panel
+
+- L1: permanent skin-side textile.
+- L2: permanent or semi-permanent heat spreader.
+- L3: releasable capillary interface.
+- L4: removable ribbed/3D-knit evaporative panel.
+- Intended mode: cleaning, replacement, alternate climate panels, or experimentation.
+
+## E16 — pattern-as-function apparel
+
+- L1: directional base textile.
+- L2: visible decorative lines are conductive heat-routing paths.
+- L3: selected pattern branches are capillary liquid paths.
+- L4: textured portions of the same visual pattern form evaporative ribs/pleats.
+- Intended mode: integrate function into stripes, geometric motifs, seams, or panel graphics rather than adding visible machine components.
+
+## E17 — hierarchical micro-evaporator + macro air-renewal paths
+
+- L1: directional liquid transport textile.
+- L2: whole-area or routed flexible heat spreader.
+- L3: capillary feed to defined wet microstructured fields.
+- L4: wet micro-ribs, short fins, 3D-knit relief, pile, or lamellae arranged in discontinuous fields rather than one uninterrupted dense carpet.
+- L5: larger open corridors, valleys, spacer-knit channels, grooves, pleat gaps, or equivalent passages that allow refreshed ambient air to reach near the wet microstructures.
+- Representative microstructure screening range: approximately 2–3 mm height and 0.8–1.5 mm local pitch.
+- Representative macro-path research range: approximately 1–10 mm width, approximately 1–5 mm depth/open height, and approximately 5–25 mm evaporator-field spacing; these are starting test ranges rather than optimized dimensions.
+- Corridor orientation may be vertical, horizontal, diagonal, branched, or aligned to expected walking airflow.
+- Corridor surfaces may be dry, partially wet, or separately capillary-fed; dry conductive exposure may be thermally shielded in hot ambient conditions.
+- No onboard fan is required.
+- Intended mode: preserve high local wetted area while preventing all evaporative surfaces from sharing one thick stagnant humidity boundary layer.
+
+## E18 — laterally open evaporative valley
+
+- L1: directional liquid transport textile.
+- L2: flexible whole-area or routed heat spreader beneath the valley floor and adjacent wet fields.
+- L3: capillary feed to the valley floor, valley side features, or adjacent micro-rib fields.
+- L4: micro-ribs, short fins, 3D-knit relief, or porous wet texture on the floor and/or edges of a shallow valley.
+- L5: the valley has **no continuous roof** and remains directly exposed to ambient air along its length, allowing lateral/normal exchange rather than relying only on two end openings.
+- Representative starting geometry: valley width approximately 3–15 mm, depth approximately 1–5 mm, with adjacent microstructure height approximately 1–3 mm.
+- The valley may be straight, branched, diagonal, curved, or integrated into seams/panel lines.
+- Openings may widen periodically or intersect transverse grooves.
+- Intended mode: maintain ambient access to wet structures when end-renewed covered channels would become humid or saturated.
+
+## E19 — segmented open valley / cross-vented path
+
+- L1–L4: as E18.
+- L5: a long visual stripe or valley is divided by transverse openings, cuts, widened nodes, perforations, or unroofed intersections so that the uninterrupted wet-flow path is short.
+- Representative starting segment length: approximately 20–50 mm; shorter and longer variants are included.
+- Adjacent segments may be staggered to preserve garment aesthetics and structural continuity.
+- Intended mode: reduce local humidity accumulation without requiring a powered fan or a single preferred buoyancy-flow direction.
+
+## E20 — discontinuous evaporator islands with ambient-connected gaps
+
+- L1: directional liquid transport.
+- L2: heat spreader routes heat laterally between body regions and separated wet islands.
+- L3: branched capillary network feeds discrete wet islands.
+- L4: each island may use ribs, fins, 3D knit, pile, lamellae, or porous evaporative texture.
+- L5: dry or weakly wet gaps between islands remain open to ambient air and act as renewal zones; gaps may form grids, stripes, chevrons, dots, or apparel panel patterns.
+- Representative island width/length: approximately 5–30 mm, with approximately 1–10 mm ambient-connected gaps as starting research ranges.
+- Intended mode: avoid one continuous saturated boundary layer and provide lateral air access while retaining large-area heat routing.
+
+## E21 — covered/end-renewed corridor comparison or assisted variant
+
+- L1: directional liquid transport.
+- L2: heat spreader beneath a wet corridor floor.
+- L3: capillary feed to the corridor floor and optionally sidewalls.
+- L4: wet porous/ribbed floor inside a corridor with a roof or cover.
+- L5: ambient connection primarily at two ends; optional additional end vents, external wind coupling, motion-induced pressure, or auxiliary fan may be used.
+- Representative research dimensions: width approximately 3–10 mm, depth approximately 2–5 mm, end-to-end length approximately 20–200 mm.
+- Passive still-air simulations indicate that long covered corridors may approach saturation under hot/humid conditions; this is a disclosed implementation and comparison case, not the currently preferred passive geometry.
+- Intended mode: comparison control, protected channel, airflow-assisted embodiment, or implementation where contamination/mechanical protection outweighs passive still-air exchange loss.
+
+## Cross-combination rule
+
+The listed embodiments are not intended to be mutually exclusive. For example, E02 anisotropic heat routing may be combined with E05 3D-knit texture, E08 dry-side shielding, E09 humidity-responsive exposure, E18 open valleys, E19 segmentation, or E20 evaporator islands. Likewise, E03 serpentine stretch paths may be used under E07 lamellae, E15 detachable panels, E18 open valleys, or E21 covered corridors.
+
+E17 is the broad hierarchical family; E18–E21 make specific ambient-access topologies explicit. A design may mix open and covered regions, transition between them, or use covered sections only where motion/external airflow is available.
+
+For future updates, newly proposed components should be documented both individually and in at least one concrete complete stack so that the repository records operable combinations rather than only menus of parts.

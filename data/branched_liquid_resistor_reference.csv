@@ -1,0 +1,4 @@
+layout,collapse_severity,tile_feed_g_h,collector_capillary_drive_Pa,trunk_nominal_radius_um,minimum_radius_retention,single_network_max_pressure_Pa,required_parallel_networks_SF3,final_max_pressure_Pa,final_pressure_margin_ratio,p95_pressure_Pa,terminal_flow_cv,active_terminal_count
+thermal_only,1.0,1.8,2277.771380596429,200.0,0.7,0.526,1,0.526,4331.534,0.507,0.846,72
+regularized,1.0,1.8,2277.771380596429,200.0,0.7,0.470,1,0.470,4847.728,0.445,1.027,80
+four_islands,1.0,1.8,2277.771380596429,200.0,0.7,0.205,1,0.205,11087.007,0.178,0.435,68

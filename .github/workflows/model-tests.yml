@@ -1,0 +1,114 @@
+name: model-tests
+
+on:
+  push:
+    branches:
+      - main
+      - 'agent/**'
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install dependencies
+        run: python -m pip install -r requirements-dev.txt
+      - name: Run tests
+        run: python -m pytest -q
+      - name: Run passive rib reference screen
+        run: python simulations/passive_rib_screen.py > /tmp/reference-screen.txt
+      - name: Run split sensible-heat and vapor-transfer screen
+        run: python simulations/split_heat_mass_screen.py > /tmp/split-transfer-screen.txt
+      - name: Run deterministic split-transfer sensitivity screen
+        run: python simulations/split_transfer_sensitivity.py > /tmp/split-transfer-sensitivity.txt
+      - name: Run E3 periodic rib diffusion screen
+        run: python simulations/rib_diffusion_screen.py > /tmp/e3-diffusion-screen.txt
+      - name: Run prescribed-state moist-air corridor buoyancy screen
+        run: python simulations/corridor_buoyancy_screen.py > /tmp/corridor-buoyancy-screen.txt
+      - name: Run self-consistent 1D corridor screen
+        run: python simulations/self_consistent_corridor_1d.py > /tmp/self-consistent-corridor.txt
+      - name: Run open-valley renewal target screen
+        run: python simulations/open_valley_exchange_target.py > /tmp/open-valley-renewal-target.txt
+      - name: Run distributed open-valley advection-diffusion screen
+        run: python simulations/open_valley_distributed_1d.py > /tmp/open-valley-distributed.txt
+      - name: Run coupled open-valley thermal-vapor screen
+        run: python simulations/open_valley_thermal_1d.py > /tmp/open-valley-thermal.txt
+      - name: Run explicit feed-limited open-valley screen
+        run: python simulations/open_valley_feed_limited.py > /tmp/open-valley-feed-limited.txt
+      - name: Run two-temperature wet-dry partial-wetness screen
+        run: python simulations/wet_dry_two_node.py > /tmp/wet-dry-two-node.txt
+      - name: Run asymmetric wet-dry spreader screen
+        run: python simulations/asymmetric_wet_dry_spreader.py > /tmp/asymmetric-wet-dry-spreader.txt
+      - name: Run spreader material/contact mapping
+        run: python simulations/spreader_material_mapping.py > /tmp/spreader-material-mapping.txt
+      - name: Run virtual prototype v0.1 screen
+        run: python simulations/virtual_prototype_v01.py > /tmp/virtual-prototype-v01.txt
+      - name: Run distributed direct-material spreader screen
+        run: python simulations/distributed_spreader_1d.py > /tmp/distributed-spreader-1d.txt
+      - name: Run heat-mass coupling audit
+        run: python simulations/open_valley_heat_mass_coupling_audit.py > /tmp/open-valley-coupling-audit.txt
+      - name: Run passive environment boundary
+        run: python simulations/passive_environment_boundary.py > /tmp/passive-environment-boundary.txt
+      - name: Run liquid-supply capacity audit
+        run: python simulations/supply_limit_audit.py > /tmp/supply-limit-audit.txt
+      - name: Run 2D heat-spreader orientation demo
+        run: python simulations/heat_spreader_2d.py > /tmp/heat-spreader-demo.txt
+      - name: Run normalized water-salt screen
+        run: python simulations/water_salt_1d.py > /tmp/water-salt-screen.txt
+      - name: Checkout exact source head for release artifact
+        if: github.event_name == 'pull_request'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+      - name: Generate reproducible reference package from outside checkout
+        run: |
+          expected_sha="${{ github.event.pull_request.head.sha || github.sha }}"
+          actual_sha="$(git rev-parse HEAD)"
+          repo_root="$(pwd)"
+          test "$actual_sha" = "$expected_sha"
+          (cd /tmp && python "$repo_root/simulations/generate_reference_outputs.py" --output-root /tmp/reference-output)
+          test -s /tmp/reference-output/data/passive_equilibrium_branches.csv
+          test -s /tmp/reference-output/data/split_heat_mass_screen.csv
+          test -s /tmp/reference-output/data/split_transfer_sensitivity.csv
+          test -s /tmp/reference-output/data/split_transfer_sensitivity_summary.csv
+          test -s /tmp/reference-output/data/corridor_buoyancy_screen.csv
+          test -s /tmp/reference-output/data/corridor_neutral_density_curve.csv
+          test -s /tmp/reference-output/data/self_consistent_corridor_1d.csv
+          test -s /tmp/reference-output/data/open_valley_renewal_targets.csv
+          test -s /tmp/reference-output/data/open_valley_distributed_1d.csv
+          test -s /tmp/reference-output/data/open_valley_thermal_1d.csv
+          test -s /tmp/reference-output/data/open_valley_feed_limited.csv
+          test -s /tmp/reference-output/data/wet_dry_two_node.csv
+          test -s /tmp/reference-output/data/asymmetric_wet_dry_spreader.csv
+          test -s /tmp/reference-output/data/asymmetric_wet_dry_spreader_gain.csv
+          test -s /tmp/reference-output/data/spreader_material_mapping.csv
+          test -s /tmp/reference-output/data/spreader_contact_audit.csv
+          test -s /tmp/reference-output/data/virtual_prototype_v01.csv
+          test -s /tmp/reference-output/data/virtual_prototype_v01_robustness.csv
+          test -s /tmp/reference-output/data/distributed_spreader_1d.csv
+          test -s /tmp/reference-output/data/open_valley_heat_mass_coupling_audit.csv
+          test -s /tmp/reference-output/data/passive_environment_boundary.csv
+          test -s /tmp/reference-output/data/passive_environment_boundary_skin_sensitivity.csv
+          test -s /tmp/reference-output/data/supply_limit_audit.csv
+          test -s /tmp/reference-output/data/heat_spreader_orientation.csv
+          test -s /tmp/reference-output/data/water_salt_parameter_screen.csv
+          test -s /tmp/reference-output/data/rib_diffusion_boundary_layer.csv
+          test -s /tmp/reference-output/figures/passive_equilibrium_branches.png
+          test -s /tmp/reference-output/figures/rib_diffusion_boundary_layer.png
+          test -s /tmp/reference-output/figures/passive_environment_boundary.png
+          test -s /tmp/reference-output/metadata.json
+          test -s /tmp/reference-output/sha256.txt
+          grep -q "\"git_commit\": \"$expected_sha\"" /tmp/reference-output/metadata.json
+      - name: Upload reproducible reference package
+        uses: actions/upload-artifact@v4
+        with:
+          name: reference-output-${{ github.event.pull_request.head.sha || github.sha }}
+          path: /tmp/reference-output
+          if-no-files-found: error
+          retention-days: 90
