@@ -49,3 +49,5 @@ jobs:
           tests/test_salt_leakage_budget.py
           tests/test_branched_liquid_resistor_network.py
           tests/test_sparse_branched_liquid_network.py
+      - name: Run indexed branched-network model directly
+        run: python simulations/branched_liquid_resistor_network.py > /tmp/branched-liquid-resistor-network.csv
