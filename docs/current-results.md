@@ -1,23 +1,21 @@
 # Current Numerical Results
 
 Status: **SIMULATION / ANALYTIC SCREENING / VIRTUAL PROTOTYPE ONLY — NO PHYSICAL SPECIMEN**  
-Compiled: 2026-08-20
+Canonical summary date: 2026-08-20
 
-This file is the current integrated numerical summary. Values are outputs of low-order screening models under explicit assumptions, not measured garment claims.
+This file is the canonical numerical summary for the research-freeze state. Specialized documents and committed CSVs contain the detailed sweeps. Values below are model outputs under explicit assumptions, not measured garment claims.
 
-## 1. Current design direction
+## 1. Frozen design direction
 
-The working virtual architecture is:
+The retained passive architecture is:
 
-> directional local sweat collection + distributed short capillary liquid routes + nearby pressure-aware or mechanically protected wet terminals + continuously ambient-connected evaporative microtexture/open valleys + short high-`k/rho` heat routes with limited cross-link redundancy + robust terminal contact + dry-side hot-ambient protection.
+> directional local sweat collection + short distributed two-scale capillary liquid routes + pressure/ambient-aware exterior wet terminals + continuously ambient-connected evaporative microtexture/open valleys/gaps/islands + short high-`k/rho` heat routes with limited cross-link redundancy + robust terminal contact + dry-side hot-ambient protection.
 
-The project no longer prefers one garment-scale centralized wick, long covered wet chimneys, indiscriminate whole-area high-`k` exposure, geometric area alone, or active wet-layout switching as baseline mechanisms.
+The project does not use one garment-scale centralized wick, one long passive wet chimney, indiscriminate whole-area high-`k` exposure, geometric area alone, or active load-state switching as baseline mechanisms.
 
-## 2. Exterior geometric area is not accessible evaporative area
+## 2. Exterior evaporation: area is not automatically accessible area
 
-The E3 periodic 2-D vapor-diffusion screen shows strong boundary-layer sharing.
-
-For `h=2.5 mm`, structured fraction `f=0.65`, whole-area vapor multipliers were approximately:
+The periodic 2-D rib vapor-diffusion screen shows strong boundary-layer sharing. For `h=2.5 mm`, structured fraction `f=0.65`:
 
 | renewal gap above rib tips | pitch 0.8 mm | pitch 1.0 mm | pitch 1.5 mm |
 |---:|---:|---:|---:|
@@ -26,45 +24,17 @@ For `h=2.5 mm`, structured fraction `f=0.65`, whole-area vapor multipliers were 
 | 2.0 mm | ~1.77 | ~1.74 | ~1.67 |
 | 5.0 mm | ~1.31 | ~1.30 | ~1.29 |
 
-Result: adding rib area without renewing the humid boundary layer produces little useful exchange.
+Result: adding rib/fin area without renewing the local humid air gives diminishing benefit.
 
-## 3. Long covered passive wet corridors are not preferred
+Covered/end-renewed corridors can remain nearly saturated despite nonzero natural flow. Thermo-solutal buoyancy can also reverse or neutralize the flow direction. The preferred passive family therefore uses continuously laterally ambient-connected valleys, gaps, islands, or short open segments.
 
-Self-consistent covered-corridor screens showed that nonzero buoyant flow does not guarantee useful evaporation. Long wet channels can become nearly saturated, and thermo-solutal buoyancy can reverse flow direction.
+## 3. Heat and vapor transfer are separate
 
-Current exterior preference is continuously laterally ambient-connected valleys, gaps or islands rather than a long covered "chimney."
+Sensible heat transfer and vapor transfer are not forced to share one empirical multiplier. Positive water evaporation is also not sufficient to establish positive body-side cooling.
 
-## 4. Open-valley renewal requires both retention and absolute conductance
+For a 34 °C skin boundary in the same-path low-order screen, representative ambient temperatures at zero body-side heat flow are approximately:
 
-Define
-
-\[
-R=G_a/G_w,
-\qquad
-F=\frac{R}{1+R}.
-\]
-
-`F` is the fraction of the ideal wet-wall vapor driving force retained after local ambient renewal. Examples:
-
-- `F=0.8` requires `R=4`;
-- `F=0.9` requires `R=9`;
-- `F=0.95` requires `R=19`.
-
-However
-
-\[
-k_{eff}=\frac{k_wk_a}{k_w+k_a}=k_wF,
-\]
-
-so high `F` can also occur because the wet-wall transfer itself is weak. `F` is therefore not sufficient as a performance metric.
-
-## 5. Positive evaporation is not equivalent to body cooling
-
-The coupled heat/vapor model can sustain evaporation while signed body-side heat flow becomes negative in hot ambient air.
-
-For a 34 °C skin boundary and ordinary same-path heat/vapor coupling, representative zero-body-flux ambient-temperature boundaries are approximately:
-
-| RH | ambient temperature at zero body heat flux |
+| RH | zero-body-flux ambient temperature |
 |---:|---:|
 | 50% | 45.25 °C |
 | 70% | 39.73 °C |
@@ -72,70 +42,34 @@ For a 34 °C skin boundary and ordinary same-path heat/vapor coupling, represent
 | 85% | 36.59 °C |
 | 90% | 35.68 °C |
 
-These are model sign boundaries, not medical/safety limits.
+These are model sign boundaries, not medical or measured garment limits.
 
-## 6. Water supply changes the optimum
+## 4. Water/feed limitation changes the optimum
 
-The feed-limited open-valley model solves a computational wet fraction `beta` when fully-wet evaporation capacity exceeds available water.
+If fully-wet evaporation capacity exceeds available sweat/water supply, the model switches to a partial-wet/feed-limited state. Under fixed feed, stronger linked ambient exchange can eventually reduce body-coupled cooling because more latent heat is supplied from ambient air after all available water is already evaporated.
 
-At 35 °C / 50% RH with 150 g/h over a 0.195 m² structured region, progressively stronger linked ambient exchange can first increase body heat removal, then reduce it after all available feed is already evaporated because a larger fraction of latent heat comes from ambient air.
+Therefore maximum exchange coefficient is not automatically the cooling optimum.
 
-Therefore maximum transfer coefficient is not automatically the body-cooling optimum.
+## 5. Heat spreading requires asymmetric local boundary conditions
 
-## 7. Heat spreading requires spatially different boundary conditions
+Lateral heat spreading produces little integrated value in a deliberately symmetric wet/dry boundary condition. Finite value appears when heat is routed between regions that differ in wetting, shielding, exposure, pressure, or contact state.
 
-A symmetric wet/dry screen showed that lateral temperature equalization alone does not create area-integrated cooling when both regions have identical local external boundaries.
+A direct-material 1-D bridge replacing scalar mixing with explicit periodic `k*t` conduction gives, at 100 g/h, spreader-only mechanism gains over 0.195 m² of approximately:
 
-Finite heat-routing value appears when wet and dry regions differ in exposure, shielding, pressure/contact or evaporation state.
-
-For a representative asymmetric `h_dry=5 W/(m² K)` scalar screen, the `g_mix` needed for ~90% of the high-mixing gain was approximately:
-
-| feed | required `g_mix` |
-|---:|---:|
-| 30 g/h | ~117 W/(m² K) |
-| 50 | ~192 |
-| 75 | ~285 |
-| 100 | ~330 |
-| 150 | ~258 |
-
-The associated mechanism gains over 0.195 m² were only several watts, not unlimited.
-
-## 8. Routing pitch and contact are first-order burdens
-
-Ideal periodic routing screen:
-
-\[
-g_{sheet}\approx\Gamma\frac{k_{\parallel}tc}{P^2}.
-\]
-
-Thus required `k*t` grows with routing pitch squared.
-
-Lumped two-contact burden:
-
-\[
-\frac{1}{g_{eff}}=\frac{1}{g_{sheet}}+\frac{2}{h_c}.
-\]
-
-High sheet conductivity alone does not guarantee useful routing if terminal contacts are weak.
-
-## 9. Direct-material 1-D bridge preserves the finite heat-routing value
-
-Replacing scalar `g_mix` with direct periodic `k*t` conduction, local contact, wet evaporation and feed-solved wet width gives, at 100 g/h:
-
-| virtual anchor | direct-material spreader-only gain over 0.195 m² |
+| virtual anchor | modeled gain |
 |---|---:|
-| VP-A | ~5.48 W |
-| VP-B | ~5.32 W |
-| VP-C | ~5.30 W |
-| VP-D | ~6.29 W |
+| VP-A | 5.48 W |
+| VP-B | 5.32 W |
+| VP-C | 5.30 W |
+| VP-D | 6.29 W |
 
-Feed closure and equation residuals were numerically checked. Agreement with the scalar model is hierarchy continuity, not independent validation.
+Agreement with earlier scalar screens is model-hierarchy continuity, not physical validation.
 
-## 10. Corrected equal-material 2-D topology result
+## 6. Corrected equal-material topology result
 
-An earlier draft conclusion that aligned sparse traces beat the homogenized equal-material field was wrong and has been withdrawn.
+An earlier draft conclusion that aligned sparse traces beat an equal-material homogenized field was wrong and is withdrawn.
 
-Current corrected periodic ordering:
+The retained ordering is:
 
 \[
 \boxed{\text{uniform homogenized} > \text{x-aligned / mesh} \gg \text{y-transverse}}
@@ -148,33 +82,19 @@ Representative 30-cell gains:
 - x-aligned traces: ~4.71 W;
 - y-transverse traces: ~1.82 W.
 
-Orientation matters strongly, but the tested sparse traces do not exceed the ideal homogenized field.
+Orientation matters strongly, but sparse coverage is not automatically superior or lighter.
 
-## 11. Multi-island heat-network motifs
+## 7. Heat-network robustness
 
-With four wet islands and ~35% binary high-`k` material:
+With four wet islands and ~35% binary high-`k` material, nominal routing gains include:
 
-| routing motif | nominal heat-routing gain |
-|---|---:|
-| parallel directed | ~5.63 W |
-| herringbone | ~4.66 W |
-| radial spokes | ~3.31 W |
-| leaf/venation | ~5.17 W |
-| redundant mesh | ~5.35 W |
+- directed: ~5.63 W;
+- leaf/venation: ~5.17 W;
+- mesh: ~5.35 W;
+- directed/mesh blend `lambda=0.125`: ~5.86 W;
+- blend `lambda=0.375`: ~5.93 W.
 
-A directed/mesh score blend gives:
-
-- `lambda=0.125`: ~5.86 W;
-- `lambda=0.375`: ~5.93 W;
-- pure mesh: ~5.35 W.
-
-## 12. Failure morphology changes the best heat network
-
-Distributed 5% conductor dropout and localized 5% tears rank topologies differently.
-
-For the current localized-tear screen, `lambda=0.125` retained about 94% of nominal gain at the worst of nine tested tear centers.
-
-For simultaneous 20% compliant-path stretch + localized wet-terminal contact loss + localized 5% conductor fracture:
+Under simultaneous 20% compliant-path stretch, localized wet-terminal contact loss, and localized 5% conductor fracture:
 
 | topology | nominal | combined-failure gain | retained |
 |---|---:|---:|---:|
@@ -184,184 +104,99 @@ For simultaneous 20% compliant-path stretch + localized wet-terminal contact los
 | leaf | ~5.17 | ~4.23 | ~81.9% |
 | mesh | ~5.35 | ~4.20 | ~78.4% |
 
-The nominal maximum is not the current robustness maximum.
+The nominal-gain maximum is not the current failure-robustness maximum.
 
-## 13. Stretch alone is less important than contact loss in the present model
+## 8. Compression and terminal contact compete with vapor-path closure
 
-If the conductive path remains intact, 20% uniaxial stretch in the compliant-serpentine screen retained roughly 97–99% of nominal routing gain.
-
-This is not a durability claim because cracking, delamination and contact loss are excluded.
-
-Localized low contact around an active wet island was more damaging, retaining only roughly 83–87% of routing gain in the current spatial-contact screen.
-
-## 14. Compression has two competing effects
-
-Hypothetical compression laws:
+A hypothetical compression screen uses
 
 \[
-h_c(c)=h_{c,0}(1+ac),
-\qquad
-s_{air}(c)=(1-c)^n.
+h_c(c)=h_{c,0}(1+ac),\qquad s_{air}(c)=(1-c)^n.
 \]
 
-At 35 °C / 50% RH / 100 g/h with `n=2`, body-side heat removal increased slightly from ~55.9 W at zero compression to ~58.3 W near 30% compression because contact improved while vapor access was still adequate.
+At 35 °C / 50% RH / 100 g/h with `n=2`, modeled body-side heat removal rises slightly from ~55.9 W at zero compression to ~58.3 W near 30% compression because contact improves while vapor access remains adequate. Beyond the transfer-limited transition, stronger compression reduces evaporation and body heat removal.
 
-Near 35% compression the screen became fully wet / transfer limited. Stronger compression then reduced evaporation and body heat removal rapidly.
+The transition depends strongly on the assumed closure law and is not a garment pressure limit.
 
-The transition is highly model-form dependent:
+## 9. Spatial load changes wet-terminal placement
 
-- `n=1`: first transfer-limited point around 58%;
-- `n=2`: around 35%;
-- `n=3`: around 25%.
+For the converged 24 x 24 synthetic backpack + shoulder-strap map (`cmax=0.5`, `n=2`):
 
-These are not garment pressure limits.
-
-## 15. Spatial pressure maps favor moving active wet terminals out of persistent load zones
-
-Synthetic pressure maps were created for a backpack panel, shoulder straps, seat back and combined backpack+straps.
-
-All wet layouts use approximately equal wet area and the same routed high-`k` material fraction.
-
-At the converged 24 x 24 primary screen (`cmax=0.5`, `n=2`) for backpack+straps:
-
-| wet layout | body-side heat flux | vapor-capacity index | mean local compression |
+| equal-area wet layout | body-side heat flux | vapor-capacity index | mean local compression |
 |---|---:|---:|---:|
-| pressure-aware | **112.8 W/m²** | **211 g/(m² h)** | **0.061** |
-| peripheral islands | 106.4 | 194 | 0.129 |
-| side columns | 103.9 | 191 | 0.130 |
-| upper/lower bands | 86.1 | 152 | 0.270 |
-| four islands | 84.3 | 147 | 0.303 |
-| center panel | 60.9 | 105 | 0.421 |
+| pressure-aware | **~112.8 W/m²** | **~211 g/(m² h)** | **~0.061** |
+| peripheral islands | ~106.4 | ~194 | ~0.129 |
+| side columns | ~103.9 | ~191 | ~0.130 |
+| four islands | ~84.3 | ~147 | ~0.303 |
+| center panel | ~60.9 | ~105 | ~0.421 |
 
-Pressure-aware placement ranked first under each primary load map. With no load, ordinary four-island placement ranked above the pressure-aware rule.
+With no load, ordinary four-island placement can rank above the pressure-aware rule. The retained conclusion is **load-aware placement where persistent load exists**, not universal peripheral evaporation.
 
-Supported conclusion: avoid persistent load zones **where they occur**; do not universally move evaporation to the garment perimeter.
+A loaded center-panel evaporator can compete only if wet-side ambient access is strongly protected. In the current effective screen the crossover is near an air-access floor of ~0.83–0.85. Support structures consume active evaporator area: at an air floor of 0.90 only ~2.5% support footprint still matches relocation, rising to ~10% only at an idealized air floor of 1.00.
 
-## 16. Protected under-load evaporation is an alternative, but air access must be preserved strongly
+## 10. Active load-state switching is not the baseline
 
-Keeping the loaded center panel active while imposing a minimum wet-side ambient-access floor gives:
+Quasisteady ideal statewise switching improves the best fixed layout by only about 0.10–0.23 W over 0.195 m² in the current commuter/mixed/seated schedules, below ~1% relative uplift. A small control or redistribution penalty can erase that benefit.
 
-| protected air floor | body-side heat flux |
-|---:|---:|
-| 0.50 | ~81.3 W/m² |
-| 0.60 | ~91.9 |
-| 0.70 | ~101.5 |
-| 0.80 | ~110.0 |
-| 0.85 | ~114.0 |
-| 0.90 | ~117.8 |
-| 1.00 | ~125.0 |
+## 11. Short distributed capillary routing is strongly preferred
 
-The pressure-aware relocation reference is ~112.8 W/m². The model crossover is near an effective air-access floor of ~0.83–0.85.
-
-This is an effective model parameter, not a measured channel-height requirement.
-
-## 17. Load-bearing support consumes active evaporator area
-
-After support footprint is removed from the loaded center wet panel, the protected-gap design space narrows:
-
-| protected air floor | maximum screened support fraction still matching relocation |
-|---:|---:|
-| 0.80 | none |
-| 0.85 | ~0% |
-| 0.90 | ~2.5% |
-| 0.95 | ~7.5% |
-| 1.00 | ~10% |
-
-This favors narrow ribs, point/perimeter supports or arches over coarse load-bearing lattices.
-
-## 18. Ideal active wet-layout switching has small value in current schedules
-
-Quasisteady hypothetical schedules compare one fixed wet layout with an ideal statewise-best layout.
-
-| schedule | best fixed | ideal adaptive uplift over 0.195 m² |
-|---|---|---:|
-| commuter backpack | pressure-aware | ~0.10 W |
-| mixed day | pressure-aware | ~0.13 W |
-| seated office | pressure-aware | ~0.23 W |
-
-The relative uplift is below ~1%. A small control/redistribution penalty can erase it, so active switching is not the current baseline direction.
-
-## 19. Passive capillary delivery favors short distributed routes
-
-Ideal cylindrical capillary screen:
+Ideal cylindrical-capillary screen:
 
 \[
-\Delta P_f=\frac{8\mu LQ}{\pi r^4N},
-\quad
-\Delta P_c=\frac{2\gamma\cos\theta}{r},
-\quad
+\Delta P_f=\frac{8\mu LQ}{\pi r^4N},\qquad
+\Delta P_c=\frac{2\gamma\cos\theta}{r},\qquad
 \Delta P_h=\rho g\Delta z.
 \]
 
-With safety factor 3 and the current screening liquid properties, a 150 g/h, 100 mm route requires many small channels if significant vertical rise is present.
-
-Example at 100 mm route / 50 mm rise:
-
-- 50 µm radius: ~2370 channels;
-- 100 µm: ~397;
-- 150 µm: ~178;
-- 200 µm: ~155;
-- 300 µm: no positive capillary-head margin.
-
-Short local routes are much more favorable.
-
-## 20. Ideal capillary radius has a lift/resistance optimum
-
-For positive vertical rise, total ideal capillary cross-section is minimized at
+For positive lift, total ideal capillary cross-section is minimized at
 
 \[
 \boxed{r_* = \frac{\gamma\cos\theta}{\rho g\Delta z}}.
 \]
 
-This is exactly half the largest equivalent radius capable of statically supporting the same rise.
+One equal-total-flow illustration at 150 g/h gives:
 
-Reference optima with current screening properties:
-
-- 25 mm rise: ~247 µm;
-- 50 mm: ~124 µm;
-- 100 mm: ~61.8 µm;
-- 200 mm: ~30.9 µm.
-
-At zero rise this ideal area objective has no finite optimum without another radius/thickness constraint.
-
-## 21. Centralized liquid lift is a poor current architecture
-
-One explicit equal-total-flow illustration (150 g/h):
-
-| architecture | path / rise | ideal total capillary cross-section | ideal liquid inventory |
+| architecture | path / rise | ideal total capillary area | ideal liquid inventory |
 |---|---|---:|---:|
 | central | 200 / 100 mm | ~48.0 mm² | ~9.61 mL |
 | 4 local cells | 50 / 25 mm | ~3.01 mm² | ~0.15 mL |
 | 8 local cells | 30 / 15 mm | ~1.34 mm² | ~0.04 mL |
 | 12 local cells | 25 / 10 mm | ~1.21 mm² | ~0.03 mL |
 
-This is a geometry-dependent screening comparison. The benefit comes from shortening route length and lift.
+This is geometry-dependent screening evidence, not a universal ratio.
 
-## 22. Practical trunk-radius caps still favor local cells
+The preferred liquid architecture is:
 
-For the 4-local-cell reference (37.5 g/h/cell, 50 mm path, 25 mm rise), the unconstrained ideal discrete optimum is near 244 µm equivalent radius.
+> local collector -> fine collector mesh / short micro-wick -> spaced larger liquid-filled trunks -> nearby exterior wet terminal.
 
-| max radius | area penalty vs unconstrained |
+## 12. Route-distance proxy corrected by explicit hydraulic networks
+
+A pressure-aware route proxy initially favored a mildly regularized terminal layout because it retained ~98.2% of thermal output while shortening a common `d95*r^-4` burden by ~16.8%.
+
+Explicit branched liquid-resistor networks show that this proxy was given too much hydraulic significance for the current short dense routes. For a 60 mm tile carrying 1.8 g/h, 200 µm nominal trunks, 50 µm collector radius, 15 mm lift, and severe pressure-linked radius reduction:
+
+| terminal layout | max network pressure drop | capillary-drive / pressure margin |
+|---|---:|---:|
+| thermal pressure-aware | ~0.526 Pa | ~4330 |
+| regularized | ~0.470 Pa | ~4850 |
+| four islands | ~0.205 Pa | ~11100 |
+
+Collector capillary drive is ~2278 Pa. The proxy remains useful as a geometric/material/seam route metric, but not as proof of binding hydraulic pressure loss.
+
+## 13. Sparse two-scale liquid-network boundary
+
+After sparsifying 200 µm trunks inside a finer collector mesh and shifting the trunk lattice through sampled phase offsets under a localized sweat-source field, the largest tested pitch retaining capillary safety factor >=3 at every sampled phase is:
+
+| collector radius | largest robust tested 200 µm trunk pitch |
 |---:|---:|
-| 75 µm | ~1.95x |
-| 100 µm | ~1.56x |
-| 150 µm | ~1.19x |
-| 200 µm | ~1.06x |
-| 300 µm | ~1.00x |
+| 20 µm | ~15 mm |
+| 25 µm | ~20 mm |
+| 30 µm | ~30 mm |
+| 35–50 µm | >=60 mm |
 
-Thus a 150–200 µm-class transport trunk remains close to the ideal hydraulic burden in this specific local geometry.
+This is now the more useful hydraulic design boundary: collector radius × trunk pitch × route phase × source localization × collapse assumptions.
 
-## 23. Liquid capture and transport should use different pore scales
-
-Current preferred liquid architecture:
-
-> local collector -> short 20–50 µm-class micro-wick -> larger 100–300 µm-class liquid-filled trunk -> accessible exterior terminal.
-
-Fine pores are used for local capillary capture rather than garment-scale hydraulic transport.
-
-Blockage redundancy can be added by installing more trunks/channels than the minimum live count. This remains a simple independent-channel screen; correlated blockage is unresolved.
-
-## 24. Salt is nonvolatile; bulk leakage wording is corrected
+## 14. Salt is nonvolatile; bulk concentration and local deposition are distinct
 
 Salt vapor flux is exactly zero:
 
@@ -369,52 +204,79 @@ Salt vapor flux is exactly zero:
 J_{salt,vapor}=0.
 \]
 
-If an upstream water fraction `f_leak` evaporates while dissolved salt flux is conserved, normalized bulk concentration follows
+If upstream evaporation removes water fraction `f_leak` while dissolved nonvolatile-solute flux is conserved:
 
 \[
 \sigma_{out}=\frac{\sigma_0}{1-f_{leak}}.
 \]
 
-Thus:
+Thus 10% upstream water loss raises bulk concentration only ~1.11x. This does not prove bulk saturation or crystallization.
 
-- 10% water leak -> 1.11x bulk concentration;
-- 20% -> 1.25x;
-- 30% -> 1.43x.
+Local wall-film drying, deposition, re-dissolution, and hydraulic-radius loss are separate mechanisms. The repository contains screening models for fouling sensitivity, but no measured fouling lifetime.
 
-Small upstream leakage therefore does not mathematically prove bulk saturation or crystallization.
+## 15. Transient water buffering
 
-Internal phase change is still discouraged because it wastes water delivery to the selected terminal and can create local thin-film dryout/deposition that this bulk balance does not resolve.
+The transient terminal-buffer model preserves water mass explicitly between a transport buffer, terminal buffer, evaporation, and overflow/drain terms. It is a low-order response screen rather than a measured textile dynamic model.
 
-## 25. Current virtual product direction
+The main retained conclusion is qualitative: transport lag penalizes startup response, while terminal water storage extends post-sweat cooling at the cost of operating wet mass. No universal optimal storage mass is established.
 
-The current baseline architecture is passive and fixed rather than actively switched:
+## 16. Virtual garment mass
 
-1. partition the garment into local liquid/thermal cells;
-2. collect sweat locally;
-3. move liquid a short distance with a two-scale capillary network;
-4. route heat from nearby dry/compressed zones toward the same terminal;
-5. place the terminal in a low-pressure ambient-open zone when possible;
-6. if terminal relocation is impossible, mechanically protect the vapor gap with very low support-area occupation;
-7. keep buried liquid trunks protected from evaporation;
-8. keep dry exterior zones shielded when hot ambient sensible gain is harmful.
+The nominal VP-E pressure-relocation BOM screen gives approximately:
 
-## 26. What is not established
+- dry mass: ~169 g;
+- operating mass including modeled water hold-up: ~181 g;
+- base textile contribution: ~109 g;
+- added functional dry mass: ~60 g.
+
+These are virtual design-variable calculations, not measured garment masses.
+
+## 17. Current product-level hypothesis
+
+At equal liquid input and ambient conditions below the relevant passive sign boundary, a garment combining routed heat spreading, capillary-fed exterior wet structures, and sufficient ambient access can in principle remove more heat from an artificial skin than a conventional flat fast-dry textile.
+
+This remains a testable hypothesis. It is not represented as physically validated.
+
+## 18. What is not established
 
 - no physical cooling measurement;
+- no manufactured garment;
 - no human trial;
 - no validated CFD;
 - no measured textile permeability/contact/pressure constitutive laws;
-- no measured salt deposition threshold;
+- no measured salt/fouling lifetime;
 - no proven manufacturing process;
-- no full-garment weight/thickness optimization;
-- no claim that the listed numerical watt values will be achieved by a garment.
+- no claim that the listed watt values will be achieved by a real garment;
+- no legal conclusion of novelty, patentability, invalidity, or freedom to operate.
 
-## 27. Next numerical priorities
+## 19. Verification state
 
-1. co-optimize heat-route length and liquid-route length to common pressure-aware terminals;
-2. add channel collapse/curvature under local pressure;
-3. resolve protected vapor-gap geometry instead of using an effective air-access floor;
-4. model local wall-film salt deposition and progressive hydraulic-radius loss;
-5. complete integrated virtual-prototype mass/thickness budgets;
-6. add hot/humid maps for the integrated virtual prototype;
-7. continue repository/publication audit and freeze a stable release only after all references and CI are synchronized.
+The pre-cleanup 43-model integration head
+
+`529fc573f2a24a0d4d3db8464c3c1409a38b34ec`
+
+passed all five defined pull-request workflows:
+
+- `model-tests` #722 — success;
+- `topology-tests` #278 — success;
+- `pressure-tests` #112 — success;
+- `liquid-tests` #91 — success;
+- `garment-tests` #46 — success.
+
+The final documentation-cleanup/release commit must be checked again before tagging.
+
+## 20. Research freeze
+
+The exploratory numerical phase is considered sufficient for the present computational disclosure. Additional 3-D flow modeling, garment-scale curvature, detailed spacer mechanics, time-varying sweat migration, measured fouling kinetics, and physical prototypes are **optional future research**, not blockers for closing this phase.
+
+Remaining stable-release work is publication/repository work:
+
+1. final cross-document consistency check;
+2. authoritative source/patent identifier verification;
+3. CI confirmation on the exact release commit;
+4. regeneration of release reference artifacts/hashes;
+5. citation/version metadata;
+6. versioned GitHub release/tag;
+7. optional persistent archive/DOI.
+
+See `research-freeze.md`, `release-checklist.md`, and `../AUDIT.md`.
