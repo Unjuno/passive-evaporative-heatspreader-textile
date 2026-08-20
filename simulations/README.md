@@ -4,160 +4,139 @@ Status: **screening / analytic / virtual-prototype models only**. No physical ga
 
 ## Executable model / audit hierarchy
 
-1. `passive_rib_screen.py` — historical low-order exterior heat/mass model and multi-root audit.
-2. `split_heat_mass_screen.py` — separate sensible `M_h`, vapor `M_m`, and radiation.
+### Exterior heat / vapor physics
+
+1. `passive_rib_screen.py` — historical low-order exterior heat/mass screen and multi-root audit.
+2. `split_heat_mass_screen.py` — separates sensible `M_h`, vapor `M_m`, and radiation.
 3. `split_transfer_sensitivity.py` — deterministic model-form sensitivity grid.
 4. `rib_diffusion_screen.py` — periodic 2-D wet-rib vapor diffusion under an idealized renewal plane.
-5. `corridor_buoyancy_screen.py` — prescribed-state thermo-solutal corridor flow sign/scaling.
+5. `corridor_buoyancy_screen.py` — prescribed-state thermo-solutal corridor-flow sign/scaling.
 6. `self_consistent_corridor_1d.py` — covered/end-renewed corridor T/RH/flow/evaporation coupling.
 7. `open_valley_exchange_target.py` — local `R=G_a/G_w`, `F=R/(1+R)` target and measurement inversion.
 8. `open_valley_distributed_1d.py` — axial diffusion/advection plus distributed lateral vapor renewal.
 9. `open_valley_thermal_1d.py` — coupled valley-air T, vapor density, wet-surface T, evaporation and body-side heat flow.
-10. `open_valley_feed_limited.py` — explicit homogenized feed-limited partial-wetness closure and latent heat-source partition.
-11. `wet_dry_two_node.py` — separate wet/dry temperatures under symmetric local sensible boundary conditions.
-12. `asymmetric_wet_dry_spreader.py` — bounded/continuation wet/dry mechanism screen with unequal dry/wet exposure.
-13. `spreader_material_mapping.py` — maps abstract `g_mix` to `k*t/pitch^2`, mass, bend-strain screening and contact resistance.
-14. `virtual_prototype_v01.py` — explicit VP-A/VP-B/VP-C/VP-D computational design anchors and topology/contact sensitivity.
-15. `distributed_spreader_1d.py` — replaces scalar `g_mix` with direct periodic `k*t` conduction, local contact, dry shielding, wet evaporation and feed-solved wet width.
-16. `open_valley_heat_mass_coupling_audit.py` — heat/mass selectivity, Lewis number and Chilton–Colburn-style baselines.
-17. `passive_environment_boundary.py` — analytic same-path hot/humid body-heat-flow sign boundary.
-18. `supply_limit_audit.py` — conservative fully-wet capacity/feed classification.
+10. `open_valley_feed_limited.py` — explicit feed-limited partial-wetness closure and latent heat-source partition.
+11. `open_valley_heat_mass_coupling_audit.py` — heat/mass selectivity, Lewis number and analogy baselines.
+12. `passive_environment_boundary.py` — analytic same-path hot/humid body-heat-flow sign boundary.
+13. `supply_limit_audit.py` — conservative fully-wet capacity/feed classification.
+
+### Heat routing / virtual prototypes
+
+14. `wet_dry_two_node.py` — separate wet/dry temperatures under symmetric sensible boundaries.
+15. `asymmetric_wet_dry_spreader.py` — bounded/continuation wet/dry mechanism screen with unequal exposure.
+16. `spreader_material_mapping.py` — maps abstract routing conductance to `k*t/pitch^2`, mass and contact burden.
+17. `virtual_prototype_v01.py` — VP-A/B/C/D computational anchors.
+18. `distributed_spreader_1d.py` — direct periodic `k*t` conduction with feed-solved wet width.
 19. `heat_spreader_2d.py` — anisotropic 2-D lateral heat-routing screen.
-20. `water_salt_1d.py` — normalized water/nonvolatile-salt mass-balance screen.
+20. `spreader_topology_2d.py` — equal-material explicit trace/topology screen and corrected orientation result.
+21. `heat_network_topology_2d.py` — four wet-island routing motifs and directed/mesh blends.
+22. `heat_network_apparel_robustness.py` — stretch, wet-field relocation and spatial-contact sensitivity.
+23. `heat_network_combined_failure.py` — simultaneous stretch/contact/fracture screen.
+24. `compression_contact_air_access.py` — contact improvement vs vapor-path collapse and regime transition.
 
-`generate_reference_outputs.py` is the reproducibility generator rather than a physical model.
+### Spatial load / apparel architecture
 
-## Current design conclusions
+25. `spatial_pressure_layout.py` — synthetic backpack/strap/seat pressure maps and equal-area evaporator placement.
+26. `protected_air_channel_tradeoff.py` — relocation vs mechanically protected vapor path under load.
+27. `load_schedule_policy.py` — quasisteady fixed vs ideal state-adaptive wet-layout policy.
+28. `protected_support_skeleton.py` — protected-gap air access vs load-bearing support-area penalty.
 
-### Ambient access dominates geometric area
+### Liquid transport / nonvolatile solute
 
-Dense wet ribs can share one stagnant humidity layer. Increasing geometric area alone is not accepted as evidence of increased useful evaporation.
+29. `water_salt_1d.py` — earlier normalized water/nonvolatile-salt balance screen.
+30. `capillary_liquid_network.py` — ideal cylindrical capillary pressure/flow burden and local-routing screen.
+31. `capillary_architecture_tradeoff.py` — analytic optimum radius and centralized-vs-distributed architecture comparison.
+32. `capillary_practical_constraints.py` — radius caps, two-scale micro-wick/trunk split and blockage redundancy.
+33. `salt_leakage_budget.py` — corrected bulk nonvolatile-salt concentration under upstream water-only leakage.
 
-### Long covered wet corridors are not preferred
+`generate_reference_outputs.py` is a reproducibility generator rather than a physical model.
 
-They can sustain nonzero natural flow while remaining nearly saturated, and thermo-solutal buoyancy can reverse flow direction. Current exterior preference is continuously laterally ambient-connected valleys, gaps or islands.
+## Current integrated architecture
 
-### `F` is not absolute transfer
+The working virtual architecture is:
 
-\[
-F=\frac{R}{1+R},
-\qquad
-k_{eff}=\frac{k_wk_a}{k_w+k_a}=k_wF.
-\]
+> directional skin-side liquid collection -> distributed short capillary routes -> low-pressure or mechanically protected wet terminals -> continuously ambient-connected microtexture/open valleys -> short high-`k/rho` heat routes with limited cross-link redundancy -> dry-side shielding where hot ambient sensible pickup is harmful.
 
-Both renewal quality and absolute conductance must be reported.
+The current project does **not** treat one garment-scale central wick, one long wet chimney, one global heat sink or geometric surface area alone as the preferred architecture.
 
-### Positive evaporation is not equivalent to body cooling
+## High-value conclusions currently retained
 
-At hot ambient conditions, latent heat can be supplied partly or predominantly by ambient sensible heat. Signed body-side heat flow remains the integrated endpoint.
+- Added geometric evaporator area can be lost to one shared humid boundary layer.
+- Covered passive wet corridors can remain near saturation despite nonzero buoyant flow.
+- Sensible heat transfer and vapor transfer must be tracked separately.
+- Positive evaporation is not equivalent to positive body-side heat removal.
+- Feed limitation changes the optimum; evaporation capacity above available water is not achievable fixed-feed performance.
+- Heat spreading creates system value only when it routes heat between genuinely different local boundary conditions.
+- Short routing pitch matters because ideal sheet burden scales approximately with `P^2`.
+- Contact resistance can cap useful high-`k` routing.
+- Equal-material sparse traces tested so far do not beat the homogenized ideal field; orientation still matters strongly.
+- A lightly cross-linked directed heat network is the current combined-failure robustness anchor for the tested failure map.
+- Under persistent local load, active evaporation is better placed in nearby low-pressure regions unless a protected vapor path retains near-uncompressed ambient access with little support-area occupation.
+- Ideal active switching between load states adds little over the best fixed pressure-aware layout in the current quasisteady schedules.
+- Passive liquid transport strongly favors distributed local collection over long upward centralized transport in the ideal capillary screen.
+- Micro-wicking and longer-range liquid transport should use different hydraulic scales.
+- Salt vapor flux is zero. Small upstream water leakage modestly raises **bulk** concentration; local wall-film crystallization remains a separate unresolved mechanism.
 
-### Water supply is explicit
+## Liquid-routing equations
 
-`open_valley_feed_limited.py` solves a computational sub-grid wet fraction `beta` when fully-wet capacity exceeds available feed. `beta` is not a measured visible wet area.
-
-### Heat spreading requires spatial heterogeneity
-
-The symmetric wet/dry screen shows that internal equalization alone does not create area-integrated cooling. The asymmetric screen produces finite benefit when the dry and wet regions have genuinely different exposure/shielding.
-
-The asymmetric nonlinear solver uses bounded least squares, explicit equation-residual acceptance and continuation support after dense sweeps exposed nonphysical branch jumps in the earlier unconstrained formulation.
-
-For the representative `h_dry=5 W/(m² K)` screen, approximate scalar-`g_mix` targets for 90% of high-mixing gain are 117, 192, 285, 330 and 258 W/(m² K) at 30, 50, 75, 100 and 150 g/h respectively. The corresponding mechanism gains over 0.195 m² are finite, roughly 3–6 W.
-
-## Heat-spreader geometry / contact mapping
-
-The ideal periodic-stripe mapping is
-
-\[
-g_{sheet}\approx \Gamma\frac{k_{\parallel}tc}{P^2},\qquad \Gamma=4.
-\]
-
-This is a low-order topology screen, not a validated textile correlation. Required `k*t` grows as routing pitch squared.
-
-Thermal contacts are screened by
-
-\[
-\frac{1}{g_{eff}}=\frac{1}{g_{sheet}}+\frac{2}{h_c}.
-\]
-
-A high-`k` sheet therefore cannot deliver the target routing conductance if wet/dry contacts are weak.
-
-## Virtual prototypes v0.1 — scalar anchor model
-
-At 100 g/h:
-
-| prototype | mass over 0.30 m² | nominal `g_eff` | scalar spreader-only gain over 0.195 m² |
-|---|---:|---:|---:|
-| VP-A | ~48 g | ~286 W/(m² K) | ~5.3 W |
-| VP-B | ~96 g | ~167 | ~4.9 W |
-| VP-C | ~27 g | ~197 | ~5.0 W |
-| VP-D | ~48 g | ~286 | ~6.1 W |
-
-The gains are relative to the same local wet/dry model with `g_mix=0`; they are not total garment-vs-control cooling predictions.
-
-## Direct-material distributed bridge model
-
-`distributed_spreader_1d.py` replaces `g_mix` with
+Ideal capillary burden:
 
 \[
-\frac{d}{dx}\left(k_{\parallel}t\frac{dT_s}{dx}\right)
-+U_b(T_{skin}-T_s)+h_c(T_o-T_s)=0.
+\Delta P_f=\frac{8\mu LQ}{\pi r^4N},\qquad
+\Delta P_c=\frac{2\gamma\cos\theta}{r},\qquad
+\Delta P_h=\rho g\Delta z.
 \]
 
-The outer layer locally exchanges sensible heat with ambient air and latent heat over the wet fraction. Wet-stripe width is solved continuously so integrated evaporation matches feed when capacity permits.
+For positive lift, the ideal radius minimizing total capillary cross-sectional area is
 
-At 100 g/h, equal-feed no-lateral baseline comparison gives:
+\[
+r_* = \frac{\gamma\cos\theta}{\rho g\Delta z},
+\]
 
-| prototype | solved wet fraction | distributed spreader-only gain over 0.195 m² |
-|---|---:|---:|
-| VP-A | ~0.444 | ~5.48 W |
-| VP-B | ~0.448 | ~5.32 W |
-| VP-C | ~0.451 | ~5.30 W |
-| VP-D | ~0.447 | ~6.29 W |
+half the largest radius that can statically sustain the same rise.
 
-Numerical checks in the development screen:
+Bulk nonvolatile-solute leakage balance:
 
-- feed closure better than ~0.001 g/h;
-- outer energy residual numerically near zero;
-- spreader equation residual ~0.004 W/m² or below;
-- VP-A 32→96 node body-flux change ~0.01 W/m²;
-- distributed gains remain within roughly 0.8 W of the scalar virtual-anchor gains.
+\[
+\sigma_{out}=\frac{\sigma_0}{1-f_{leak}},\qquad J_{salt,vapor}=0.
+\]
 
-The latter is model-hierarchy continuity, not independent validation, because both models share exterior/body assumptions.
+This bulk equation does not prove that small upstream evaporation causes crystallization.
 
-VP-C's 50% routed coverage is still homogenized as effective thickness `t_eff=t*coverage`; actual sparse traces are not yet geometry-resolved.
-
-## Run
+## Reproducibility
 
 ```bash
 python -m pip install -r requirements-dev.txt
 python -m pytest -q
-python simulations/asymmetric_wet_dry_spreader.py
-python simulations/spreader_material_mapping.py
-python simulations/virtual_prototype_v01.py
-python simulations/distributed_spreader_1d.py
-python simulations/generate_reference_outputs.py --output-root generated-reference
 ```
+
+Dedicated workflows currently separate the broad model stack, topology/apparel screens, spatial-pressure screens and liquid-routing screens.
 
 ## Interpretation rules
 
 Do not use any one of the following as proof of garment cooling:
 
-- geometric surface area;
-- one lumped exchange multiplier;
-- corridor velocity or axial Péclet number;
-- local `F`;
+- geometric area;
+- a single lumped exchange multiplier;
+- corridor velocity or Péclet number;
+- local `F` alone;
 - evaporation mass alone;
 - fully-wet capacity above feed;
-- model wet fraction `beta`;
-- scalar `g_mix` under symmetric boundary conditions;
-- high sheet `k` without routing/contact constraints;
-- homogenized sparse coverage as proof of trace-level performance;
-- virtual-prototype spreader-only gain as total garment performance.
+- a scalar heat-spreader conductance under symmetric boundaries;
+- high sheet `k` without route length and contact;
+- sparse material coverage without topology;
+- synthetic pressure percentages as real garment pressure limits;
+- ideal cylindrical-capillary counts as measured textile permeability;
+- bulk salt balance as proof of local crystallization.
 
-Integrated interpretation requires vapor renewal, absolute vapor transfer, signed body heat flow, water supply/wetness state, ambient sensible pickup, spatially heterogeneous wet/dry boundary conditions, material `k*t/P²`, contacts, added mass and explicit hot-ambient protection.
+Integrated interpretation requires signed body heat flow, vapor renewal, absolute vapor conductance, water supply, wet/dry spatial state, ambient sensible pickup, heat-route/contact burden, liquid hydraulic burden, pressure/load maps, added mass/thickness and explicit uncertainty.
 
-## Next model task
+## Next model tasks
 
-Move from the periodic 1-D bridge to a **2-D geometry-resolved spreader** with anisotropic `k_x/k_y`, explicit routed traces/sparse coverage, spatially varying contact, wet islands, dry shielding and garment curvature/compression. VP-A through VP-D remain regression anchors.
+1. couple heat-route and capillary-route cost to the same pressure-aware terminal geography;
+2. add explicit channel collapse/curvature under pressure;
+3. resolve protected vapor-gap geometry rather than use an effective air-access floor;
+4. add time-varying wet/load maps only if the static robust architecture leaves meaningful performance on the table;
+5. complete full virtual-garment mass/thickness budgets and hot/humid maps.
 
-See `docs/distributed-spreader-1d.md`, `docs/virtual-prototypes-v0.1.md`, `docs/current-results.md`, and `AUDIT.md`.
+See `docs/current-results.md`, the pressure/liquid design notes under `docs/`, and `AUDIT.md`.
