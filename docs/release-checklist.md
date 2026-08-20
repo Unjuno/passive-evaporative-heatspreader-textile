@@ -2,7 +2,7 @@
 
 Status date: 2026-08-20
 
-This checklist tracks the **release candidate**, not further exploratory model development.
+This checklist tracks **v1.0.0 publication**, not further exploratory model development.
 
 ## 1. Technical record
 
@@ -27,7 +27,8 @@ This checklist tracks the **release candidate**, not further exploratory model d
 - [x] `AUDIT.md` records release-readiness and known corrections.
 - [x] `docs/roadmap.md` is release-oriented rather than an open-ended research queue.
 - [x] Actual executable-model count was reconciled against `simulations/`: **45 models + 1 reference-output generator**.
-- [ ] Final exact-head pass confirms no documentation/count drift after the last reproducibility edits.
+- [x] v1.0.0 release notes are present at `docs/release-notes-v1.0.0.md`.
+- [ ] Final exact-head CI pass after the v1.0.0 metadata/publication-workflow edits.
 
 ## 3. Prior art and source integrity
 
@@ -35,8 +36,8 @@ This checklist tracks the **release candidate**, not further exploratory model d
 - [x] Close integrated heat-conduction + sweat-transport prior art is explicitly acknowledged.
 - [x] Patent working notes separate public-index bibliographic/technical cross-checks from authoritative patent-office verification.
 - [x] Claim-scope caveats are retained where specification embodiments could be mistaken for independent-claim limitations.
-- [x] Repository does not claim novelty, patentability, invalidity, or freedom to operate as a legal conclusion.
-- [ ] For any patent family/claim fact the stable release chooses to label **authoritatively verified**, verify that exact fact from an authoritative patent-office record; otherwise leave it explicitly as a working-map/public-index statement.
+- [x] Repository does not claim novelty, patentability, invalidity, infringement, or freedom to operate as a legal conclusion.
+- [x] Stable-release confidence policy is decided: **v1.0.0 labels no patent family/legal-status/claim-scope fact as authoritatively office-verified unless such verification is actually recorded.** The current six-item patent map remains explicitly a public-index technical map.
 
 ## 4. Models, tests, data, and release artifact
 
@@ -47,54 +48,43 @@ This checklist tracks the **release candidate**, not further exploratory model d
 - [x] Dense and sparse liquid-network corrections are reflected in canonical documentation.
 - [x] Collector-fouling/radius-loss is identified as an imposed failure sensitivity rather than measured deposition kinetics.
 - [x] Transient terminal buffering is identified as a mass-conserving low-order model rather than a measured response constant.
-- [x] Documentation-cleanup checkpoint `14fa2ab6fb289ad8db568ef6425009f84c684855` passed all five workflows:
-  - `model-tests` #752;
-  - `topology-tests` #308;
-  - `pressure-tests` #127;
-  - `liquid-tests` #106;
-  - `garment-tests` #61.
-- [x] `model-tests` now uploads the generated reference package as an exact-head Actions artifact.
-- [ ] Confirm all five workflows pass on the **final release-candidate commit** after the count/artifact corrections.
-- [ ] Confirm the reference artifact exists and contains generated data, figures, `metadata.json`, and `sha256.txt`.
+- [x] Exact-PR-head artifact provenance was corrected and independently checked.
+- [x] `branched_liquid_resistor_network.py` direct execution is covered by CI.
+- [x] `generate_reference_outputs.py` resolves Git metadata from `REPO_ROOT`, and CI invokes it from outside the checkout working directory.
+- [x] Exact-head reference artifacts contain generated data, figures, `metadata.json`, and `sha256.txt`.
+- [ ] Confirm all five PR workflows pass on the final v1.0.0 release-candidate head.
 
 ## 5. Physical experiments
 
 Physical measurements are **not required for closure of this computational disclosure**, and no specimen exists.
 
-If measurements are ever added in a later version:
+If measurements are ever added in a later version, retain raw data, calibration metadata, exclusion criteria, water balance, sample count, negative/null results, and measurement uncertainty with appropriate precision.
 
-- [ ] retain raw data;
-- [ ] include calibration metadata;
-- [ ] document exclusion criteria;
-- [ ] report water balance;
-- [ ] report sample count;
-- [ ] retain negative/null results;
-- [ ] report measurement uncertainty with appropriate precision.
-
-No unchecked physical-experiment item blocks the present computational release.
+No physical-experiment item blocks v1.0.0.
 
 ## 6. Version and public record
 
-- [ ] Choose final version identifier (`v1.0.0` is the natural stable candidate unless intentionally choosing another version).
-- [ ] Update `CITATION.cff` version/date to match the actual release.
-- [ ] Finalize release notes for the exact final commit.
-- [ ] Record the final release commit SHA.
-- [ ] Create public GitHub tag/release without rewriting earlier public history.
-- [ ] Attach or reference the exact-head reference artifact / SHA-256 manifest.
-- [ ] Optionally create a persistent archival copy/DOI and link it to the exact GitHub tag/commit.
+- [x] Final version identifier chosen: `v1.0.0`.
+- [x] `CITATION.cff` contains `version: 1.0.0` and `date-released: 2026-08-20`.
+- [x] Release notes finalized at `docs/release-notes-v1.0.0.md`.
+- [x] `.github/workflows/publish-v1.yml` is configured to publish `v1.0.0` from the exact stable `main` commit after running regressions and regenerating the reference package.
+- [ ] Merge the verified release-candidate PR to `main`.
+- [ ] Confirm `publish-v1` creates tag/release `v1.0.0` at the merge commit.
+- [ ] Confirm the GitHub Release contains `reference-output-v1.0.0.zip` and its SHA-256 file.
+- [ ] Persistent archival copy/DOI: optional; no Zenodo/DOI integration is currently connected to this workspace.
 
 ## 7. Final audit questions
 
-Before tagging stable, all answers should be **yes**:
+Before merge/tag, all answers should be **yes**:
 
 1. Can a technically skilled reader identify one complete passive working architecture rather than only a menu of concepts?
 2. Can a reader identify equations, assumptions, boundary conditions, and known failure regimes?
 3. Can the numerical results be reproduced from the exact release commit?
 4. Are major corrections and superseded interpretations traceable?
 5. Are close prior technologies acknowledged accurately at the confidence level actually verified?
-6. Is every remaining unchecked item a publication/source-integrity task rather than an invitation to resume open-ended modeling?
+6. Is every remaining unchecked item a publication operation rather than an invitation to resume open-ended modeling?
 7. Does the repository clearly distinguish computational evidence from physical measurement?
 
 ## Release rule
 
-Do **not** add a new numerical model to the release candidate merely because another sensitivity could be explored. New research should normally be deferred to a later version unless it corrects a contradiction or a release-critical technical error.
+Do **not** add a new numerical model to v1.0.0 merely because another sensitivity could be explored. New research should normally be deferred to a later version unless it corrects a contradiction or a release-critical technical error.
