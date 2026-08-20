@@ -94,3 +94,10 @@ jobs:
           test -s /tmp/reference-output/figures/passive_environment_boundary.png
           test -s /tmp/reference-output/metadata.json
           test -s /tmp/reference-output/sha256.txt
+      - name: Upload reproducible reference package
+        uses: actions/upload-artifact@v4
+        with:
+          name: reference-output-${{ github.sha }}
+          path: /tmp/reference-output
+          if-no-files-found: error
+          retention-days: 90
