@@ -1,62 +1,97 @@
 # Stable Release Checklist
 
-Use this checklist before creating the first versioned public technical release.
+Status date: 2026-08-20
 
-## Technical disclosure
+This checklist now tracks the **release candidate**, not further exploratory model development.
 
-- [ ] Core architecture is stated consistently in README and technical disclosure.
-- [ ] Primary passive embodiment is separated from optional fan/MOF/adaptive variants.
-- [ ] Concrete embodiment matrix is reviewed for operability and internal consistency.
-- [ ] All dimensional ranges are labeled as examples, test ranges, or measurements.
-- [ ] No simulated number is presented as measured product performance.
-- [ ] Salt mass balance contains zero salt-vapor flux.
-- [ ] Known failure modes are preserved rather than deleted.
+## 1. Technical record
 
-## Prior art
+- [x] Core passive architecture is stated consistently in the root README and technical disclosure.
+- [x] Primary passive embodiment is separated from optional fan/sorbent/adaptive variants.
+- [x] Concrete embodiment matrix records complete implementation combinations.
+- [x] Numerical values are described as simulations, analytic screens, or research ranges rather than measurements.
+- [x] No simulated watt value is presented as measured garment performance.
+- [x] Salt mass balance contains zero salt-vapor flux: `J_salt,vapor = 0`.
+- [x] Major negative results and corrections are retained rather than removed.
+- [x] Research-freeze / change-control policy is documented.
+- [x] Optional future research is separated from stable-release blockers.
 
-- [ ] Every cited literature item has verified authors/title/year/DOI.
-- [ ] Close i-Cool heat-conduction + sweat-transport prior art is explicitly acknowledged.
-- [ ] Patent publication numbers and earliest priority dates are verified from authoritative records.
-- [ ] Independent-claim overlap is summarized for the closest patent families.
-- [ ] No legal conclusion of novelty is asserted without separate professional review.
+## 2. Canonical documentation
 
-## Models and data
+- [x] Root `README.md` is a concise project summary and navigation entry point.
+- [x] `docs/README.md` is a usable documentation index.
+- [x] `docs/technical-disclosure.md` is the integrated architecture disclosure.
+- [x] `docs/embodiment-matrix.md` records concrete implementation families.
+- [x] `docs/current-results.md` is the detailed numerical-results record.
+- [x] `docs/research-freeze.md` states what is frozen and what is deferred.
+- [x] `AUDIT.md` records release-readiness and known corrections.
+- [x] `docs/roadmap.md` is release-oriented rather than an open-ended research queue.
+- [ ] Final proofreading pass confirms these documents do not contradict one another after the cleanup commits.
 
-- [ ] CI passes on the release commit.
-- [ ] Multi-stable equilibrium behavior is reported rather than hidden by root selection.
-- [ ] Reference output CSV is regenerated from the release commit.
-- [ ] Generated data record input parameters and commit SHA.
-- [ ] Numerical sensitivity to grid/root detection has been checked.
-- [ ] At least one uncertainty/sensitivity report is included.
+## 3. Prior art and source integrity
 
-## Physical experiments
+- [ ] Verify every cited literature item used in the final prior-art summary for authors/title/year/DOI or other stable identifier.
+- [ ] Explicitly retain acknowledgement of close integrated heat-conduction + sweat-transport prior art.
+- [ ] Verify patent publication numbers, family relationships, and earliest relevant dates from authoritative patent-office sources.
+- [ ] Where independent-claim overlap is discussed, ensure the wording is descriptive rather than a legal conclusion.
+- [x] Repository does not claim novelty, patentability, invalidity, or freedom to operate as a legal conclusion.
 
-Physical measurements are desirable but not mandatory for an early technical disclosure if the architecture is otherwise enabling. If measurements are included:
+## 4. Models, tests, and data
 
-- [ ] raw data are retained;
-- [ ] calibration metadata are included;
-- [ ] exclusion criteria are documented;
-- [ ] water balance is reported;
-- [ ] sample count is reported;
-- [ ] negative/null results are not removed;
-- [ ] measurement uncertainty is reported with appropriate precision.
+- [x] Simulation index contains 43 executable models plus the reference-output generator.
+- [x] Regression tests exist for the current model families.
+- [x] Multiple/multi-stable equilibrium behavior is reported rather than hidden by root selection.
+- [x] Uncertainty/sensitivity analysis is present.
+- [x] Dense and sparse liquid-network corrections are reflected in canonical documentation.
+- [x] Pre-cleanup integration head `529fc573f2a24a0d4d3db8464c3c1409a38b34ec` passed all five workflows:
+  - `model-tests` #722;
+  - `topology-tests` #278;
+  - `pressure-tests` #112;
+  - `liquid-tests` #91;
+  - `garment-tests` #46.
+- [ ] Confirm all five workflows pass on the **exact final cleanup/release commit**.
+- [ ] Regenerate release reference outputs from that exact commit.
+- [ ] Confirm generated data/metadata record the release commit SHA where intended.
+- [ ] Generate/freeze SHA-256 manifest for bundled release artifacts.
 
-## Public record
+## 5. Physical experiments
 
-- [ ] `CITATION.cff` version and date match the release.
-- [ ] `CHANGELOG.md` is updated.
-- [ ] repository commit/tag is public.
-- [ ] release files are immutable or versioned rather than overwritten.
-- [ ] SHA-256 manifest is generated for bundled release artifacts.
-- [ ] persistent archival copy/DOI is created when ready.
-- [ ] archive links back to the exact repository release/tag.
+Physical measurements are **not required for closure of this computational disclosure**, and no specimen exists.
 
-## Final audit questions
+If measurements are ever added in a later version:
 
-1. Can a technically skilled reader understand a complete working stack rather than only a list of concepts?
-2. Can a reader identify the equations, assumptions, boundary conditions, and known failure regimes?
-3. Can the numerical results be reproduced from the exact release?
-4. Are close prior technologies distinguished accurately rather than ignored?
-5. Are all corrections and deprecated design branches traceable?
+- [ ] retain raw data;
+- [ ] include calibration metadata;
+- [ ] document exclusion criteria;
+- [ ] report water balance;
+- [ ] report sample count;
+- [ ] retain negative/null results;
+- [ ] report measurement uncertainty with appropriate precision.
 
-Do not mark the release stable if any answer is materially unclear.
+No unchecked physical-experiment item blocks the present computational release.
+
+## 6. Version and public record
+
+- [ ] Choose final version identifier (`v1.0.0` or another explicit stable version).
+- [ ] Update `CITATION.cff` version/date to match the actual release.
+- [ ] Update `CHANGELOG.md` and release notes to the exact final commit.
+- [ ] Record the final release commit SHA.
+- [ ] Create public GitHub tag/release without rewriting earlier public history.
+- [ ] Attach or reference the frozen hash/reference package.
+- [ ] Optionally create a persistent archival copy/DOI and link it to the exact GitHub tag/commit.
+
+## 7. Final audit questions
+
+Before tagging stable, all answers should be **yes**:
+
+1. Can a technically skilled reader identify one complete passive working architecture rather than only a menu of concepts?
+2. Can a reader identify equations, assumptions, boundary conditions, and known failure regimes?
+3. Can the numerical results be reproduced from the exact release commit?
+4. Are major corrections and superseded interpretations traceable?
+5. Are close prior technologies acknowledged accurately?
+6. Is every remaining unchecked item a publication/source-integrity task rather than an invitation to resume open-ended modeling?
+7. Does the repository clearly distinguish computational evidence from physical measurement?
+
+## Release rule
+
+Do **not** add a new numerical model to the release candidate merely because another sensitivity could be explored. New research should normally be deferred to a later version unless it corrects a contradiction or a release-critical technical error.
