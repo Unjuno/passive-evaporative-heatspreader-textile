@@ -6,14 +6,17 @@ on:
       - "simulations/capillary_liquid_network.py"
       - "simulations/capillary_architecture_tradeoff.py"
       - "simulations/capillary_practical_constraints.py"
+      - "simulations/capillary_radius_collapse.py"
       - "simulations/salt_leakage_budget.py"
       - "tests/test_capillary_liquid_network.py"
       - "tests/test_capillary_architecture_tradeoff.py"
       - "tests/test_capillary_practical_constraints.py"
+      - "tests/test_capillary_radius_collapse.py"
       - "tests/test_salt_leakage_budget.py"
       - "data/capillary_liquid_reference.csv"
       - "data/capillary_architecture_reference.csv"
       - "data/capillary_practical_reference.csv"
+      - "data/capillary_radius_collapse_reference.csv"
       - "data/salt_leakage_budget_reference.csv"
       - ".github/workflows/liquid-tests.yml"
   workflow_dispatch:
@@ -36,4 +39,5 @@ jobs:
           tests/test_capillary_liquid_network.py
           tests/test_capillary_architecture_tradeoff.py
           tests/test_capillary_practical_constraints.py
+          tests/test_capillary_radius_collapse.py
           tests/test_salt_leakage_budget.py
