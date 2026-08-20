@@ -1,0 +1,7 @@
+terminal_storage_capacity_g,time_after_stop_to_half_body_flux_min,total_evaporated_g,total_overflow_g
+0,6.333,14.184,37.483
+2,11.767,16.184,35.483
+4,17.233,18.184,33.483
+8,28.100,22.184,29.483
+12.42,40.100,26.604,25.063
+20,60.700,34.184,17.483
