@@ -8,10 +8,17 @@ capillary drive is represented by a collector pressure margin.
 """
 from __future__ import annotations
 
+from pathlib import Path
+import sys
+
 import numpy as np
 import pandas as pd
 from scipy.sparse import coo_matrix
 from scipy.sparse.linalg import spsolve
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 from simulations.spatial_pressure_layout import (
     WET_FRACTION,
