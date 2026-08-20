@@ -11,7 +11,7 @@ The current fanless hypothesis is:
 1. directional sweat collection away from skin;
 2. distributed local collection cells rather than one garment-scale liquid manifold;
 3. short protected micro-wicks feeding larger low-resistance liquid trunks;
-4. nearby wet exterior terminals placed by a pressure-aware **thermal/liquid co-design** rather than pure pressure avoidance;
+4. nearby wet exterior terminals placed mainly by local pressure / ambient-access requirements, with route regularization treated as an optional geometric tradeoff rather than a proven hydraulic necessity;
 5. low-profile micro-rib / 3D-knit / short-fin evaporative texture with continuously ambient-connected valleys/gaps;
 6. short in-plane high-`k/rho` heat routes connecting dry/compressed regions to active wet terminals;
 7. limited cross-link redundancy for damage tolerance;
@@ -45,24 +45,31 @@ The objective is **body-coupled useful evaporation**, not maximum geometric surf
 - A loaded evaporator can remain competitive only if its vapor path is mechanically protected strongly while load-bearing support occupies little active wet area.
 - Ideal state-adaptive wet-layout switching adds less than about 1% over the best fixed pressure-aware layout in the current quasisteady usage scenarios, so active switching is not the baseline direction.
 
-### Thermal / liquid terminal co-design
+### Liquid routing: proxy result and correction
 
-Pure pressure avoidance improves evaporation under load but can lengthen liquid collection routes. The current terminal co-design therefore screens both body-side heat flux and a protected-trunk hydraulic burden
+A first route co-design used the relative proxy
 
 \[
-J_h=d_{95}\hat r^{-4}.
+J_h=d_{95}\hat r^{-4}
 \]
 
-For the converged 24 x 24 backpack + shoulder-strap reference:
+and found that a regularized terminal pattern reduced that proxy by ~16.8% while retaining ~98.2% of the pure thermal optimum.
 
-| candidate | body-side heat flux | liquid `d95` | protected-trunk hydraulic proxy |
-|---|---:|---:|---:|
-| pure thermal optimum | 112.84 W/m² | 20.16 mm | 30.72 mm-eq |
-| current co-design anchor | 110.83 W/m² | 16.77 mm | 25.56 mm-eq |
+That remains a valid **geometric route-length tradeoff**, but an explicit branched liquid-resistor network now shows that the proxy should not be treated as a capillary-feasibility constraint for the current short 50–200 µm-class distributed trunks.
 
-The co-design anchor (`template beta=0.125`, route weight `0.35`) retains **98.21%** of the modeled thermal optimum while reducing the same hydraulic p95 proxy by **16.79%**. This is a screening result, not a full hydraulic-network solution.
+For a 60 mm tile carrying flow proportional to 150 g/h over 0.30 m², with 200 µm nominal trunks, a 50 µm collector, 15 mm lift and severe pressure-linked radius reduction:
 
-### Liquid routing
+| terminal layout | max liquid-network pressure drop | capillary-drive / pressure margin |
+|---|---:|---:|
+| thermal pressure-aware | ~0.526 Pa | ~4330 |
+| regularized route layout | ~0.470 Pa | ~4850 |
+| four islands | ~0.205 Pa | ~11100 |
+
+The collector capillary drive is ~2278 Pa. The one-network safety-factor-3 radius boundary occurs only around ~26–32 µm depending on terminal layout.
+
+**Correction:** the regularized layout is no longer promoted over the pure thermal pressure-aware layout solely because of hydraulic pressure drop. It remains an optional candidate when route sparsity, material amount, seams, curvature or source localization make route length costly.
+
+### Passive capillary architecture
 
 Ideal capillary screen:
 
@@ -78,9 +85,9 @@ For positive vertical lift, the ideal radius minimizing total capillary cross-se
 \boxed{r_* = \frac{\gamma\cos\theta}{\rho g\Delta z}}.
 \]
 
-The current screen strongly favors **many short local liquid routes** over one long upward centralized route. In one explicit equal-total-flow illustration (150 g/h), a 200 mm / 100 mm-rise central route requires an ideal total capillary cross-section of ~48 mm², while four 50 mm / 25 mm-rise local cells require ~3 mm². This is geometry-dependent, not a universal performance ratio.
+The current architecture still strongly favors **many short local liquid routes** over one long upward centralized route. In one equal-total-flow illustration (150 g/h), a 200 mm / 100 mm-rise central route requires an ideal total capillary cross-section of ~48 mm², while four 50 mm / 25 mm-rise local cells require ~3 mm². This is geometry-dependent, not a universal performance ratio.
 
-A practical two-scale liquid architecture is therefore:
+A practical two-scale liquid architecture remains:
 
 > local collector wick -> short fine-pore section -> larger transport trunk -> nearby exterior terminal.
 
@@ -128,10 +135,10 @@ These are model outputs under synthetic normalized pressure fields, not measured
 - `docs/current-results.md` — integrated numerical summary
 - `docs/spatial-pressure-layout.md` — local load / wet-terminal placement
 - `docs/terminal-route-codesign.md` — pressure avoidance vs terminal-distance tradeoff
-- `docs/pressure-liquid-codesign.md` — thermal / protected-trunk hydraulic co-design
+- `docs/pressure-liquid-codesign.md` — relative terminal-route proxy and correction
+- `docs/branched-liquid-resistor-network.md` — explicit distributed-flow hydraulic correction
 - `docs/protected-air-channel-tradeoff.md` — relocation vs protected under-load vapor path
 - `docs/protected-support-skeleton.md` — air-gap preservation vs support-area penalty
-- `docs/load-schedule-policy.md` — fixed vs ideal adaptive wet-layout policy
 - `docs/capillary-liquid-network.md` — passive liquid-routing burden
 - `docs/capillary-architecture-tradeoff.md` — analytic optimum and central/local comparison
 - `docs/capillary-practical-constraints.md` — radius caps, hierarchy and blockage
@@ -139,12 +146,11 @@ These are model outputs under synthetic normalized pressure fields, not measured
 - `docs/integrated-virtual-prototype-vpe.md` — integrated VP-E anchor
 - `docs/salt-leakage-budget.md` — corrected nonvolatile-solute bulk balance
 - `docs/roadmap.md` — virtual-prototype-first roadmap
-- `docs/prior-art.md` / `docs/patent-notes.md` — adjacent work / working patent notes
 - `AUDIT.md` — repository audit
 
 ### Executable stack
 
-The branch currently contains **41 executable screening/sensitivity/audit/virtual-prototype models**, plus `generate_reference_outputs.py` as a reproducibility generator. See `simulations/README.md` for the indexed list.
+The branch currently contains **42 executable screening/sensitivity/audit/virtual-prototype models**, plus `generate_reference_outputs.py` as a reproducibility generator. See `simulations/README.md` for the indexed list.
 
 Dedicated workflows cover the broad model stack, topology/apparel models, pressure/load models and liquid-routing models.
 
@@ -159,7 +165,7 @@ Reference CSVs in `data/` distinguish converged screening outputs from analytic 
 
 ## Interpretation rules
 
-Do not treat any of the following alone as proof of garment cooling:
+Do not treat any of the following alone as proof of garment cooling or hydraulic viability:
 
 - geometric surface area;
 - one exchange multiplier;
@@ -170,16 +176,17 @@ Do not treat any of the following alone as proof of garment cooling:
 - synthetic pressure percentages as real garment pressure limits;
 - ideal cylindrical capillary counts as real textile permeability;
 - route-distance or `d95 r^-4` proxies as a full hydraulic network;
+- a fully connected resistor grid as proof that a sparse manufactured liquid network will behave identically;
 - virtual BOM values as measured garment mass;
 - bulk salt concentration as proof of local crystallization.
 
 ## Current next tasks
 
-1. replace the route-distance/hydraulic proxy with an explicit branched heat + liquid network on a garment-scale regional map;
-2. add explicit channel/spacer collapse and garment curvature under local load;
-3. replace effective protected-air floors with geometry-resolved vapor paths;
-4. model local wall-film salt deposition and progressive hydraulic-radius loss;
-5. rerun independent wet/dry hot/humid exposure control at full converged reference resolution;
+1. sparsify the explicit liquid network and optimize edge/material density jointly with terminal thermal performance;
+2. introduce localized sweat-source maps rather than uniform tile injection;
+3. add explicit channel/spacer collapse and garment curvature under local load;
+4. replace effective protected-air floors with geometry-resolved vapor paths;
+5. model local wall-film salt deposition and progressive hydraulic-radius loss;
 6. continue prior-art/claim verification and prepare a frozen stable release only after the computational record is internally consistent.
 
 ## Physical clarification: sweat salts
