@@ -1,19 +1,25 @@
 name: publish-v1
 
 on:
+  pull_request:
+    paths:
+      - '.github/workflows/publish-v1.yml'
+      - 'CITATION.cff'
+      - 'docs/release-notes-v1.0.0.md'
+      - 'simulations/**'
+      - 'tests/**'
+      - 'requirements*.txt'
   push:
     branches:
       - main
 
-permissions:
-  contents: write
-
 jobs:
-  publish-v1:
-    if: github.repository == 'Unjuno/passive-evaporative-heatspreader-textile'
+  validate-v1:
+    if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     env:
-      RELEASE_TAG: v1.0.0
       RELEASE_DIR: reference-output-v1.0.0
       RELEASE_ZIP: reference-output-v1.0.0.zip
     steps:
@@ -42,7 +48,59 @@ jobs:
       - name: Verify indexed direct execution
         run: python simulations/branched_liquid_resistor_network.py > /tmp/branched-network-direct.csv
 
-      - name: Generate exact-commit reference package from outside checkout
+      - name: Generate commit-traced reference package from outside checkout
+        run: |
+          cd /tmp
+          python "$GITHUB_WORKSPACE/simulations/generate_reference_outputs.py" \
+            --output-root "$RUNNER_TEMP/$RELEASE_DIR"
+          grep -q "\"git_commit\": \"$GITHUB_SHA\"" \
+            "$RUNNER_TEMP/$RELEASE_DIR/metadata.json"
+          test -s "$RUNNER_TEMP/$RELEASE_DIR/sha256.txt"
+
+      - name: Build release archive and checksum
+        run: |
+          cd "$RUNNER_TEMP"
+          python -m zipfile -c "$RELEASE_ZIP" "$RELEASE_DIR"
+          sha256sum "$RELEASE_ZIP" > "$RELEASE_ZIP.sha256"
+          test -s "$RELEASE_ZIP"
+          test -s "$RELEASE_ZIP.sha256"
+
+  publish-v1:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    env:
+      RELEASE_TAG: v1.0.0
+      RELEASE_DIR: reference-output-v1.0.0
+      RELEASE_ZIP: reference-output-v1.0.0.zip
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Verify exact release commit and metadata
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          grep -q '^version: 1.0.0$' CITATION.cff
+          grep -q '^date-released: 2026-08-20$' CITATION.cff
+          test -s docs/release-notes-v1.0.0.md
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements-dev.txt
+
+      - name: Run full regression suite
+        run: python -m pytest -q
+
+      - name: Verify indexed direct execution
+        run: python simulations/branched_liquid_resistor_network.py > /tmp/branched-network-direct.csv
+
+      - name: Generate exact-release reference package from outside checkout
         run: |
           cd /tmp
           python "$GITHUB_WORKSPACE/simulations/generate_reference_outputs.py" \
