@@ -46,7 +46,7 @@ Status: **screening / analytic / virtual-prototype models only**. No physical ga
 32. `terminal_route_coddesign.py` — pressure avoidance vs liquid/heat nearest-terminal distance Pareto screen.
 33. `pressure_weighted_liquid_routes.py` — pressure/collapse-weighted liquid route cost and protected escape trunks.
 34. `environment_exposure_control.py` — hot/humid wet-terminal open/shield state screen under load.
-35. `pressure_liquid_codesign.py` — pressure-aware terminal thermal performance vs protected-trunk hydraulic-burden co-design.
+35. `pressure_liquid_codesign.py` — relative pressure-aware terminal thermal/geometric route co-design proxy.
 
 ### Liquid transport / nonvolatile solute
 
@@ -56,14 +56,15 @@ Status: **screening / analytic / virtual-prototype models only**. No physical ga
 39. `capillary_practical_constraints.py` — radius caps, two-scale micro-wick/trunk split and blockage redundancy.
 40. `capillary_radius_collapse.py` — equivalent hydraulic-radius collapse plus blockage sensitivity.
 41. `salt_leakage_budget.py` — corrected bulk nonvolatile-salt concentration under upstream water-only leakage.
+42. `branched_liquid_resistor_network.py` — explicit distributed-source branched-flow pressure solve to multiple wet terminals.
 
-`generate_reference_outputs.py` is a reproducibility generator rather than a physical model, so it is not included in the 41-model count.
+`generate_reference_outputs.py` is a reproducibility generator rather than a physical model, so it is not included in the 42-model count.
 
 ## Current integrated architecture
 
 The working virtual architecture is:
 
-> directional skin-side liquid collection -> distributed short capillary routes -> short pressure-resistant escape trunks where needed -> pressure-aware wet terminals regularized against excessive liquid-route length -> continuously ambient-connected microtexture/open valleys -> short high-`k/rho` heat routes with limited cross-link redundancy -> optional environmental open/shield state -> dry-side shielding in hostile hot/humid ambient.
+> directional skin-side liquid collection -> distributed short capillary routes -> short pressure-resistant escape trunks where needed -> pressure-aware wet terminals -> continuously ambient-connected microtexture/open valleys -> short high-`k/rho` heat routes with limited cross-link redundancy -> optional environmental open/shield state -> dry-side shielding in hostile hot/humid ambient.
 
 The current project does **not** treat one garment-scale central wick, one long wet chimney, one global heat sink, geometric surface area alone, or active load-state switching as the preferred architecture.
 
@@ -80,12 +81,12 @@ The current project does **not** treat one garment-scale central wick, one long 
 - Equal-material sparse traces tested so far do not beat the homogenized ideal field; orientation still matters strongly.
 - A lightly cross-linked directed heat network is the current combined-failure robustness anchor for the tested failure map.
 - Under persistent local load, active evaporation is better placed in nearby low-pressure regions unless a protected vapor path retains near-uncompressed ambient access with little support-area occupation.
-- Pure pressure avoidance lengthens liquid routes; the current co-design anchor deliberately trades ~1.8% thermal performance for ~16.8% lower protected-trunk hydraulic p95 proxy in the 24 x 24 backpack+straps reference.
-- Pressure-aware terminal relocation requires a protected short liquid escape path when source regions themselves are compressed.
+- A geometric `d95 r^-4` proxy can shorten routes, but the later explicit branched-flow model shows that **50–200 µm-class dense local trunks are not capillary-head limited** at the current tile-scaled flow. The proxy is therefore not sufficient to justify sacrificing thermal performance.
+- In the explicit 24 x 24 dense local network, the single-network safety-factor-3 capillary boundary occurs only around ~26–32 µm nominal trunk radius depending on terminal layout.
 - Ideal load-state wet-layout switching adds little in current quasisteady schedules, but environmental wet-terminal open/shield switching remains useful because body-heat-flow sign changes in hot/humid conditions.
 - Passive liquid transport strongly favors distributed local collection over long upward centralized transport in the ideal capillary screen.
 - Micro-wicking and longer-range liquid transport should use different hydraulic scales.
-- Hydraulic trunk radius loss is severe because viscous burden scales approximately as `r^-4`; redundancy alone does not remove the need to protect cross-section.
+- Hydraulic trunk radius loss is severe because viscous burden scales approximately as `r^-4`; the new network result only says the present dense 50–200 µm local network has large pressure margin.
 - Salt vapor flux is zero. Small upstream water leakage modestly raises **bulk** concentration; local wall-film crystallization remains a separate unresolved mechanism.
 - Current screening BOMs put nominal operating mass near 181 g for the pressure-relocation VP-E configuration, but this is a design-variable calculation rather than a measured garment mass.
 
@@ -100,26 +101,22 @@ The current project does **not** treat one garment-scale central wick, one long 
 For positive lift, the ideal radius minimizing total capillary cross-sectional area is
 
 \[
-r_* = \frac{\gamma\cos\theta}{\rho g\Delta z},
+r_* = \frac{\gamma\cos\theta}{\rho g\Delta z}.
 \]
 
-half the largest radius that can statically sustain the same rise.
-
-Pressure/liquid terminal co-design uses the first-order common burden
+Explicit network edge law:
 
 \[
-J_h=d_{95}\hat r^{-4},
+Q_e=G_e\Delta p_e,
+\qquad
+G_e=\frac{\pi r_e^4}{8\mu L_e}.
 \]
-
-where `d95` is source-to-terminal route distance and `r_hat` is a protected equivalent-radius retention ratio. This is a screening proxy, not a full hydraulic solve.
 
 Bulk nonvolatile-solute leakage balance:
 
 \[
 \sigma_{out}=\frac{\sigma_0}{1-f_{leak}},\qquad J_{salt,vapor}=0.
 \]
-
-This bulk equation does not prove that small upstream evaporation causes crystallization.
 
 ## Reproducibility
 
@@ -128,11 +125,11 @@ python -m pip install -r requirements-dev.txt
 python -m pytest -q
 ```
 
-Dedicated workflows separate the broad model stack, topology/apparel screens, spatial-pressure/environment screens and liquid-routing screens. The newest pressure/liquid co-design regression is included in `pressure-tests.yml`.
+Dedicated workflows separate the broad model stack, topology/apparel screens, spatial-pressure/environment screens and liquid-routing screens. `liquid-tests.yml` now includes the explicit branched liquid network regression.
 
 ## Interpretation rules
 
-Do not use any one of the following as proof of garment cooling:
+Do not use any one of the following as proof of garment cooling or hydraulic viability:
 
 - geometric area;
 - a single lumped exchange multiplier;
@@ -146,6 +143,7 @@ Do not use any one of the following as proof of garment cooling:
 - synthetic pressure/compression percentages as measured garment limits;
 - ideal cylindrical-capillary counts as measured textile permeability;
 - pressure-weighted shortest-path or `d95 r^-4` cost as a full hydraulic network solution;
+- a dense-grid resistor network as proof that a sparse manufactured network will have the same pressure margin;
 - bulk salt balance as proof of local crystallization;
 - virtual BOM values as measured garment mass.
 
@@ -153,11 +151,11 @@ Integrated interpretation requires signed body heat flow, vapor renewal, absolut
 
 ## Next model tasks
 
-1. replace route-distance/hydraulic proxies with one explicit branched heat + capillary network optimizer on a garment-scale regional map;
-2. add explicit channel/spacer collapse and curvature using candidate geometry rather than equivalent retention factors;
-3. resolve protected vapor-gap geometry rather than use an effective air-access floor;
-4. model local wall-film salt deposition and progressive hydraulic-radius loss;
-5. rerun independent wet/dry exposure hot/humid control at full converged reference resolution;
-6. synchronize README, audit, current-results, changelog and PR metadata before a frozen release.
+1. sparsify the explicit branched liquid network and optimize edge/material density jointly with thermal terminal placement;
+2. add localized sweat-source maps rather than uniform distributed injection;
+3. add explicit channel/spacer collapse and curvature using candidate geometry rather than equivalent retention factors;
+4. resolve protected vapor-gap geometry rather than use an effective air-access floor;
+5. model local wall-film salt deposition and progressive hydraulic-radius loss;
+6. synchronize current-results, audit, README, changelog and PR metadata after each substantive correction.
 
 See `docs/current-results.md`, the specialized design notes under `docs/`, and `AUDIT.md`.
