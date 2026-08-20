@@ -2,7 +2,7 @@
 
 Status date: 2026-08-20
 
-This checklist tracks **v1.0.0 publication**, not further exploratory model development.
+This checklist records the completed `v1.0.0` publication and the remaining optional archival work. It is not an open-ended research queue.
 
 ## 1. Technical record
 
@@ -18,17 +18,15 @@ This checklist tracks **v1.0.0 publication**, not further exploratory model deve
 
 ## 2. Canonical documentation
 
-- [x] Root `README.md` is a concise project summary and navigation entry point.
-- [x] `docs/README.md` is a usable documentation index.
+- [x] Root `README.md` is the project summary and navigation entry point.
+- [x] `docs/README.md` is the documentation index.
 - [x] `docs/technical-disclosure.md` is the integrated architecture disclosure.
 - [x] `docs/embodiment-matrix.md` records concrete implementation families.
-- [x] `docs/current-results.md` is the canonical numerical-results record.
+- [x] `docs/current-results.md` is the canonical numerical-results record for v1.0.0.
 - [x] `docs/research-freeze.md` states what is frozen and what is deferred.
-- [x] `AUDIT.md` records release-readiness and known corrections.
-- [x] `docs/roadmap.md` is release-oriented rather than an open-ended research queue.
+- [x] `AUDIT.md` records release integrity and known corrections.
+- [x] `docs/release-notes-v1.0.0.md` records stable release scope and evidence boundary.
 - [x] Actual executable-model count was reconciled against `simulations/`: **45 models + 1 reference-output generator**.
-- [x] v1.0.0 release notes are present at `docs/release-notes-v1.0.0.md`.
-- [x] Code/release-workflow-bearing checkpoint `568d637f09f039366465544099d8a28d803391c8` passed all six PR workflows, including `publish-v1` validation.
 
 ## 3. Prior art and source integrity
 
@@ -37,9 +35,9 @@ This checklist tracks **v1.0.0 publication**, not further exploratory model deve
 - [x] Patent working notes separate public-index bibliographic/technical cross-checks from authoritative patent-office verification.
 - [x] Claim-scope caveats are retained where specification embodiments could be mistaken for independent-claim limitations.
 - [x] Repository does not claim novelty, patentability, invalidity, infringement, or freedom to operate as a legal conclusion.
-- [x] Stable-release confidence policy is decided: **v1.0.0 labels no patent family/legal-status/claim-scope fact as authoritatively office-verified unless such verification is actually recorded.** The current six-item patent map remains explicitly a public-index technical map.
+- [x] `v1.0.0` labels no patent family/legal-status/claim-scope fact as authoritatively office-verified unless such verification is actually recorded.
 
-## 4. Models, tests, data, and release artifact
+## 4. Models, tests, and pre-release reference artifact
 
 - [x] Simulation index contains **45 executable models** plus the reference-output generator.
 - [x] Regression tests exist for the current model families.
@@ -48,46 +46,50 @@ This checklist tracks **v1.0.0 publication**, not further exploratory model deve
 - [x] Dense and sparse liquid-network corrections are reflected in canonical documentation.
 - [x] Collector-fouling/radius-loss is identified as an imposed failure sensitivity rather than measured deposition kinetics.
 - [x] Transient terminal buffering is identified as a mass-conserving low-order model rather than a measured response constant.
-- [x] Exact-PR-head artifact provenance was corrected and independently checked.
 - [x] `branched_liquid_resistor_network.py` direct execution is covered by CI.
 - [x] `generate_reference_outputs.py` resolves Git metadata from `REPO_ROOT`, and CI invokes it from outside the checkout working directory.
-- [x] Exact-head reference artifacts contain generated data, figures, `metadata.json`, and `sha256.txt`.
-- [x] On `568d637f...`: `model-tests` #796, `topology-tests` #352, `pressure-tests` #149, `liquid-tests` #128, `garment-tests` #83, and `publish-v1` #2 all passed.
-- [x] Exact-head artifact for that checkpoint: `reference-output-568d637f09f039366465544099d8a28d803391c8`, artifact id `9409854675`, GitHub ZIP digest `sha256:9830c9b16c6c4a4b2a7b195e7243b341bb3bec3d4c070dcaefdf97dd6828031f`.
+- [x] Final release-candidate head `0a885e41f8a1ebef1152066d2cea79fe156b5dad` passed all six PR workflows.
+- [x] Exact-head reference artifact existed for that head: artifact id `9410060502`, GitHub ZIP digest `sha256:a2dbba8d70d5453bd445afa035dbf62857f6c14b71157ddcb933917b5d08b6fc`.
 
-## 5. Physical experiments
+## 5. Stable version and public record
+
+- [x] Final version identifier: `v1.0.0`.
+- [x] `CITATION.cff` contains `version: 1.0.0` and `date-released: 2026-08-20`.
+- [x] PR #1 was merged to `main` without squashing the research history.
+- [x] Stable merge commit: `e544f64630119c88425b49cc3e5a00e06d15ad84`.
+- [x] Public tag `v1.0.0` resolves to that exact merge commit.
+- [x] Publication workflow was PR-validated before merge.
+- [x] Publication workflow was designed to regenerate the exact-commit package, verify its metadata, create a ZIP and SHA-256 file, and create `v1.0.0` if absent.
+- [ ] Independently re-download the GitHub Release assets and verify the published ZIP against its published SHA-256. **Not completed in this workspace because the connected GitHub interface does not expose Release-asset download endpoints.**
+- [ ] Persistent archival copy/DOI. **Optional; no Zenodo/DOI integration is currently connected to this workspace.**
+
+The two unchecked items do not change the technical content of `v1.0.0`. The first is an independent post-publication distribution check; the second is an optional second archive.
+
+## 6. Post-release maintenance
+
+- [x] `v1.0.0` is treated as immutable project history.
+- [x] Automatic `v1.0.0` publication on every later `main` push is removed in post-release maintenance.
+- [x] The former publication workflow is converted into a read-only/manual verifier that checks out tag `v1.0.0`, verifies exact SHA/metadata, reruns regressions, regenerates the reference package, and uploads a temporary verification artifact.
+- [x] Post-release maintenance does not move or rewrite the stable tag.
+
+## 7. Physical experiments
 
 Physical measurements are **not required for closure of this computational disclosure**, and no specimen exists.
 
 If measurements are ever added in a later version, retain raw data, calibration metadata, exclusion criteria, water balance, sample count, negative/null results, and measurement uncertainty with appropriate precision.
 
-No physical-experiment item blocks v1.0.0.
+No physical-experiment item blocks `v1.0.0`.
 
-## 6. Version and public record
-
-- [x] Final version identifier chosen: `v1.0.0`.
-- [x] `CITATION.cff` contains `version: 1.0.0` and `date-released: 2026-08-20`.
-- [x] Release notes finalized at `docs/release-notes-v1.0.0.md`.
-- [x] `.github/workflows/publish-v1.yml` is configured and PR-validated: on `main` it reruns regressions, regenerates the exact-commit reference package, verifies commit provenance, and creates `v1.0.0` if absent.
-- [ ] Merge the verified release-candidate PR to `main`.
-- [ ] Confirm `publish-v1` creates tag/release `v1.0.0` at the merge commit.
-- [ ] Confirm the GitHub Release contains `reference-output-v1.0.0.zip` and its SHA-256 file.
-- [ ] Persistent archival copy/DOI: optional; no Zenodo/DOI integration is currently connected to this workspace.
-
-The three unchecked GitHub-publication operations above occur **after** this source checklist is merged. Their completion is verified from GitHub state rather than by rewriting the already-tagged v1.0.0 source tree.
-
-## 7. Final audit questions
-
-Before merge/tag, all answers are **yes**:
+## Final audit questions
 
 1. Can a technically skilled reader identify one complete passive working architecture rather than only a menu of concepts? **Yes.**
 2. Can a reader identify equations, assumptions, boundary conditions, and known failure regimes? **Yes.**
-3. Can the numerical results be reproduced from the exact release commit? **Yes; the release workflow enforces commit-traced regeneration.**
+3. Can the numerical results be regenerated from the exact release tag? **Yes; the post-release verifier is explicitly bound to the immutable v1.0.0 SHA.**
 4. Are major corrections and superseded interpretations traceable? **Yes.**
-5. Are close prior technologies acknowledged accurately at the confidence level actually verified? **Yes.**
-6. Is every remaining unchecked item a publication operation rather than an invitation to resume open-ended modeling? **Yes.**
-7. Does the repository clearly distinguish computational evidence from physical measurement? **Yes.**
+5. Are close prior technologies acknowledged at the confidence level actually verified? **Yes.**
+6. Does the repository clearly distinguish computational evidence from physical measurement? **Yes.**
+7. Is further numerical exploration required to keep v1.0.0 valid as the published computational record? **No.**
 
 ## Release rule
 
-Do **not** add a new numerical model to v1.0.0 merely because another sensitivity could be explored. New research should normally be deferred to a later version unless it corrects a contradiction or a release-critical technical error.
+Do **not** add a new numerical model to `v1.0.0`. New research belongs to a later version unless it corrects a contradiction in the published record. Never rewrite or move the `v1.0.0` tag.
