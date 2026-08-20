@@ -26,33 +26,36 @@ This checklist tracks the **release candidate**, not further exploratory model d
 - [x] `docs/research-freeze.md` states what is frozen and what is deferred.
 - [x] `AUDIT.md` records release-readiness and known corrections.
 - [x] `docs/roadmap.md` is release-oriented rather than an open-ended research queue.
-- [ ] Final proofreading pass confirms these documents do not contradict one another after the cleanup commits.
+- [x] Actual executable-model count was reconciled against `simulations/`: **45 models + 1 reference-output generator**.
+- [ ] Final exact-head pass confirms no documentation/count drift after the last reproducibility edits.
 
 ## 3. Prior art and source integrity
 
-- [ ] Verify every cited literature item used in the final prior-art summary for authors/title/year/DOI or another stable identifier.
-- [ ] Explicitly retain acknowledgement of close integrated heat-conduction + sweat-transport prior art.
-- [ ] Verify patent publication numbers, family relationships, and earliest relevant dates from authoritative patent-office sources.
-- [ ] Where independent-claim overlap is discussed, ensure the wording is descriptive rather than a legal conclusion.
+- [x] Close literature is identified with stable bibliographic identifiers in the working prior-art map.
+- [x] Close integrated heat-conduction + sweat-transport prior art is explicitly acknowledged.
+- [x] Patent working notes separate public-index bibliographic/technical cross-checks from authoritative patent-office verification.
+- [x] Claim-scope caveats are retained where specification embodiments could be mistaken for independent-claim limitations.
 - [x] Repository does not claim novelty, patentability, invalidity, or freedom to operate as a legal conclusion.
+- [ ] For any patent family/claim fact the stable release chooses to label **authoritatively verified**, verify that exact fact from an authoritative patent-office record; otherwise leave it explicitly as a working-map/public-index statement.
 
-## 4. Models, tests, and data
+## 4. Models, tests, data, and release artifact
 
-- [x] Simulation index contains 43 executable models plus the reference-output generator.
+- [x] Simulation index contains **45 executable models** plus the reference-output generator.
 - [x] Regression tests exist for the current model families.
 - [x] Multiple/multi-stable equilibrium behavior is reported rather than hidden by root selection.
 - [x] Uncertainty/sensitivity analysis is present.
 - [x] Dense and sparse liquid-network corrections are reflected in canonical documentation.
-- [x] Pre-cleanup integration head `529fc573f2a24a0d4d3db8464c3c1409a38b34ec` passed all five workflows:
-  - `model-tests` #722;
-  - `topology-tests` #278;
-  - `pressure-tests` #112;
-  - `liquid-tests` #91;
-  - `garment-tests` #46.
-- [ ] Confirm all five workflows pass on the **exact final cleanup/release commit**.
-- [ ] Regenerate release reference outputs from that exact commit.
-- [ ] Confirm generated data/metadata record the release commit SHA where intended.
-- [ ] Generate/freeze SHA-256 manifest for bundled release artifacts.
+- [x] Collector-fouling/radius-loss is identified as an imposed failure sensitivity rather than measured deposition kinetics.
+- [x] Transient terminal buffering is identified as a mass-conserving low-order model rather than a measured response constant.
+- [x] Documentation-cleanup checkpoint `14fa2ab6fb289ad8db568ef6425009f84c684855` passed all five workflows:
+  - `model-tests` #752;
+  - `topology-tests` #308;
+  - `pressure-tests` #127;
+  - `liquid-tests` #106;
+  - `garment-tests` #61.
+- [x] `model-tests` now uploads the generated reference package as an exact-head Actions artifact.
+- [ ] Confirm all five workflows pass on the **final release-candidate commit** after the count/artifact corrections.
+- [ ] Confirm the reference artifact exists and contains generated data, figures, `metadata.json`, and `sha256.txt`.
 
 ## 5. Physical experiments
 
@@ -72,12 +75,12 @@ No unchecked physical-experiment item blocks the present computational release.
 
 ## 6. Version and public record
 
-- [ ] Choose final version identifier (`v1.0.0` or another explicit stable version).
+- [ ] Choose final version identifier (`v1.0.0` is the natural stable candidate unless intentionally choosing another version).
 - [ ] Update `CITATION.cff` version/date to match the actual release.
-- [ ] Update `CHANGELOG.md` and release notes to the exact final commit.
+- [ ] Finalize release notes for the exact final commit.
 - [ ] Record the final release commit SHA.
 - [ ] Create public GitHub tag/release without rewriting earlier public history.
-- [ ] Attach or reference the frozen hash/reference package.
+- [ ] Attach or reference the exact-head reference artifact / SHA-256 manifest.
 - [ ] Optionally create a persistent archival copy/DOI and link it to the exact GitHub tag/commit.
 
 ## 7. Final audit questions
@@ -88,7 +91,7 @@ Before tagging stable, all answers should be **yes**:
 2. Can a reader identify equations, assumptions, boundary conditions, and known failure regimes?
 3. Can the numerical results be reproduced from the exact release commit?
 4. Are major corrections and superseded interpretations traceable?
-5. Are close prior technologies acknowledged accurately?
+5. Are close prior technologies acknowledged accurately at the confidence level actually verified?
 6. Is every remaining unchecked item a publication/source-integrity task rather than an invitation to resume open-ended modeling?
 7. Does the repository clearly distinguish computational evidence from physical measurement?
 
