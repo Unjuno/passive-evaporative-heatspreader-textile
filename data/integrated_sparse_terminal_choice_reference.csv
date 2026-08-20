@@ -1,0 +1,4 @@
+layout,collector_radius_um,trunk_pitch_mm,trunk_edge_fraction,channel_liquid_volume_ml_per_60mm_tile,worst_margin_ratio_across_sources_offsets,body_W_m2,thermal_retention_percent,passes_SF3
+thermal_only,35,60,0.041667,0.02463,3.9534,112.8443,100.0000,true
+regularized,35,60,0.041667,0.02463,4.2135,110.8265,98.2119,true
+four_islands,35,60,0.041667,0.02463,6.4460,84.2635,74.6720,true
