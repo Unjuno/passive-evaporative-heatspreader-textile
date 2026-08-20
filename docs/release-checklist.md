@@ -2,7 +2,7 @@
 
 Status date: 2026-08-20
 
-This checklist now tracks the **release candidate**, not further exploratory model development.
+This checklist tracks the **release candidate**, not further exploratory model development.
 
 ## 1. Technical record
 
@@ -22,7 +22,7 @@ This checklist now tracks the **release candidate**, not further exploratory mod
 - [x] `docs/README.md` is a usable documentation index.
 - [x] `docs/technical-disclosure.md` is the integrated architecture disclosure.
 - [x] `docs/embodiment-matrix.md` records concrete implementation families.
-- [x] `docs/current-results.md` is the detailed numerical-results record.
+- [x] `docs/current-results.md` is the canonical numerical-results record.
 - [x] `docs/research-freeze.md` states what is frozen and what is deferred.
 - [x] `AUDIT.md` records release-readiness and known corrections.
 - [x] `docs/roadmap.md` is release-oriented rather than an open-ended research queue.
@@ -30,7 +30,7 @@ This checklist now tracks the **release candidate**, not further exploratory mod
 
 ## 3. Prior art and source integrity
 
-- [ ] Verify every cited literature item used in the final prior-art summary for authors/title/year/DOI or other stable identifier.
+- [ ] Verify every cited literature item used in the final prior-art summary for authors/title/year/DOI or another stable identifier.
 - [ ] Explicitly retain acknowledgement of close integrated heat-conduction + sweat-transport prior art.
 - [ ] Verify patent publication numbers, family relationships, and earliest relevant dates from authoritative patent-office sources.
 - [ ] Where independent-claim overlap is discussed, ensure the wording is descriptive rather than a legal conclusion.
