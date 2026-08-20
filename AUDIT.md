@@ -5,283 +5,214 @@ Branch: `agent/initial-research-disclosure`
 
 ## Overall assessment
 
-The branch contains a coherent technical disclosure, explicit implementation variants, **20 executable screening/sensitivity/audit/virtual-prototype modules**, regression tests, reproducible reference-output generation, prior-art working notes, and future physical-test protocols.
+The branch now contains a coherent technical disclosure, explicit implementation variants, **33 executable screening/sensitivity/audit/virtual-prototype modules**, regression tests, reference CSVs, multiple CI workflows, prior-art working notes, and future physical-validation specifications.
 
-It remains a development branch and a **virtual/computational prototype only**. No physical garment or bench specimen currently exists, and no physical garment-performance measurements have been published.
+It remains a **virtual/computational prototype only**. No physical garment or bench specimen exists and no measured garment-performance claim is made.
 
-The numerical record now supports a narrower design hypothesis:
+The current integrated design hypothesis is:
 
-> directional liquid transport + capillary-fed wet microtexture + continuously ambient-connected exterior valleys/islands + short-range high-`k/rho` heat routing between thermally asymmetric wet/dry regions + explicit thermal contacts + explicit liquid-supply state + hot-ambient sensible-heat protection.
+> directional local sweat collection + distributed short capillary liquid routes + nearby pressure-aware or mechanically protected wet terminals + continuously ambient-connected evaporative microtexture/open valleys + short high-`k/rho` heat routes with limited redundancy + terminal contact management + dry-side hot-ambient protection.
 
-The repository no longer accepts geometric area alone, long passive wet chimneys, axial Péclet number alone, centimeter-scale segmentation alone, high local `F` alone, positive evaporation alone, fully-wet capacity above feed, heat spreading under symmetric boundary conditions, infinite sheet conductivity, sparse coverage as automatic mass reduction, or high sheet `k` without routing/contact constraints as sufficient design criteria.
+The design has moved away from garment-scale centralized liquid lift, long covered wet chimneys, indiscriminate full-area high-`k` spreading, geometric surface area alone, and active layout switching as baseline mechanisms.
 
 ## A. Technical coherence
 
 | Item | Status | Audit note |
 |---|---|---|
-| Directional sweat transport | PASS | Core layer retained. |
-| Capillary liquid delivery | PASS | Distributed liquid path retained. |
-| Exterior micro-ribs / 3D knit / fins / lamellae | PASS | Multiple concrete families documented. |
-| Hierarchical ambient access | PASS | Open valleys, cross-openings, short interruptions, islands and covered comparisons explicit. |
+| Directional sweat collection | PASS/CONCEPT | Retained as skin-side source layer. |
+| Distributed capillary delivery | PASS/SCREEN | Local short routes now explicitly favored over centralized lift in the ideal hydraulic screen. |
+| Hierarchical liquid pore scale | PASS/HYPOTHESIS | Short fine collector + larger transport trunk is explicit. |
+| Exterior micro-ribs / 3D knit / fins | PASS/CONCEPT | Multiple exterior families retained. |
+| Ambient-open valleys/islands | PASS/SCREEN | Preferred to long covered wet corridors. |
 | Sensible/vapor separation | PASS | Heat and vapor transfer are not forced to share one multiplier. |
-| Explicit feed-limited state | PASS/SCREEN | Homogenized wet fraction solves imposed feed when fully-wet capacity is too high. |
-| Separate wet/dry temperatures | PASS/SCREEN | Symmetric and asymmetric two-node models exist. |
-| Asymmetric heat-routing value | PASS/SCREEN | System-level spreader gain appears only when local boundary conditions differ. |
-| Material/pitch mapping | PASS/SCREEN | `g_mix` maps to `k*t/P²`, mass and bend-strain screening under an explicit topology factor. |
-| Thermal-contact mapping | PASS/SCREEN | Two-contact series burden is explicit. |
-| Virtual prototypes v0.1 | PASS/DEV | VP-A through VP-D are reproducible computational anchors. |
-| Direct-material distributed bridge | PASS/DEV | Scalar `g_mix` is replaced by periodic 1-D direct `k*t` conduction for VP regression. |
-| Hot-ambient protection | PASS/HYPOTHESIS | Required by several screens; no physical validation. |
-| Salt handling | PASS | Water evaporates; salt vapor flux is zero. |
-| Apparel integration | PASS/CONCEPT | Low-profile patterns, valleys/islands and routed paths documented. |
+| Feed-limited state | PASS/SCREEN | Water supply is explicit in the open-valley stack. |
+| Wet/dry thermal asymmetry | PASS/SCREEN | Required for integrated heat-spreader value. |
+| Direct heat-routing topology | PASS/DEV | 1-D direct `k*t` and 2-D explicit topology models exist. |
+| Damage/stretch/contact robustness | PASS/SCREEN | Separate and combined failure maps exist. |
+| Compression regime transition | PASS/SCREEN | Contact benefit vs vapor-path closure is explicit. |
+| Spatial pressure maps | PASS/SCREEN | Backpack/strap/seat synthetic maps and equal-area terminal layouts exist. |
+| Protected under-load vapor path | PASS/HYPOTHESIS | Effective air-access floor and support-area penalty are explicit. |
+| Load-schedule adaptation | PASS/SCREEN | Ideal switching adds little in current quasisteady scenarios; fixed robust layout remains baseline. |
+| Hot-ambient protection | PASS/HYPOTHESIS | Required by signed heat-flow screens. |
+| Salt nonvolatility | PASS | Salt vapor flux is exactly zero. |
+| Bulk salt leakage correction | PASS/CORRECTION | Small upstream water loss does not by itself imply bulk saturation. |
+| Physical validation | NOT EXECUTED | No specimen exists. |
 
 ## B. Executable model / audit stack
 
-1. `simulations/passive_rib_screen.py`
-2. `simulations/split_heat_mass_screen.py`
-3. `simulations/split_transfer_sensitivity.py`
-4. `simulations/rib_diffusion_screen.py`
-5. `simulations/corridor_buoyancy_screen.py`
-6. `simulations/self_consistent_corridor_1d.py`
-7. `simulations/open_valley_exchange_target.py`
-8. `simulations/open_valley_distributed_1d.py`
-9. `simulations/open_valley_thermal_1d.py`
-10. `simulations/open_valley_feed_limited.py`
-11. `simulations/wet_dry_two_node.py`
-12. `simulations/asymmetric_wet_dry_spreader.py`
-13. `simulations/spreader_material_mapping.py`
-14. `simulations/virtual_prototype_v01.py`
-15. `simulations/distributed_spreader_1d.py`
-16. `simulations/open_valley_heat_mass_coupling_audit.py`
-17. `simulations/passive_environment_boundary.py`
-18. `simulations/supply_limit_audit.py`
-19. `simulations/heat_spreader_2d.py`
-20. `simulations/water_salt_1d.py`
+See `simulations/README.md` for the full indexed list. Current count: **33**.
 
-`simulations/generate_reference_outputs.py` is the reproducibility generator rather than a physical model.
+Major groups:
 
-All models are screening/analytic/virtual-prototype models. None is validated CFD or measured garment performance.
+- exterior heat/vapor physics: 13 modules;
+- heat routing / virtual prototypes: 11 modules through compression;
+- spatial load/apparel architecture: 4 modules;
+- liquid transport / nonvolatile solute: 5 modules including the earlier water/salt screen.
+
+`generate_reference_outputs.py` remains a reproducibility generator rather than a physical model.
 
 ## C. Reproducibility / verification
 
 | Item | Status | Audit note |
 |---|---|---|
-| Regression tests | PASS/UPDATED | Include multi-root, split transfer, E3, corridor, open-valley, feed-limited, wet/dry, asymmetric continuation, material/contact, virtual-prototype and distributed-spreader checks. |
-| E3 grid convergence | PASS/SCREEN | 24 nodes/pitch within ~0.62% of 48-node reference for the screened case. |
-| Distributed open-valley convergence | PASS/SCREEN | Center `F` stable over tested grids. |
-| Coupled wall-energy closure | PASS | Open-valley regression exists. |
-| Feed balance closure | PASS | Feed-limited model matches imposed feed numerically. |
-| Asymmetric branch acceptance | PASS | Bounded least squares + residual threshold + continuation replaced the earlier branch-jumping solver. |
-| Material mapping identities | PASS | Round trip, quadratic pitch penalty, coverage/mass identity and contact ceiling are tested. |
-| Virtual prototype regression | PASS | VP-A/B/C/D nominal and relative design expectations are tested. |
-| Distributed feed closure | PASS/SCREEN | Development screen closes 100 g/h feed to better than ~0.001 g/h. |
-| Distributed outer-energy residual | PASS/SCREEN | Numerically near zero in checked VP cases. |
-| Distributed spreader residual | PASS/SCREEN | ~0.004 W/m² or lower in checked VP cases. |
-| Distributed grid convergence | PASS/SCREEN | VP-A 32→96-node body-flux change is ~0.01 W/m². |
-| Scalar/distributed hierarchy continuity | PASS/SCREEN | VP-A–D distributed gains remain within ~0.8 W of scalar-anchor gains. |
-| Reference generator | PASS/UPDATED | Material/contact, VP and distributed-spreader CSVs included. |
-| CI definition | PASS/UPDATED | Current workflow runs all current executable models and checks generated distributed output. |
-| Previously verified integration | PASS | `model-tests` #370 succeeded at SHA `a01eeafc8ae6814349a3a0937251efd048823dae` before the latest material/VP/distributed updates. |
-| Current 20-module head | CHECK | Record a newer successful Actions run before marking the current head verified. |
+| Broad regression suite | PASS/DEV | Existing model/topology tests retained. |
+| Dedicated pressure CI | PASS/DEFINED | `pressure-tests.yml`; initial import-path failure was diagnosed and fixed with `PYTHONPATH=.`. |
+| Dedicated liquid CI | PASS/DEFINED | `liquid-tests.yml` covers capillary architecture/practical/salt regression tests. |
+| 24 x 24 pressure reference | PASS/SCREEN | Converged reference CSV committed. |
+| Protected-air reference | PASS/SCREEN | 24 x 24 floor sweep committed. |
+| Support-skeleton frontier | PASS/SCREEN | Reference frontier committed. |
+| Load-schedule reference | PASS/SCREEN | Quasisteady 24 x 24 scenario summary committed. |
+| Capillary reference tables | PASS/SCREEN | Central/local, radius-cap and salt-leakage references committed. |
+| Current full-head CI | CHECK | Do not call the current 33-module head verified until current workflow runs complete successfully. |
 
 ## D. Major findings retained
 
 ### D1 — exterior area requires ambient access
 
-Dense wet ribs can share one humidity boundary layer. In the E3 screen, whole-area vapor multipliers fall from roughly 3–4 at a 0.5 mm idealized renewal gap to roughly 1.3 at a 5 mm gap.
+Dense wet ribs can share one humidity boundary layer. Geometric area alone is not accepted as proof of useful evaporation.
 
-### D2 — long wet covered corridors are weak
+### D2 — long covered wet corridors are weak
 
-Covered/end-renewed channels can sustain nonzero natural flow while remaining nearly saturated, and flow direction can reverse. Velocity and axial Péclet number are not accepted as success metrics alone.
+Covered/end-renewed channels can remain nearly saturated despite nonzero buoyant flow; flow direction can reverse.
 
-### D3 — open-valley renewal requires both `F` and absolute conductance
+### D3 — positive evaporation is not equivalent to body cooling
 
-\[
-R=G_a/G_w,
-\quad F=\frac{R}{1+R},
-\quad k_{eff}=\frac{k_wk_a}{k_w+k_a}=k_wF.
-\]
+Warm ambient air can supply a substantial fraction of latent heat. Signed body-side heat flow remains the integrated thermal endpoint.
 
-`F=0.8` requires `R=4`; `F=0.9` requires `R=9`. The representative distributed open-valley exchange length is ~0.7–1.1 mm, making 20–50 mm interruption a negative/control case rather than the preferred mechanism.
+### D4 — feed limitation changes the optimum
 
-### D4 — positive evaporation can coexist with inward body heat flow
+Once available water is fully evaporated, stronger linked ambient exchange can lower body-coupled cooling by supplying more latent heat from ambient air.
 
-At 40 °C / 70% RH, linked heat/vapor low-order cases can still evaporate while body-side heat flow is negative.
+### D5 — heat spreading requires spatially different boundary conditions
 
-### D5 — hot/humid same-path sign boundary
+Symmetric wet/dry exposure produces little integrated gain. Shielding, pressure, wetting and exposure heterogeneity create finite routing value.
 
-For a 34 °C artificial skin, representative zero-body-flux boundaries are ~45.25 °C at 50% RH, ~39.73 °C at 70%, ~37.57 °C at 80%, ~36.59 °C at 85%, and ~35.68 °C at 90%. This is a model sign boundary, not a safety/medical threshold.
+### D6 — heat-routing distance/contact are first-order burdens
 
-### D6 — arbitrary heat/vapor selectivity is not assumed
+Ideal routing burden grows approximately as `P^2`; two terminal contacts can cap useful sheet conductivity.
 
-At 40 °C / 70% RH, current low-order critical `Xi=delta_vapor/delta_heat` is roughly 0.31–0.65. Ordinary same-path / Lewis / Chilton–Colburn-style baselines remain near one. A distinct physical mechanism is required to claim stronger selectivity.
+### D7 — explicit sparse traces do not beat the homogenized ideal reference in the corrected equal-material screen
 
-### D7 — feed limitation changes the optimum
+The corrected ordering is:
 
-Once all available feed is already evaporated, stronger linked ambient exchange can reduce body-coupled cooling because more latent heat comes from warm ambient air.
+`uniform homogenized > x-aligned / mesh >> y-transverse`.
 
-### D8 — identical evaporation mass does not imply identical body heat removal
+The earlier opposite claim is withdrawn in the repository record.
 
-At 35 °C / 50% RH / 150 g/h, modeled body share of latent heat varies from roughly 62–64% under very strong linked exchange to roughly 78% near the feed/transfer transition.
+### D8 — robust heat topology is failure-map dependent
 
-### D9 — symmetric heat spreading does not create global cooling
+For the current combined stretch/contact/fracture map, the lightly cross-linked directed network (`lambda≈0.125`) is the strongest screened robustness anchor, not the nominal-gain maximum.
 
-Internal equalization under identical wet/dry external boundary conditions changes local temperatures but leaves area-integrated body heat flow essentially unchanged.
+### D9 — spatial load changes evaporator placement
 
-### D10 — asymmetric heat spreading creates finite value
+Under synthetic backpack/strap/seat maps, low-pressure wet-terminal placement ranks highest in the primary pressure-closure screen. Under no load, ordinary four-island placement can be better.
 
-With a shielded/weaker-exposed dry region and an active wet sink, lateral routing increases total modeled body heat removal. Corrected `h_dry=5 W/(m² K)` scalar targets for ~90% of high-mixing gain are ~117, 192, 285, 330 and 258 W/(m² K) at 30, 50, 75, 100 and 150 g/h respectively. High-mixing gains over 0.195 m² are finite, roughly 3–6 W.
+Therefore the conclusion is pressure-aware placement in load-prone garment regions, not universal peripheral evaporation.
 
-### D11 — routing pitch has a quadratic burden
+### D10 — under-load evaporation can work only if vapor access is protected strongly enough
 
-\[
-g_{sheet}\approx\Gamma\frac{k_{\parallel}tc}{P^2},\qquad\Gamma=4.
-\]
+For the primary backpack+strap screen, a loaded center wet panel needs an effective wet-side air-access floor near ~0.83–0.85 to match the relocated pressure-aware terminal.
 
-For a representative `g_mix≈330 W/(m² K)` target, abstract `k=100 W/(m K)`, `rho=1600 kg/m³` maps to ~83 µm / 40 g over 0.30 m² at 10 mm pitch, ~330 µm / 159 g at 20 mm, and ~743 µm / 357 g at 30 mm.
+This is a model parameter, not a measured porosity/velocity requirement.
 
-### D12 — sparse coverage is not automatically lighter
+### D11 — support structures consume evaporator area
 
-Under linear `t*c` scaling, coverage cancels from idealized mass at fixed target conductance. Sparse routing only helps if topology/path/material/inactive-area behavior also changes.
+After charging support footprint against the loaded wet panel, the screened feasible region is narrow:
 
-### D13 — contact can dominate sheet conductivity
+- air floor 0.90: only about 2.5% support footprint still matches relocation;
+- 0.95: about 7.5%;
+- 1.00: about 10%.
 
-\[
-1/g_{eff}=1/g_{sheet}+2/h_c.
-\]
+This favors narrow ribs, point/perimeter supports or arches rather than coarse lattices.
 
-For `g_target≈330 W/(m² K)`, even an ideal sheet requires each-side `h_c>~660 W/(m² K)` in the lumped contact screen.
+### D12 — active wet-layout switching is not currently justified
 
-### D14 — virtual prototypes v0.1 scalar anchors
+Ideal statewise switching improves the best fixed layout by only about 0.10–0.23 W over 0.195 m² in the current quasisteady commuter/office/mixed schedules. A sub-percent switching/control penalty can erase this benefit.
 
-At 100 g/h:
+### D13 — distributed capillary delivery is strongly favored in the ideal liquid model
 
-| VP | mass over 0.30 m² | scalar spreader-only gain over 0.195 m² |
-|---|---:|---:|
-| A | ~48 g | ~5.3 W |
-| B | ~96 g | ~4.9 W |
-| C | ~27 g | ~5.0 W |
-| D | ~48 g | ~6.1 W |
+For 150 g/h total flow, an illustrative 200 mm / 100 mm-rise centralized route requires roughly 48 mm² ideal total capillary cross-section, while four 50 mm / 25 mm-rise local cells require about 3 mm².
 
-These are spreader mechanism increments, not total garment-vs-control performance.
+This is geometry-dependent, not a universal performance ratio.
 
-### D15 — direct-material distributed bridge retains the design direction
+### D14 — capillary radius has a lift/resistance optimum
 
-The 1-D bridge solves
+For positive lift,
 
 \[
-\frac{d}{dx}\left(k_{\parallel}t\frac{dT_s}{dx}\right)
-+U_b(T_{skin}-T_s)+h_c(T_o-T_s)=0
+r_* = \frac{\gamma\cos\theta}{\rho g\Delta z},
 \]
 
-with local wet evaporation, dry shielding, periodic routing and feed-solved continuous wet width.
+which is half the largest radius capable of statically supporting the same rise.
 
-At 100 g/h, equal-feed no-lateral baseline comparison gives:
+A 4-local-cell reference remains near its unconstrained ideal burden with a ~200 µm maximum radius; a 75–100 µm cap imposes a much larger hydraulic area penalty.
 
-| VP | wet fraction | distributed spreader-only gain over 0.195 m² |
-|---|---:|---:|
-| A | ~0.444 | ~5.48 W |
-| B | ~0.448 | ~5.32 W |
-| C | ~0.451 | ~5.30 W |
-| D | ~0.447 | ~6.29 W |
+### D15 — liquid capture and transport should use different hydraulic scales
 
-This preserves the short-pitch and shielding conclusions without using scalar `g_mix`. Distributed/scalar gains agree within ~0.8 W, which is hierarchy continuity rather than independent validation.
+Short fine-pore collection can provide capillary pressure while larger liquid-filled trunks carry longer-distance flow. The exterior evaporator remains a separate terminal phase-change zone.
 
-**Important limitation:** VP-C's 50% coverage is still homogenized as effective thickness. Actual sparse trace geometry, tortuosity and local contact loss are not yet resolved.
+### D16 — salt leakage wording is corrected
 
-## E. Future physical-validation readiness
+Salt vapor flux is zero. If upstream evaporation removes water fraction `f_leak`, the bulk normalized concentration is
 
-No specimen exists. Experiment files are future specifications only.
+\[
+\sigma_{out}=\sigma_0/(1-f_{leak}).
+\]
 
-| Item | Status |
-|---|---|
-| Physical specimen | **NOT BUILT** |
-| Physical performance data | **NOT EXECUTED** |
-| B0/B2/B3/B4 definitions | PLANNED |
-| E3/E3b/E3c | PLANNED |
-| E4a feed transition | PLANNED |
-| E4/E6 hot/humidity validation | PLANNED |
-| Signed heat-flow / water-balance / T-RH requirements | SPECIFIED |
+Thus 10% water leakage raises bulk concentration only ~1.11x. Small leakage does not mathematically guarantee bulk crystallization. Local wall-film drying/nucleation remains unresolved and is a separate reason to keep evaporation out of permanent buried channels.
 
-## F. Public-release readiness
+## E. Public-release readiness
 
 | Item | Status |
 |---|---|
 | Public GitHub repository | PASS |
 | Apache-2.0 | PASS |
 | Integrated technical disclosure | PASS / development |
-| Reproducible model stack | PASS / screening |
-| Explicit virtual prototypes | PASS / v0.1 anchors |
-| Direct-material distributed bridge | PASS / development |
-| Future validation protocols | PASS / planned |
-| Authoritative patent-office claim mapping | OPEN |
+| 33-module executable screening stack | PASS / development |
+| Regression tests / dedicated workflows | PASS / development |
+| Explicit pressure/load architecture | PASS / development |
+| Explicit liquid-routing architecture | PASS / development |
+| Salt nonvolatility / corrected leakage balance | PASS |
+| Physical data | NOT AVAILABLE / not required for current computational record |
+| Authoritative patent-family/claim verification | OPEN |
+| Root `docs/current-results.md` fully consolidated to newest 33-module state | OPEN |
 | Stable release tag | MISSING |
 | Persistent archive / DOI | MISSING |
 | Frozen release SHA-256 manifest | MISSING |
 
-## G. Remaining queue
+## F. Remaining queue
 
-### P0 — repository / virtual-prototype quality
+### P0 — repository consistency
 
-- [x] feed-limited / wet-dry / asymmetric model stack;
-- [x] bounded continuation solver and branch-jump regression;
-- [x] material/pitch/mass/contact mapping;
-- [x] VP-A/B/C/D scalar anchors;
-- [x] direct-material distributed 1-D bridge;
-- [x] distributed grid/feed/energy regression;
-- [x] reference-generator / CI integration;
-- [ ] record a successful current-head CI run and update this audit with exact SHA/run;
-- [ ] ensure README/current-results/changelog/PR all show 20-model state.
+- [x] update root README to 33-module architecture;
+- [x] update simulation index to 33 modules;
+- [x] add pressure/load reference CSVs and dedicated CI;
+- [x] add liquid-routing/salt reference CSVs and dedicated CI;
+- [ ] obtain successful current-head runs for model/topology/pressure/liquid workflows;
+- [ ] consolidate newest pressure/liquid conclusions into `docs/current-results.md` rather than relying on add-on documents/PR body;
+- [ ] update changelog and PR module count/verification section after CI success.
 
 ### P1 — model strengthening
 
-- [ ] move from periodic 1-D to geometry-resolved 2-D heat routing with direct `k_x/k_y`, explicit traces, contact maps, wet islands and dry shielding;
-- [ ] predict exterior lateral exchange from geometry-resolved 2-D/3-D natural convection/cross-flow;
-- [ ] re-test lumped multi-equilibrium behavior under improved external-flow physics;
-- [ ] sensitivity to topology factor, compression, contact degradation, Nu/Sh, radiation, curvature and external drift.
+- [ ] co-optimize heat-route and liquid-route cost to the same pressure-aware terminal locations;
+- [ ] add explicit trunk/channel collapse with pressure and curvature;
+- [ ] map protected gap height/width/support spacing to vapor exchange instead of an effective air-access floor;
+- [ ] model local wall-film evaporation/deposition and progressive hydraulic-radius loss;
+- [ ] geometry-resolved exterior natural convection/cross-flow;
+- [ ] hot/humid maps for integrated virtual prototypes.
 
-### P2 — virtual-prototype completion
+### P2 — virtual garment completion
 
-- [x] VP-A short-pitch baseline;
-- [x] VP-B routing-distance comparison;
-- [x] VP-C lightweight/high-`k/rho` anchor;
-- [x] VP-D shielded performance anchor;
-- [x] direct-material 1-D versions of VP-A–D;
-- [ ] resolve VP-C sparse trace topology explicitly in 2-D;
-- [ ] add full garment mass/thickness budget beyond spreader layer;
-- [ ] add hot/humid performance map for each VP.
+- [ ] full mass/thickness budget including textile, high-`k` routes, capillary structures, spacer/protection structures and stored liquid;
+- [ ] garment-scale regional layout using expected load zones rather than one repeating tile;
+- [ ] curvature and seam placement;
+- [ ] explicit integrated virtual prototype combining one heat network, one liquid network and one wet-terminal map.
 
 ### P3 — stable publication
 
-- [ ] authoritative patent-family/claim verification;
-- [ ] freeze exact technical-disclosure + virtual-prototype commit;
+- [ ] authoritative patent-office family/claim verification;
+- [ ] freeze exact technical-disclosure + integrated virtual-prototype commit;
 - [ ] regenerate reference artifacts and SHA-256 at that commit;
-- [ ] update `CITATION.cff` / version / release notes;
+- [ ] update `CITATION.cff`, version and release notes;
 - [ ] create stable tag/release;
-- [ ] create persistent public archive/DOI without overwriting earlier records.
-
-## H. Audit rules
-
-Every significant result must answer:
-
-1. measurement, simulation, analytic screen, inference, or hypothesis?
-2. reproducible from code/data?
-3. does it supersede an earlier conclusion?
-4. are nonlinear branch choices explicit and residual-checked?
-5. is geometric area being confused with accessible area?
-6. is vapor transfer being reused as sensible heat transfer?
-7. is axial Péclet number being confused with vapor renewal?
-8. is high `F` being confused with high evaporation capacity?
-9. is positive evaporation being confused with body cooling?
-10. does predicted evaporation exceed available feed?
-11. is model wet fraction being reported as measured wet area?
-12. is ordinary heat/mass analogy being violated without a mechanism?
-13. is symmetric heat spreading being generalized to asymmetric systems without stating the heterogeneity?
-14. is `g_mix` quoted without routing/material/contact assumptions?
-15. is sparse conductive coverage being assumed to reduce mass automatically?
-16. is scalar-to-distributed agreement being misrepresented as independent validation?
-17. is VP-C homogenized coverage being misrepresented as resolved sparse-trace behavior?
-18. is a virtual-prototype spreader-only gain being confused with total garment cooling?
-19. is any planned physical protocol being described as executed when no specimen exists?
-
-If any answer is unclear, keep the item open.
+- [ ] archive persistently after internal consistency review.
