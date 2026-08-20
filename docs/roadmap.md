@@ -4,7 +4,7 @@ Date: 2026-08-20
 
 ## Objective
 
-Develop and publicly document a reproducible passive cooling garment architecture based on local sweat collection, short liquid transport, exterior evaporation, pressure-aware heat routing and explicit hot/humid failure boundaries.
+Develop and publicly document a reproducible passive cooling garment architecture based on local sweat collection, short two-scale liquid transport, exterior evaporation, pressure-aware heat routing and explicit hot/humid failure boundaries.
 
 **Current project mode: virtual/computational prototype only. No physical specimen currently exists.**
 
@@ -37,7 +37,7 @@ Status: **in progress**
 
 ## Gate 2 — reproducible model stack
 
-Status: **advanced low-order stack with direct geometry/material bridges**
+Status: **advanced low-order stack with direct geometry/material and branched-liquid bridges**
 
 Completed:
 
@@ -55,54 +55,56 @@ Completed:
 - [x] compression/contact/ambient-path regime screen;
 - [x] spatial pressure maps;
 - [x] capillary transport, lift/radius optimum and blockage/radius-collapse screens;
+- [x] explicit dense branched liquid resistor network;
+- [x] sparse two-scale trunk/collector network with phase robustness;
 - [x] nonvolatile water/salt mass balance;
 - [x] regression tests, CI and reference CSVs.
 
 Still open:
 
 1. geometry-resolved 3-D exterior natural convection/cross-flow;
-2. branched liquid-network solve coupled directly to terminal placement;
+2. joint thermal/liquid/material network optimization at garment scale;
 3. local wall-film salt deposition and progressive radius loss;
 4. measured or independently validated constitutive laws if hardware is ever built.
 
 ## Gate 3 — explicit virtual prototypes
 
-Status: **advanced**
+Status: **advanced; VP-E terminal geometry not frozen**
 
 VP-A through VP-D remain mechanism anchors for routing pitch, mass/contact burden and hot-ambient shielding.
 
-### VP-E — current integrated design anchor
+### VP-E — current integrated design family
 
 VP-E combines:
 
 - directed heat routing with limited cross-link redundancy (`lambda`-like heat-route blend near 0.125);
 - distributed local liquid cells rather than a garment-scale central wick;
+- two-scale liquid architecture: fine collector paths + larger trunks;
 - pressure-aware exterior terminals;
 - fixed passive terminal placement rather than active switching as baseline;
 - dry-side shielding in hot ambient conditions;
 - explicit nonvolatile-salt handling;
 - mass/thickness BOM screen.
 
-The terminal-placement rule is now a **thermal/liquid co-design**, not a pure thermal optimum.
+An earlier route proxy suggested promoting a mildly regularized pressure-aware terminal layout. The explicit branched-flow model corrected that interpretation: with short dense 50–200 µm-class trunks, absolute hydraulic pressure loss is far below capillary drive. Therefore **the final VP-E terminal rule remains open**.
 
-At the converged 24 x 24 backpack+straps reference:
+Current terminal choices are:
 
-- thermal-only optimum: `beta=0`, route weight `0.20`, `q_body≈112.84 W/m²`, liquid `d95≈20.16 mm`;
-- co-design anchor: `beta=0.125`, route weight `0.35`, `q_body≈110.83 W/m²`, liquid `d95≈16.77 mm`.
-
-The co-design anchor retains ~98.21% of modeled thermal performance while reducing the same protected-trunk hydraulic proxy by ~16.79%.
+- pure thermal pressure-aware layout as the thermal reference;
+- mildly regularized pressure-aware layout as a route/material/seam Pareto alternative;
+- final choice deferred until sparse-network and material burden are optimized jointly.
 
 Gate-3 completion criterion:
 
 - [x] at least three explicit virtual prototypes;
-- [x] integrated VP-E heat/liquid/terminal architecture;
+- [x] integrated VP-E heat/liquid/terminal architecture family;
 - [x] screening mass/thickness budget;
 - [x] hot/humid state maps at low-order resolution;
-- [ ] freeze one reproducible VP-E input manifest for release.
+- [ ] freeze one reproducible VP-E terminal/liquid-network input manifest for release.
 
 ## Gate 4 — virtual robustness / apparel constraints
 
-Status: **advanced; no longer merely planned**
+Status: **advanced**
 
 Completed screens:
 
@@ -117,14 +119,25 @@ Completed screens:
 - [x] pressure-linked liquid-channel radius-collapse sensitivity;
 - [x] localized and distributed damage comparisons;
 - [x] virtual garment BOM range screen;
-- [x] pressure-aware heat/liquid terminal co-design.
+- [x] terminal route-length Pareto screen;
+- [x] explicit dense branched liquid flow;
+- [x] sparse trunk pitch / collector-radius / phase robustness.
+
+Sparse-network reference under localized sweat source and sampled trunk-grid phases:
+
+| collector radius | largest tested 200 µm trunk pitch passing SF=3 at all sampled phases |
+|---:|---:|
+| 20 µm | ~15 mm |
+| 25 µm | ~20 mm |
+| 30 µm | ~30 mm |
+| 35–50 µm | >=60 mm |
 
 Remaining:
 
 - [ ] garment curvature and seam placement;
 - [ ] regional full-garment load map instead of one repeating tile;
-- [ ] time-dependent wet-source migration rather than quasisteady snapshots;
-- [ ] explicit branched liquid network with shared trunks and local collectors;
+- [ ] time-dependent wet-source migration;
+- [ ] optimize network material density / wall mass in addition to liquid pressure;
 - [ ] resolved protected-gap geometry instead of an effective air-access factor.
 
 ## Gate 5 — future physical validation specification
@@ -141,8 +154,8 @@ If a specimen is eventually built, planned order remains:
 6. E4 — humidity mapping with water-balance classification;
 7. E5 — heat-route orientation/material/contact validation;
 8. E6 — hot-ambient sensible-heat penalty and shielding;
-9. new pressure validation — loaded terminal air-access/contact mapping;
-10. new hydraulic validation — local collector/trunk pressure drop and collapse.
+9. pressure validation — loaded terminal air-access/contact mapping;
+10. hydraulic validation — collector/trunk pressure drop, lattice pitch and collapse.
 
 Minimum future measurement package:
 
@@ -166,7 +179,7 @@ Before stable v1.0:
 - [ ] authoritative patent-office verification;
 - [ ] freeze technical disclosure and VP-E input manifest at one exact commit;
 - [ ] regenerate all reference outputs at that commit;
-- [ ] obtain successful current-head model/topology/pressure/liquid workflows;
+- [ ] obtain successful current-head model/topology/pressure/liquid/garment workflows;
 - [ ] freeze SHA-256 manifest;
 - [ ] update `CITATION.cff`, version/date, changelog and release notes;
 - [ ] create GitHub tag/release;
@@ -175,15 +188,18 @@ Before stable v1.0:
 
 ## Current research priorities
 
-### P0 — replace the co-design proxy with an explicit liquid network
+### P0 — joint sparse-network design
 
-Current pressure/liquid co-design uses
+The distance-only liquid proxy has been superseded for pressure-feasibility questions by explicit branched-flow models. The next optimization variables are now:
 
-\[
-J_h=d_{95}\hat r^{-4}
-\]
+- collector hydraulic radius;
+- large-trunk pitch;
+- trunk-grid phase / route placement;
+- localized source distribution;
+- network wall/material mass;
+- terminal thermal performance.
 
-as a first-order common metric. Next step is a graph/network solve where collector, trunk and terminal topology are explicit and pressure-dependent.
+The target is a Pareto front in **cooling performance vs liquid pressure margin vs network material burden**.
 
 ### P1 — exterior vapor-gap geometry
 
@@ -208,10 +224,10 @@ A virtual architecture should be downgraded if it:
 - improves evaporation but not signed body-side cooling;
 - depends on unavailable water supply;
 - requires long central liquid lift when local routing is feasible;
-- moves terminals so far from liquid sources that hydraulic burden offsets pressure benefit;
+- requires a collector radius / trunk pitch combination that loses capillary safety margin under plausible phase placement;
 - requires vapor-gap preservation incompatible with expected compression;
 - depends on heat/vapor selectivity without a physical mechanism;
-- maps required heat routing to impractical mass/thickness/contact burden;
-- assumes sparse conductive coverage automatically saves mass;
+- maps required heat routing or liquid routing to impractical mass/thickness burden;
+- assumes sparse conductive or liquid-network coverage automatically saves mass;
 - assumes salt evaporates;
 - loses ambient paths or liquid radius under expected load without redundancy/protection.
