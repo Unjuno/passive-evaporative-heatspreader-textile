@@ -2,7 +2,7 @@
 
 Status: **screening / analytic / virtual-prototype models only**. No physical garment or bench specimen exists.
 
-The current release-candidate stack is frozen at **43 executable models**, plus `generate_reference_outputs.py` as a reproducibility generator. New exploratory models should normally be deferred to a later version unless needed to correct a release-critical contradiction.
+The current release-candidate stack is frozen at **45 executable models**, plus `generate_reference_outputs.py` as a reproducibility generator. New exploratory models should normally be deferred to a later version unless needed to correct a release-critical contradiction.
 
 ## Executable model hierarchy
 
@@ -50,7 +50,7 @@ The current release-candidate stack is frozen at **43 executable models**, plus 
 34. `environment_exposure_control.py` — hot/humid wet-terminal open/shield screen under load.
 35. `pressure_liquid_codesign.py` — relative pressure-aware thermal/geometric route co-design proxy.
 
-### Liquid transport / nonvolatile solute
+### Liquid transport / nonvolatile solute / transient water state
 
 36. `water_salt_1d.py` — normalized water/nonvolatile-solute balance screen.
 37. `capillary_liquid_network.py` — ideal cylindrical capillary pressure/flow burden and local-routing screen.
@@ -60,6 +60,8 @@ The current release-candidate stack is frozen at **43 executable models**, plus 
 41. `salt_leakage_budget.py` — corrected bulk nonvolatile-solute concentration under upstream water-only leakage.
 42. `branched_liquid_resistor_network.py` — explicit distributed-source branched-flow pressure solve to multiple terminals.
 43. `sparse_branched_liquid_network.py` — trunk-pitch / collector-radius / grid-phase robustness screen.
+44. `collector_fouling_margin.py` — imposed nonvolatile-residue / hydraulic-radius-loss failure screen; does not predict deposition chemistry or rate.
+45. `transient_terminal_buffer.py` — mass-conserving transport/terminal water-buffer and response-time screen.
 
 `generate_reference_outputs.py` is a reproducibility generator rather than a model and is excluded from the count.
 
@@ -79,7 +81,9 @@ The model hierarchy supports the following architecture-level conclusions:
 - short distributed capillary routing is favored over long centralized lift;
 - explicit branched-network pressure solves supersede route-distance proxies for hydraulic claims;
 - collector radius, trunk pitch, phase/placement, and source localization jointly control sparse-network feasibility;
-- salt vapor flux is zero and bulk concentration is distinct from local deposition.
+- salt vapor flux is zero and bulk concentration is distinct from local deposition;
+- imposed collector fouling/radius loss is a failure sensitivity, not a measured salt-deposition lifetime;
+- transient water storage trades startup/decay response against operating wet mass.
 
 ## Reproducibility
 
@@ -96,7 +100,7 @@ Five dedicated workflows separate the broad stack and domain-specific checks:
 - `liquid-tests`;
 - `garment-tests`.
 
-The pre-cleanup integration head `529fc573f2a24a0d4d3db8464c3c1409a38b34ec` passed all five. The exact final release commit must be checked again after documentation cleanup.
+The final release candidate should preserve the exact-head reference package produced by `model-tests` as an Actions artifact containing generated data, figures, `metadata.json`, and `sha256.txt`.
 
 ## Interpretation rules
 
@@ -115,6 +119,8 @@ Do not use any one of the following as proof of real-garment performance or hydr
 - pressure-weighted shortest-path or `d95*r^-4` cost as a full hydraulic network;
 - one favorable trunk-grid phase as a robust sparse-network boundary;
 - bulk salt balance as proof of local crystallization;
+- imposed fouling thickness as a measured deposition rate or service life;
+- transient time constants as measured textile response constants;
 - virtual BOM values as measured garment mass.
 
 ## Freeze rule
