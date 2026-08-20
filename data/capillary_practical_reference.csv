@@ -1,0 +1,9 @@
+case,radius_cap_um,selected_radius_um,channels_per_cell,cross_section_per_cell_mm2,area_penalty_vs_unconstrained,inventory_per_cell_ml
+4_local_cell,75,74.868,83,1.462,1.947,0.073
+4_local_cell,100,99.080,38,1.172,1.561,0.059
+4_local_cell,150,148.159,13,0.896,1.194,0.045
+4_local_cell,200,190.063,7,0.794,1.058,0.040
+4_local_cell,300,244.405,4,0.751,1.000,0.038
+blockage_4local_r200_0pct,200,200,7,,, 
+blockage_4local_r200_30pct,200,200,10,,, 
+blockage_4local_r200_50pct,200,200,14,,, 
